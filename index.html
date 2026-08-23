@@ -1037,11 +1037,11 @@ body.dialog-lock { overflow:hidden !important; }
             <label class="field"><span>先选省 / 地区</span><select id="knownProvinceSelect"><option value="">全部地区</option></select></label>
             <label class="field"><span>再选知名矿区 / 矿山</span><select id="knownLocalitySelect"><option value="">直接打字，或从这里选</option></select></label>
           </div>
-          <div class="locality-group-note">快捷选择只是帮你少打字：选中后自动填下面四项；不在列表里的产地照样可以直接输入。当前矿物相关的产地会优先显示。</div>
+          <div class="locality-group-note">快捷选择只是帮你少打字，不是必填：选中后自动填下面四项；不在列表里的国家、地区或矿区照样可以直接输入。只知道“印度”这种国家级产地也完全有效，不会因为没写省/州或矿山而自动变成待办。当前矿物相关的知名产地会优先显示。</div>
         </div>
       </div>
       <div class="form-card grid-two">
-        <label class="field"><span>国家 / 地区</span><input id="country" list="localityCountries" placeholder="中国" /></label>
+        <label class="field"><span>国家 / 地区</span><input id="country" list="localityCountries" placeholder="例如：中国 / 印度 / 美国" /><small class="field-hint">只知道国家也可以直接保存；省 / 州、城市和矿区都是可选的进一步细化。</small></label>
         <label class="field"><span>省 / 州</span><input id="province" list="localityProvinces" placeholder="湖南" /></label>
         <label class="field"><span>市 / 县</span><input id="city" list="localityCities" placeholder="郴州" /></label>
         <label class="field"><span>矿山 / 矿区</span><input id="mine" list="localityMines" placeholder="香花岭矿区" /></label>
@@ -1086,7 +1086,7 @@ body.dialog-lock { overflow:hidden !important; }
           <div class="task-options">
             <label class="task-check"><input type="checkbox" data-task="clean">待清洗</label>
             <label class="task-check"><input type="checkbox" data-task="photo">待拍照</label>
-            <label class="task-check"><input type="checkbox" data-task="locality">待查产地</label>
+            <label class="task-check"><input type="checkbox" data-task="locality">想补更详细产地</label>
             <label class="task-check"><input type="checkbox" data-task="label">待补标签</label>
             <label class="task-check"><input type="checkbox" data-task="repair">待修复</label>
             <label class="task-check"><input type="checkbox" data-task="sell">准备出售</label>
@@ -1165,7 +1165,7 @@ body.dialog-lock { overflow:hidden !important; }
         <div id="batchCareCard" class="care-card" aria-live="polite"></div>
         <label class="field"><span>先选省 / 地区</span><select id="batchKnownProvinceSelect"><option value="">全部地区</option></select></label>
         <label class="field"><span>再选知名矿区 / 矿山</span><select id="batchKnownLocalitySelect"><option value="">直接打字，或从这里选</option></select></label>
-        <label class="field"><span>国家 / 地区</span><input id="batchCountry" list="localityCountries" placeholder="中国" /></label>
+        <label class="field"><span>国家 / 地区</span><input id="batchCountry" list="localityCountries" placeholder="例如：中国 / 印度 / 美国" /><small class="field-hint">批量录入时只填国家也算有效产地，不会自动生成“待补更详细产地”。</small></label>
         <label class="field"><span>省 / 州</span><input id="batchProvince" list="localityProvinces" placeholder="内蒙古" /></label>
         <label class="field"><span>市 / 县</span><input id="batchCity" list="localityCities" placeholder="赤峰" /></label>
         <label class="field"><span>矿山 / 矿区</span><input id="batchMine" list="localityMines" placeholder="矿山 / 矿区" /></label>
@@ -1422,7 +1422,7 @@ const MINERAL_CATALOG = [
   {name:'沸石类（未细分）', system:'不是单一晶系', formula:'成分随具体沸石种变化', hardness:'通常约 3.5–5.5（随种类变化）', scienceClass:'硅酸盐', scienceSubclass:'架状硅酸盐·沸石', scienceGroup:'沸石族群 / 未细分', aliases:['沸石','zeolite','zeolites'], structureNote:'“沸石”是一个矿物族群/收藏圈统称，不是单一矿物种。若能确定具体种类，建议改选方沸石、辉沸石、片沸石、钠沸石、菱沸石、浊沸石、丝光沸石等具体名称；暂时分不清时可以先用“沸石类（未细分）”记录。'}
 ];
 
-const MINERAL_CATALOG_VERSION = '2026.08 · 稀有矿扩展 / 中国矿区扩展 · 沸石补充';
+const MINERAL_CATALOG_VERSION = '2026.08 · 稀有矿扩展 / 中国矿区扩展 · 沸石补充 · 产地层级修复';
 function patchMineral(name, patch){ const x=MINERAL_CATALOG.find(v=>v.name===name); if(x) Object.assign(x, patch); }
 patchMineral('菱锰矿',{aliases:['rhodochrosite','红纹石','菱錳礦']});
 patchMineral('赤铁矿',{hardness:'5.5–6.5', aliases:['hematite','镜铁矿','鏡鐵礦','specularite','specular hematite','铁玫瑰','iron rose'], structureNote:'“镜铁矿 / Specularite”是具银灰色镜面光泽、常呈片状/板状集合体的赤铁矿变种/形态称呼；科学矿物种仍归赤铁矿。'});
@@ -1466,6 +1466,8 @@ IMA_RRUFF_FALLBACK.forEach(([name,formula,system,hardness])=>{
 
 
 const SCIENCE_CLASS_ORDER = ['自然元素','硫化物与硫盐','卤化物','氧化物与氢氧化物','碳酸盐与硝酸盐','硼酸盐','硫酸盐、铬酸盐、钼酸盐与钨酸盐','磷酸盐、砷酸盐与钒酸盐','硅酸盐','有机矿物','准矿物/非晶质','未分类'];
+
+const COUNTRY_SUGGESTIONS = ["中国", "中国香港", "中国澳门", "中国台湾", "印度", "巴基斯坦", "阿富汗", "尼泊尔", "斯里兰卡", "孟加拉国", "不丹", "缅甸", "泰国", "越南", "老挝", "柬埔寨", "马来西亚", "新加坡", "印度尼西亚", "菲律宾", "日本", "韩国", "朝鲜", "蒙古", "哈萨克斯坦", "乌兹别克斯坦", "吉尔吉斯斯坦", "塔吉克斯坦", "土库曼斯坦", "伊朗", "伊拉克", "土耳其", "格鲁吉亚", "亚美尼亚", "阿塞拜疆", "以色列", "约旦", "黎巴嫩", "沙特阿拉伯", "阿曼", "也门", "阿联酋", "卡塔尔", "科威特", "俄罗斯", "乌克兰", "白俄罗斯", "波兰", "德国", "法国", "英国", "爱尔兰", "西班牙", "葡萄牙", "意大利", "瑞士", "奥地利", "捷克", "斯洛伐克", "匈牙利", "罗马尼亚", "保加利亚", "希腊", "塞尔维亚", "克罗地亚", "斯洛文尼亚", "波黑", "黑山", "北马其顿", "阿尔巴尼亚", "挪威", "瑞典", "芬兰", "丹麦", "冰岛", "荷兰", "比利时", "卢森堡", "爱沙尼亚", "拉脱维亚", "立陶宛", "摩尔多瓦", "美国", "加拿大", "墨西哥", "危地马拉", "洪都拉斯", "尼加拉瓜", "哥斯达黎加", "巴拿马", "古巴", "多米尼加", "牙买加", "哥伦比亚", "委内瑞拉", "圭亚那", "苏里南", "厄瓜多尔", "秘鲁", "玻利维亚", "巴西", "巴拉圭", "乌拉圭", "阿根廷", "智利", "澳大利亚", "新西兰", "巴布亚新几内亚", "斐济", "南非", "纳米比亚", "博茨瓦纳", "津巴布韦", "赞比亚", "刚果（金）", "刚果（布）", "安哥拉", "莫桑比克", "马达加斯加", "坦桑尼亚", "肯尼亚", "埃塞俄比亚", "厄立特里亚", "乌干达", "卢旺达", "布隆迪", "马拉维", "加纳", "尼日利亚", "喀麦隆", "加蓬", "几内亚", "塞拉利昂", "利比里亚", "科特迪瓦", "马里", "尼日尔", "布基纳法索", "塞内加尔", "毛里塔尼亚", "摩洛哥", "阿尔及利亚", "突尼斯", "利比亚", "埃及", "苏丹"];
 
 const LOCALITY_CATALOG = [
   {id:'cn-yaogangxian', label:'瑶岗仙矿 · 湖南郴州', country:'中国', province:'湖南', city:'郴州 · 宜章县', mine:'瑶岗仙矿（Yaogangxian Mine）', minerals:['萤石','石英','方解石','白云母','黄铁矿','方铅矿','闪锌矿','黑钨矿']},
@@ -1524,7 +1526,7 @@ const LOCALITY_COORDS = {
   'cn-xikuangshan':[27.7,111.4], 'cn-daoping':[24.8,110.8], 'cn-yangshuo':[24.8,110.5],
   'cn-fengjiashan':[30.1,114.95], 'cn-wutong':[23.0,111.0], 'cn-tonglushan':[30.08,114.95], 'cn-wuning':[29.25,115.1], 'cn-dahegou':[34.05,111.0], 'cn-banpo':[25.8,107.5]
 };
-const TASK_LABELS = {clean:'待清洗',photo:'待拍照',locality:'待查产地',label:'待补标签',repair:'待修复',sell:'准备出售'};
+const TASK_LABELS = {clean:'待清洗',photo:'待拍照',locality:'想补更详细产地',label:'待补标签',repair:'待修复',sell:'准备出售'};
 const CONFIDENCE_LABELS = {confirmed:'确定',dealer:'商家 / 原标签标注',self:'自己判断',unknown:'待确认'};
 const TIMELINE_LABELS = {note:'备注',acquired:'入手',cleaned:'清洗 / 养护',moved:'换柜位',damaged:'损坏',repaired:'修复',provenance:'来源 / 转手',loaned:'借出',returned:'归还',sold:'售出',gifted:'赠送'};
 const WISHLIST_KEY = 'mineralCatalogWishlistV1';
@@ -1794,7 +1796,7 @@ function updateBatchScientificInfo(){
 }
 function populateLocalityDatalists(){
   const fill=(id,values)=>{ const el=$(id); if(el) el.innerHTML=[...new Set(values.filter(Boolean))].sort((a,b)=>a.localeCompare(b,'zh-CN')).map(v=>`<option value="${esc(v)}"></option>`).join(''); };
-  fill('localityCountries',LOCALITY_CATALOG.map(x=>x.country));
+  fill('localityCountries',[...COUNTRY_SUGGESTIONS,...LOCALITY_CATALOG.map(x=>x.country)]);
   fill('localityProvinces',LOCALITY_CATALOG.map(x=>x.province));
   fill('localityCities',LOCALITY_CATALOG.map(x=>x.city));
   fill('localityMines',LOCALITY_CATALOG.map(x=>x.mine));
@@ -1958,6 +1960,7 @@ function fmtDate(s) {
 }
 function tagsOf(s='') { return String(s||'').split(/[,，#\s]+/).map(x=>x.trim()).filter(Boolean); }
 function placeOf(i) { return [i.country,i.province,i.city,i.mine].filter(Boolean).join(' · '); }
+function localityPrecisionLabel(i){ if(i?.mine) return '矿区级'; if(i?.city) return '城市 / 县级'; if(i?.province) return '省 / 州级'; if(i?.country) return '国家级'; return '未填写'; }
 function collectionPath(i){ return [i.collectionGroup,i.collectionType].filter(Boolean).join(' › '); }
 function sciencePathOf(i){ return [i.scienceClass,i.scienceSubclass,i.scienceGroup].filter(Boolean).join(' › '); }
 function isIncomplete(i) { return !i.mineralName || !placeOf(i) || !(i.photos && i.photos.length); }
@@ -2323,6 +2326,7 @@ async function refresh() {
     if(!i.accessionNo){ maxCode+=1; patch.accessionNo=`M-${String(maxCode).padStart(4,'0')}`; }
     if(!i.sizeClass && i.size) patch.sizeClass=specimenSizeClass(i.size);
     if(!Array.isArray(i.tasks)) patch.tasks=[];
+    else if(i.country && i.tasks.includes('locality') && !i.localityTaskManual) patch.tasks=i.tasks.filter(t=>t!=='locality');
     if(!Array.isArray(i.timeline)) patch.timeline=[];
     if(!i.identityConfidence) patch.identityConfidence='confirmed';
     if(!i.localityConfidence) patch.localityConfidence='confirmed';
@@ -2547,7 +2551,7 @@ function gatherForm() {
     estimatedValue:get('estimatedValue'), saleAskPrice:get('saleAskPrice'), minSalePrice:get('minSalePrice'), forSale:!!$('forSale')?.checked && (get('disposition')||'held')==='held',
     disposition:get('disposition')||'held', salePrice:get('salePrice'), giftTo:get('giftTo'), dispositionDate:get('dispositionDate'), dispositionNote:get('dispositionNote'),
     conditionStatus:get('conditionStatus')||'normal', damageDate:get('damageDate'), damageNote:get('damageNote'),
-    tasks, nextCareDate:get('nextCareDate'),
+    tasks, localityTaskManual:tasks.includes('locality'), nextCareDate:get('nextCareDate'),
     loanStatus:get('loanStatus')||'none', loanTo:get('loanTo'), loanDate:get('loanDate'), loanDue:get('loanDue'), loanReturnedDate:get('loanReturnedDate'),
     tags:get('tags'), notes:get('notes'), photos:[...editingPhotos], labelPhotos:[...editingLabelPhotos], timeline:[...editingTimeline],
     createdAt:existing?.createdAt||now, updatedAt:now
@@ -2582,6 +2586,7 @@ function openDetail(id) {
       ${i.accessionNo?`<span class="detail-pill strong">${esc(i.accessionNo)}</span>`:''}
       <span class="detail-pill">身份：${esc(confidenceLabel(i.identityConfidence))}</span>
       <span class="detail-pill">产地：${esc(confidenceLabel(i.localityConfidence))}</span>
+      ${placeOf(i)?`<span class="detail-pill">产地精度：${esc(localityPrecisionLabel(i))}</span>`:''}
       ${i.sizeClass||specimenSizeClass(i.size)?`<span class="detail-pill">${esc(i.sizeClass||specimenSizeClass(i.size))}</span>`:''}
       ${careDue?`<span class="reminder-badge">${esc(careDue)}</span>`:''}
     </div>
@@ -2726,7 +2731,7 @@ async function saveBatch(){
   for(let idx=0; idx<batchRows.length; idx++){
     const row=batchRows[idx]; const type=row.collectionType.trim()||common.collectionType;
     if(common.collectionGroup && type) ensureTaxonomyEntry(common.collectionGroup,type);
-    const tasks=[]; if(!row.photos.length) tasks.push('photo'); if(!common.mine&&!common.province) tasks.push('locality');
+    const tasks=[]; if(!row.photos.length) tasks.push('photo'); if(!common.country) tasks.push('locality');
     const accessionNo=`M-${String(maxCode+idx+1).padStart(4,'0')}`;
     const item={
       id:uid(), accessionNo, ...common, collectionType:type,
@@ -2735,7 +2740,7 @@ async function saveBatch(){
       nickname:row.nickname.trim(), notes:row.notes.trim(), favorite:false, color:'', habit:'', size:'', sizeClass:'', price:row.price.trim()||common.price||'', provenanceNote:'',
       estimatedValue:'', saleAskPrice:'', minSalePrice:'', forSale:false,
       disposition:'held', salePrice:'', giftTo:'', dispositionDate:'', dispositionNote:'', conditionStatus:'normal', damageDate:'', damageNote:'',
-      tasks, nextCareDate:'', loanStatus:'none', loanTo:'', loanDate:'', loanDue:'', loanReturnedDate:'',
+      tasks, localityTaskManual:false, nextCareDate:'', loanStatus:'none', loanTo:'', loanDate:'', loanDue:'', loanReturnedDate:'',
       photos:[...row.photos], labelPhotos:[], timeline:[eventEntry('acquired',common.source||'批量入藏',common.acquiredDate||todayStr())], createdAt:now, updatedAt:now
     };
     await put(item);
