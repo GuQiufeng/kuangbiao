@@ -1984,6 +1984,32 @@ function confidenceLabel(v){ return CONFIDENCE_LABELS[v]||CONFIDENCE_LABELS.conf
 function timelineLabel(v){ return TIMELINE_LABELS[v]||'记录'; }
 function tasksOf(i){ return Array.isArray(i?.tasks)?i.tasks:[]; }
 function taskLabels(i){ return tasksOf(i).map(x=>TASK_LABELS[x]||x); }
+function reconciledTasks(item){
+  const tasks=[...new Set(tasksOf(item))];
+  return tasks.filter(task=>{
+    if(task==='photo' && Array.isArray(item?.photos) && item.photos.length>0) return false;
+    if(task==='label' && Array.isArray(item?.labelPhotos) && item.labelPhotos.length>0) return false;
+    if(task==='sell' && dispositionOf(item)!=='held') return false;
+    if(task==='repair' && conditionOf(item)==='repaired') return false;
+    if(task==='locality' && item?.country && !item?.localityTaskManual) return false;
+    return true;
+  });
+}
+function reconcileTaskCheckboxesFromEditor(){
+  const photoCb=document.querySelector('[data-task="photo"]');
+  if(photoCb && editingPhotos.length>0) photoCb.checked=false;
+  const labelCb=document.querySelector('[data-task="label"]');
+  if(labelCb && editingLabelPhotos.length>0) labelCb.checked=false;
+  const sellCb=document.querySelector('[data-task="sell"]');
+  if(sellCb && (($('disposition')?.value||'held')!=='held')) sellCb.checked=false;
+  const repairCb=document.querySelector('[data-task="repair"]');
+  if(repairCb && (($('conditionStatus')?.value||'normal')==='repaired')) repairCb.checked=false;
+  const localityCb=document.querySelector('[data-task="locality"]');
+  if(localityCb){
+    const manual=localityCb.dataset.userTouched==='1' || localityCb.dataset.manualPersisted==='1';
+    if(($('country')?.value||'').trim() && !manual) localityCb.checked=false;
+  }
+}
 function nextSpecimenCode(excludeId=''){
   let max=0;
   allItems.forEach(i=>{
@@ -2326,7 +2352,11 @@ async function refresh() {
     if(!i.accessionNo){ maxCode+=1; patch.accessionNo=`M-${String(maxCode).padStart(4,'0')}`; }
     if(!i.sizeClass && i.size) patch.sizeClass=specimenSizeClass(i.size);
     if(!Array.isArray(i.tasks)) patch.tasks=[];
-    else if(i.country && i.tasks.includes('locality') && !i.localityTaskManual) patch.tasks=i.tasks.filter(t=>t!=='locality');
+    else {
+      const healedTasks=reconciledTasks(i);
+      if(JSON.stringify(healedTasks)!==JSON.stringify(i.tasks)) patch.tasks=healedTasks;
+      if(!healedTasks.includes('locality') && i.localityTaskManual) patch.localityTaskManual=false;
+    }
     if(!Array.isArray(i.timeline)) patch.timeline=[];
     if(!i.identityConfidence) patch.identityConfidence='confirmed';
     if(!i.localityConfidence) patch.localityConfidence='confirmed';
@@ -2430,7 +2460,7 @@ function resetForm() {
   if($('localityConfidence')) $('localityConfidence').value='confirmed';
   if($('loanStatus')) $('loanStatus').value='none';
   if($('accessionNo')) $('accessionNo').value=nextSpecimenCode();
-  document.querySelectorAll('[data-task]').forEach(x=>x.checked=false);
+  document.querySelectorAll('[data-task]').forEach(x=>{x.checked=false; delete x.dataset.userTouched; delete x.dataset.manualPersisted;});
   updateCarePreview(false); updateLifecycleFields(); updateLoanFields(); updateCareReminderHint(); updateSizeClassHint(); updateDuplicateHint();
   populateCategorySuggestions();
 }
@@ -2476,7 +2506,12 @@ function openEditor(item=null) {
         'nextCareDate','loanStatus','loanTo','loanDate','loanDue','loanReturnedDate'
       ].forEach(k=>setField(k,item[k]));
       $('forSale').checked=!!item.forSale;
-      document.querySelectorAll('[data-task]').forEach(x=>x.checked=tasksOf(item).includes(x.dataset.task));
+      document.querySelectorAll('[data-task]').forEach(x=>{
+        x.checked=tasksOf(item).includes(x.dataset.task);
+        delete x.dataset.userTouched;
+        delete x.dataset.manualPersisted;
+        if(x.dataset.task==='locality' && item.localityTaskManual) x.dataset.manualPersisted='1';
+      });
       $('crystalSystem').dataset.manual = item.crystalSystem ? '1' : '';
       safeEditorStep('矿物科学资料',()=>updateCrystalSystemFromMineral(false));
       safeEditorStep('私人分类',()=>updateTypeSuggestions('collectionGroup'));
@@ -2496,6 +2531,7 @@ function openEditor(item=null) {
   safeEditorStep('养护提醒',()=>updateCareReminderHint());
   safeEditorStep('尺寸分类',()=>updateSizeClassHint());
   safeEditorStep('重复收藏提醒',()=>updateDuplicateHint());
+  safeEditorStep('待办复核',()=>reconcileTaskCheckboxesFromEditor());
 
   // 某些浏览器在 showModal 前后滚动位置异常，统一回到表单顶部。
   safeEditorStep('滚动到顶部',()=>{ const sheet=els.editor?.querySelector('.sheet'); if(sheet) sheet.scrollTop=0; });
@@ -2532,7 +2568,10 @@ function gatherForm() {
   const get=id=>$(id)?.value?.trim?.()||'';
   const mineralName=get('mineralName');
   const info=findMineralInfo(mineralName);
+  reconcileTaskCheckboxesFromEditor();
   let tasks=[...document.querySelectorAll('[data-task]:checked')].map(x=>x.dataset.task);
+  const localityCb=document.querySelector('[data-task="locality"]');
+  const localityTaskManual=tasks.includes('locality') && (localityCb?.dataset.userTouched==='1' || localityCb?.dataset.manualPersisted==='1');
   const formDisposition=get('disposition')||'held';
   if($('forSale')?.checked && formDisposition==='held' && !tasks.includes('sell')) tasks.push('sell');
   if(formDisposition!=='held') tasks=tasks.filter(x=>x!=='sell');
@@ -2551,11 +2590,13 @@ function gatherForm() {
     estimatedValue:get('estimatedValue'), saleAskPrice:get('saleAskPrice'), minSalePrice:get('minSalePrice'), forSale:!!$('forSale')?.checked && (get('disposition')||'held')==='held',
     disposition:get('disposition')||'held', salePrice:get('salePrice'), giftTo:get('giftTo'), dispositionDate:get('dispositionDate'), dispositionNote:get('dispositionNote'),
     conditionStatus:get('conditionStatus')||'normal', damageDate:get('damageDate'), damageNote:get('damageNote'),
-    tasks, localityTaskManual:tasks.includes('locality'), nextCareDate:get('nextCareDate'),
+    tasks, localityTaskManual, nextCareDate:get('nextCareDate'),
     loanStatus:get('loanStatus')||'none', loanTo:get('loanTo'), loanDate:get('loanDate'), loanDue:get('loanDue'), loanReturnedDate:get('loanReturnedDate'),
     tags:get('tags'), notes:get('notes'), photos:[...editingPhotos], labelPhotos:[...editingLabelPhotos], timeline:[...editingTimeline],
     createdAt:existing?.createdAt||now, updatedAt:now
   };
+  base.tasks=reconciledTasks(base);
+  if(!base.tasks.includes('locality')) base.localityTaskManual=false;
   base.timeline=appendAutomaticEvents(existing,base);
   return base;
 }
@@ -3115,8 +3156,8 @@ function bindEvents(){
   els.form.addEventListener('submit',async e=>{ e.preventDefault(); if(!$('mineralName').value.trim()){showToast('先写一下主矿物名称');return;} const item=gatherForm(); ensureTaxonomyEntry(item.collectionGroup,item.collectionType); await put(item); closeSheet(els.editor); await refresh(); showToast('矿标已保存'); });
   $('deleteBtn').onclick=async()=>{ const id=$('recordId').value; if(id&&confirm('确定删除这件矿标吗？这个操作无法撤销。')){await removeItem(id);closeSheet(els.editor);await refresh();showToast('已删除');} };
 
-  els.photoInput.onchange=async()=>{ showToast('正在处理照片…'); editingPhotos.push(...await filesToImages(els.photoInput.files)); els.photoInput.value=''; renderMainPreviews(); showToast('照片已加入'); };
-  els.labelPhotoInput.onchange=async()=>{ showToast('正在处理照片…'); editingLabelPhotos.push(...await filesToImages(els.labelPhotoInput.files)); els.labelPhotoInput.value=''; renderLabelPreviews(); showToast('原矿标照片已加入'); };
+  els.photoInput.onchange=async()=>{ showToast('正在处理照片…'); editingPhotos.push(...await filesToImages(els.photoInput.files)); els.photoInput.value=''; renderMainPreviews(); reconcileTaskCheckboxesFromEditor(); showToast('照片已加入；“待拍照”已自动完成'); };
+  els.labelPhotoInput.onchange=async()=>{ showToast('正在处理照片…'); editingLabelPhotos.push(...await filesToImages(els.labelPhotoInput.files)); els.labelPhotoInput.value=''; renderLabelPreviews(); reconcileTaskCheckboxesFromEditor(); showToast('原矿标照片已加入；“待补标签”已自动完成'); };
   $('timelinePhotoInput').onchange=async()=>{ showToast('正在处理时间线照片…'); pendingTimelinePhotos.push(...await filesToImages($('timelinePhotoInput').files)); $('timelinePhotoInput').value=''; renderPendingTimelinePhotos(); showToast('照片已加入这条记录'); };
   $('addTimelineEvent').onclick=addTimelineEventFromForm;
   $('timelineList').addEventListener('click',e=>{ const b=e.target.closest('[data-remove-event]'); if(!b)return; editingTimeline=editingTimeline.filter(x=>x.id!==b.dataset.removeEvent); renderTimelineEditor(); });
@@ -3125,11 +3166,15 @@ function bindEvents(){
   $('mineralName').addEventListener('input',mineralChanged); $('mineralName').addEventListener('change',mineralChanged);
   const associatedChanged=()=>{updateCarePreview(false);updateCareReminderHint();}; $('associated').addEventListener('input',associatedChanged); $('associated').addEventListener('change',associatedChanged);
   $('knownProvinceSelect').addEventListener('change',()=>populateKnownLocalities($('mineralName').value,'knownLocalitySelect','knownProvinceSelect'));
-  $('knownLocalitySelect').addEventListener('change',e=>{applyKnownLocality(e.target.value,false);updateDuplicateHint();});
-  ['country','province','city','mine'].forEach(id=>$(id).addEventListener('input',()=>{if($('localityId'))$('localityId').value='';updateDuplicateHint();}));
+  $('knownLocalitySelect').addEventListener('change',e=>{applyKnownLocality(e.target.value,false);reconcileTaskCheckboxesFromEditor();updateDuplicateHint();});
+  ['country','province','city','mine'].forEach(id=>$(id).addEventListener('input',()=>{if($('localityId'))$('localityId').value='';reconcileTaskCheckboxesFromEditor();updateDuplicateHint();}));
   ['collectionGroup','collectionType'].forEach(id=>$(id).addEventListener('input',updateDuplicateHint));
   $('collectionGroup').addEventListener('input',()=>updateTypeSuggestions('collectionGroup'));
-  $('disposition').addEventListener('change',updateLifecycleFields); $('conditionStatus').addEventListener('change',updateLifecycleFields); $('loanStatus').addEventListener('change',updateLoanFields); $('size').addEventListener('input',updateSizeClassHint);
+  $('disposition').addEventListener('change',()=>{updateLifecycleFields();reconcileTaskCheckboxesFromEditor();}); $('conditionStatus').addEventListener('change',()=>{updateLifecycleFields();reconcileTaskCheckboxesFromEditor();}); $('loanStatus').addEventListener('change',updateLoanFields); $('size').addEventListener('input',updateSizeClassHint);
+  document.querySelectorAll('[data-task]').forEach(cb=>cb.addEventListener('change',()=>{
+    cb.dataset.userTouched='1';
+    if(cb.dataset.task==='locality' && !cb.checked) delete cb.dataset.manualPersisted;
+  }));
   $('forSale').addEventListener('change',()=>{ const cb=document.querySelector('[data-task="sell"]'); if(cb) cb.checked=$('forSale').checked; });
   document.querySelector('[data-task="sell"]')?.addEventListener('change',e=>{$('forSale').checked=e.target.checked;});
   $('nextCareDate').addEventListener('focus',()=>{ if(!$('nextCareDate').value) $('nextCareDate').value=addMonthsToDate(todayStr(),careSuggestedMonths($('mineralName').value,$('associated').value)); });
