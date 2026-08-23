@@ -2585,7 +2585,7 @@ function openDetail(id) {
       ${careDue?`<span class="reminder-badge">${esc(careDue)}</span>`:''}
     </div>
     <div class="detail-actions-grid">
-      <button type="button" class="secondary-btn" data-detail-action="card">导出单块标本卡</button>
+      <button type="button" class="secondary-btn" data-detail-action="card">预览 / 导出标本卡</button>
       <button type="button" class="secondary-btn" data-detail-action="label">馆藏标签 / 二维码</button>
     </div>
     <div class="detail-section">
@@ -2852,6 +2852,50 @@ async function handleTaxonomyAction(btn){
 function printableHtml(title,body){
   return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;background:#f3f1ec;color:#1f2723;margin:0;padding:28px}.page{max-width:760px;margin:auto;background:#fbfaf7;border:1px solid #ddd8cf;border-radius:24px;padding:28px}h1,h2{font-family:Georgia,"Songti SC",serif}h1{margin:0 0 6px;font-size:30px}.muted{color:#767d78}.hero{width:100%;max-height:520px;object-fit:cover;border-radius:18px;margin:18px 0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#e1ddd5;border-radius:14px;overflow:hidden}.row{background:#fbfaf7;padding:10px 12px}.row span{display:block;font-size:10px;color:#767d78;margin-bottom:3px}.row b{font-size:13px}.tags{display:flex;gap:6px;flex-wrap:wrap}.tag{padding:5px 8px;border-radius:999px;background:#e4ece8;font-size:10px}.sale-card{display:grid;grid-template-columns:180px 1fr;gap:18px;padding:16px 0;border-bottom:1px solid #ddd8cf}.sale-card img{width:180px;height:150px;object-fit:cover;border-radius:14px}.price{font-size:22px;font-family:Georgia,serif;color:#315a4e}.label{display:grid;grid-template-columns:1fr 124px;gap:18px;align-items:center}.label img.qr{width:124px;height:124px}.code{font:700 22px Georgia,serif;letter-spacing:.08em}.small{font-size:11px;line-height:1.55}.review-stat{display:inline-block;margin:4px;padding:10px 12px;border-radius:12px;background:#eeece6}.review-stat b{display:block;font-size:21px}.card-kicker{font-size:10px;letter-spacing:.18em;color:#777f79;margin-bottom:10px}.card-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}.museum-seal{border:1px solid #b8b1a7;border-radius:50%;width:72px;height:72px;display:flex;align-items:center;justify-content:center;text-align:center;font:700 9px Georgia,serif;letter-spacing:.12em;color:#315a4e}.photo-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:-8px 0 18px}.photo-strip img{width:100%;height:110px;object-fit:cover;border-radius:12px}.museum-block{margin-top:12px;padding:12px 14px;border:1px solid #ddd8cf;border-radius:14px}.museum-block span{display:block;font-size:10px;color:#767d78;margin-bottom:4px}.museum-block b{font-size:13px}.museum-block p{font-size:11px;line-height:1.6;margin:6px 0 0}.museum-block.warning{background:#fff5e8;border-color:#e9cda8}.notes{margin-top:14px}.footer-note{margin-top:20px} @media print{body{background:white;padding:0}.page{border:0;border-radius:0;max-width:none}.no-print{display:none}} @media(max-width:560px){.grid{grid-template-columns:1fr}.sale-card{grid-template-columns:110px 1fr}.sale-card img{width:110px;height:110px}.label{grid-template-columns:1fr}}</style></head><body><div class="page">${body}<p class="no-print muted small" style="margin-top:24px">可以用浏览器“打印 / 保存为 PDF”。</p></div></body></html>`;
 }
+function openExportPreview(html,filename,title='标本卡预览'){
+  const old=document.getElementById('exportPreviewOverlay');
+  if(old) old.remove();
+  const overlay=document.createElement('div');
+  overlay.id='exportPreviewOverlay';
+  Object.assign(overlay.style,{position:'fixed',inset:'0',zIndex:'99999',background:'rgba(22,28,25,.56)',display:'flex',alignItems:'stretch',justifyContent:'center',padding:'env(safe-area-inset-top) 0 env(safe-area-inset-bottom)',boxSizing:'border-box'});
+  const panel=document.createElement('div');
+  Object.assign(panel.style,{width:'min(920px,100%)',height:'100%',background:'#f7f5f0',display:'flex',flexDirection:'column',boxShadow:'0 20px 80px rgba(0,0,0,.25)'});
+  const bar=document.createElement('div');
+  Object.assign(bar.style,{display:'flex',gap:'8px',alignItems:'center',padding:'10px 12px',background:'#fbfaf7',borderBottom:'1px solid #ddd8cf',position:'relative',zIndex:'2',flexWrap:'wrap'});
+  const heading=document.createElement('strong');
+  heading.textContent=title;
+  Object.assign(heading.style,{marginRight:'auto',fontFamily:'Georgia,"Songti SC",serif',fontSize:'15px'});
+  const makeBtn=(label,primary=false)=>{const b=document.createElement('button');b.type='button';b.textContent=label;Object.assign(b.style,{border:'1px solid '+(primary?'#315a4e':'#cfc9bf'),background:primary?'#315a4e':'#fff',color:primary?'#fff':'#2f3733',borderRadius:'999px',padding:'9px 13px',fontSize:'12px',fontWeight:'700',cursor:'pointer'});return b;};
+  const saveBtn=makeBtn('保存文件',true);
+  const printBtn=makeBtn('打印 / 存 PDF');
+  const closeBtn=makeBtn('关闭');
+  const frame=document.createElement('iframe');
+  frame.title=title;
+  Object.assign(frame.style,{border:'0',width:'100%',flex:'1',background:'#f3f1ec'});
+  frame.srcdoc=html;
+  bar.append(heading,saveBtn,printBtn,closeBtn); panel.append(bar,frame); overlay.append(panel); document.body.append(overlay);
+  document.body.style.overflow='hidden';
+  const close=()=>{overlay.remove();document.body.style.overflow='';};
+  closeBtn.addEventListener('click',close);
+  overlay.addEventListener('click',e=>{if(e.target===overlay) close();});
+  printBtn.addEventListener('click',()=>{
+    try{frame.contentWindow.focus();frame.contentWindow.print();}
+    catch(err){console.warn('print preview failed',err);showToast('打印没唤起，请先点“保存文件”');}
+  });
+  saveBtn.addEventListener('click',async()=>{
+    const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+    const file=new File([blob],filename,{type:'text/html'});
+    try{
+      if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+        await navigator.share({files:[file],title});
+        showToast('标本卡已打开系统分享 / 保存');
+        return;
+      }
+    }catch(err){ if(err && err.name==='AbortError') return; console.warn('share file fallback',err); }
+    downloadBlob(blob,filename);
+    showToast('标本卡文件已保存');
+  });
+}
 function exportSpecimenCard(i){
   const photos=(i.photos||[]).slice(0,4);
   const mainPhoto=photos[0];
@@ -2891,8 +2935,9 @@ function exportSpecimenCard(i){
     ${tags.length?`<div class="tags">${tags.map(t=>`<span class="tag">#${esc(t)}</span>`).join('')}</div>`:''}
     ${i.notes?`<p class="small notes"><b>备注：</b>${esc(i.notes)}</p>`:''}
     <p class="muted small footer-note">这张标本卡默认不显示入手价、最低愿售价等私密财务字段。</p>`;
-  downloadBlob(new Blob([printableHtml(`${i.accessionNo||''}_${i.mineralName||'矿标'}`,body)],{type:'text/html;charset=utf-8'}),`${i.accessionNo||'矿标'}_${i.mineralName||'标本'}_单块标本卡.html`);
-  showToast('单块标本卡已导出');
+  const html=printableHtml(`${i.accessionNo||''}_${i.mineralName||'矿标'}`,body);
+  const filename=`${i.accessionNo||'矿标'}_${i.mineralName||'标本'}_单块标本卡.html`;
+  openExportPreview(html,filename,`${i.accessionNo||''} ${i.mineralName||'矿标'} · 标本卡`.trim());
 }
 function exportSpecimenLabel(i){
   const code=i.accessionNo||'未编号';
