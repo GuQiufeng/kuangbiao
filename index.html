@@ -1418,10 +1418,11 @@ const MINERAL_CATALOG = [
   {name:'钴华', system:'单斜晶系', formula:'Co₃(AsO₄)₂·8H₂O', hardness:'1.5–2.5', scienceClass:'磷酸盐、砷酸盐与钒酸盐', scienceSubclass:'含水砷酸盐', scienceGroup:'蓝铁矿族', aliases:['erythrite']},
   {name:'方沸石', system:'等轴晶系', formula:'NaAlSi₂O₆·H₂O', hardness:'5–5.5', scienceClass:'硅酸盐', scienceSubclass:'架状硅酸盐·沸石', scienceGroup:'方沸石族', aliases:['analcime']},
   {name:'辉沸石', system:'单斜晶系', formula:'NaCa₄(Al₉Si₂₇O₇₂)·28H₂O（常见种概式）', hardness:'3.5–4', scienceClass:'硅酸盐', scienceSubclass:'架状硅酸盐·沸石', scienceGroup:'辉沸石族', aliases:['stilbite','stilbite-ca']},
-  {name:'片沸石', system:'单斜晶系', formula:'CaAl₂Si₇O₁₈·6H₂O（常见种概式）', hardness:'3.5–4', scienceClass:'硅酸盐', scienceSubclass:'架状硅酸盐·沸石', scienceGroup:'片沸石族', aliases:['heulandite','heulandite-ca']}
+  {name:'片沸石', system:'单斜晶系', formula:'CaAl₂Si₇O₁₈·6H₂O（常见种概式）', hardness:'3.5–4', scienceClass:'硅酸盐', scienceSubclass:'架状硅酸盐·沸石', scienceGroup:'片沸石族', aliases:['heulandite','heulandite-ca']},
+  {name:'沸石类（未细分）', system:'不是单一晶系', formula:'成分随具体沸石种变化', hardness:'通常约 3.5–5.5（随种类变化）', scienceClass:'硅酸盐', scienceSubclass:'架状硅酸盐·沸石', scienceGroup:'沸石族群 / 未细分', aliases:['沸石','zeolite','zeolites'], structureNote:'“沸石”是一个矿物族群/收藏圈统称，不是单一矿物种。若能确定具体种类，建议改选方沸石、辉沸石、片沸石、钠沸石、菱沸石、浊沸石、丝光沸石等具体名称；暂时分不清时可以先用“沸石类（未细分）”记录。'}
 ];
 
-const MINERAL_CATALOG_VERSION = '2026.08 · 稀有矿扩展 / 中国矿区扩展 · 手机兼容修复';
+const MINERAL_CATALOG_VERSION = '2026.08 · 稀有矿扩展 / 中国矿区扩展 · 沸石补充';
 function patchMineral(name, patch){ const x=MINERAL_CATALOG.find(v=>v.name===name); if(x) Object.assign(x, patch); }
 patchMineral('菱锰矿',{aliases:['rhodochrosite','红纹石','菱錳礦']});
 patchMineral('赤铁矿',{hardness:'5.5–6.5', aliases:['hematite','镜铁矿','鏡鐵礦','specularite','specular hematite','铁玫瑰','iron rose'], structureNote:'“镜铁矿 / Specularite”是具银灰色镜面光泽、常呈片状/板状集合体的赤铁矿变种/形态称呼；科学矿物种仍归赤铁矿。'});
@@ -1534,7 +1535,7 @@ const DRY_ONLY_MINERALS = new Set(['石盐','石膏','蓝铁矿','钴华','自�
 const FRAGILE_MINERALS = new Set(['萤石','方解石','文石','重晶石','天青石','鱼眼石','石膏','辉锑矿','黑钨矿','钨铁矿','钨锰矿','自然硫','蓝铜矿','孔雀石','钒铅矿','磷氯铅矿','砷铅矿','白铅矿','铅矾','钼铅矿','铬铅矿','砷锌矿','蓝铁矿','钴华','辉沸石','片沸石','辉银矿','辉铜矿','辉铋矿','车轮矿','硫锑铅矿','脆硫锑铅矿','淡红银矿','浓红银矿','脆银矿','雌黄','氯银矿','光卤石','硼砂','水锌矿','胆矾','芒硝','泻利盐','镍华','铜铀云母','钙铀云母','浊沸石','毛沸石','硅孔雀石','翠铜矿']);
 const LIGHT_SENSITIVE_MINERALS = new Set(['雄黄','雌黄','辰砂','锂辉石','氯银矿','淡红银矿','浓红银矿','砷华']);
 const LOW_HUMIDITY_MINERALS = new Set(['黄铁矿','白铁矿','磁黄铁矿']);
-const WATER_CAUTION_MINERALS = new Set(['鱼眼石','辉沸石','片沸石','孔雀石','蓝铜矿','绿松石','蛋白石','硅孔雀石','浊沸石','菱沸石','钠沸石','钙十字沸石','丝光沸石']);
+const WATER_CAUTION_MINERALS = new Set(['鱼眼石','辉沸石','片沸石','孔雀石','蓝铜矿','绿松石','蛋白石','硅孔雀石','浊沸石','菱沸石','钠沸石','钙十字沸石','丝光沸石','沸石类（未细分）']);
 
 function splitAssociatedNames(text=''){
   return String(text||'').split(/[,，、;+＋/]+/).map(x=>x.trim()).filter(Boolean);
