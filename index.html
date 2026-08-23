@@ -82,6 +82,8 @@ h1 {
   font-weight: 700;
 }
 .icon-btn {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   border: 1px solid rgba(255,255,255,.2);
   width: 47px;
   height: 47px;
@@ -389,6 +391,8 @@ h1 {
 .center { justify-content: center; }
 
 .fab {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   display: none;
   position: fixed;
   right: 24px;
@@ -445,6 +449,17 @@ h1 {
   overflow: hidden;
 }
 .sheet-dialog::backdrop { background: rgba(25,31,28,.42); backdrop-filter: blur(4px); }
+
+/* Mobile dialog compatibility fallback: browsers without reliable <dialog>.showModal() */
+.sheet-dialog.dialog-fallback-open {
+  display:block !important;
+  position:fixed !important;
+  inset:auto 0 0 0 !important;
+  z-index:9999 !important;
+  max-height:94dvh;
+  box-shadow:0 0 0 100vmax rgba(25,31,28,.42), 0 -18px 55px rgba(20,30,25,.18);
+}
+body.dialog-lock { overflow:hidden !important; }
 .sheet { height: 100%; overflow-y: auto; background: var(--bg); padding: 0 16px; }
 .sheet-handle { width: 38px; height: 4px; border-radius: 9px; background: #c8cbc6; margin: 10px auto 2px; }
 .sheet-head, .detail-actions {
@@ -751,7 +766,9 @@ h1 {
 }
 @media (min-width: 680px) {
   .collection-grid { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 17px; }
-  .fab { display: block; }
+  .fab {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent; display: block; }
   .app-shell { padding-left: 24px; padding-right: 24px; }
 }
 @media (max-width: 380px) {
@@ -872,6 +889,9 @@ h1 {
   .detail-actions-grid { grid-template-columns:1fr 1fr; }
 }
 
+
+/* 2026.08.22 single-add robustness fix */
+#addBtnTop,#addBtnEmpty,#fab,#addBtnBottom{touch-action:manipulation;pointer-events:auto!important;}
 </style>
   <title>我的矿标</title>
 </head>
@@ -882,7 +902,7 @@ h1 {
         <div class="eyebrow">MINERAL CABINET · 私人收藏</div>
         <h1>我的矿标</h1>
       </div>
-      <button id="addBtnTop" class="icon-btn" aria-label="新增矿标"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+      <button id="addBtnTop" type="button" class="icon-btn" aria-label="新增矿标"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
     </header>
 
     <main>
@@ -952,15 +972,15 @@ h1 {
         <div class="gem"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M16 18 32 8l16 10 6 14-22 24L10 32l6-14Z"/><path d="m16 18 16 38 16-38M10 32h44M16 18h32M32 8v48"/></svg></div>
         <h3>把第一块矿收进来吧</h3>
         <p>拍照、写矿物名和产地，以后再也不用靠脑子记。</p>
-        <button id="addBtnEmpty" class="primary-btn">＋ 新增矿标</button>
+        <button id="addBtnEmpty" type="button" class="primary-btn">＋ 新增矿标</button>
       </section>
     </main>
 
-    <button id="fab" class="fab" aria-label="新增矿标">＋</button>
+    <button id="fab" type="button" class="fab" aria-label="新增矿标">＋</button>
 
     <footer class="bottom-bar">
       <button id="homeBtn" class="bottom-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7.5 12 4l7 3.5v9L12 20l-7-3.5v-9Z"/><path d="M5 7.5 12 11l7-3.5M12 11v9"/></svg>收藏</button>
-      <button id="addBtnBottom" class="bottom-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg>新增</button>
+      <button id="addBtnBottom" type="button" class="bottom-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg>新增</button>
       <button id="taxonomyBtn" class="bottom-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6h5M5 12h8M5 18h11"/><path d="m17 5 2 2 2-2M19 7V3"/></svg>分类</button>
       <button id="manageBtn" class="bottom-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5h14v14H5z"/><path d="M8 9h8M8 13h5M8 17h7"/></svg>馆务</button>
       <button id="settingsBtn" class="bottom-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8.5h12v10H6z"/><path d="M9 8.5v-2h6v2M9 13h6M12 10v6"/></svg>备份</button>
@@ -1401,7 +1421,7 @@ const MINERAL_CATALOG = [
   {name:'片沸石', system:'单斜晶系', formula:'CaAl₂Si₇O₁₈·6H₂O（常见种概式）', hardness:'3.5–4', scienceClass:'硅酸盐', scienceSubclass:'架状硅酸盐·沸石', scienceGroup:'片沸石族', aliases:['heulandite','heulandite-ca']}
 ];
 
-const MINERAL_CATALOG_VERSION = '2026.08 · 稀有矿扩展 / 中国矿区扩展';
+const MINERAL_CATALOG_VERSION = '2026.08 · 稀有矿扩展 / 中国矿区扩展 · 手机兼容修复';
 function patchMineral(name, patch){ const x=MINERAL_CATALOG.find(v=>v.name===name); if(x) Object.assign(x, patch); }
 patchMineral('菱锰矿',{aliases:['rhodochrosite','红纹石','菱錳礦']});
 patchMineral('赤铁矿',{hardness:'5.5–6.5', aliases:['hematite','镜铁矿','鏡鐵礦','specularite','specular hematite','铁玫瑰','iron rose'], structureNote:'“镜铁矿 / Specularite”是具银灰色镜面光泽、常呈片状/板状集合体的赤铁矿变种/形态称呼；科学矿物种仍归赤铁矿。'});
@@ -2409,28 +2429,71 @@ function resetForm() {
   updateCarePreview(false); updateLifecycleFields(); updateLoanFields(); updateCareReminderHint(); updateSizeClassHint(); updateDuplicateHint();
   populateCategorySuggestions();
 }
+
+function sheetIsOpen(el){ return !!el && (el.open === true || el.hasAttribute('open') || el.classList.contains('dialog-fallback-open')); }
+function showSheet(el){
+  if(!el) return;
+  try {
+    if(typeof el.showModal === 'function') { if(!el.open) el.showModal(); return; }
+  } catch(err) { console.warn('dialog.showModal fallback', err); }
+  el.setAttribute('open','');
+  el.classList.add('dialog-fallback-open');
+  document.body.classList.add('dialog-lock');
+  el.scrollTop=0;
+}
+function closeSheet(el){
+  if(!el) return;
+  try {
+    if(typeof el.close === 'function' && el.open) { el.close(); }
+  } catch(err) { console.warn('dialog.close fallback', err); }
+  el.removeAttribute('open');
+  el.classList.remove('dialog-fallback-open');
+  if(!document.querySelector('.sheet-dialog.dialog-fallback-open')) document.body.classList.remove('dialog-lock');
+}
 function setField(id,val){ if($(id)) $(id).value=val||''; }
+function safeEditorStep(label, fn){
+  try { return fn(); }
+  catch(err){ console.error('[新增矿标] '+label, err); return undefined; }
+}
 function openEditor(item=null) {
-  resetForm();
+  // 先打开编辑器：即使某个高级模块报错，也不能让“+”看起来完全没反应。
+  if(!sheetIsOpen(els.editor)) safeEditorStep('打开编辑器',()=>showSheet(els.editor));
+
+  safeEditorStep('重置表单',()=>resetForm());
+
   if(item){
-    $('editorTitle').textContent='编辑矿标'; $('recordId').value=item.id; $('favorite').checked=!!item.favorite;
-    [
-      'mineralName','crystalSystem','collectionGroup','collectionType','associated','nickname','accessionNo',
-      'identityConfidence','localityConfidence','country','province','city','mine','localityId','color','habit','size','storage',
-      'acquiredDate','source','provenanceNote','price','estimatedValue','saleAskPrice','minSalePrice','tags','notes','disposition','salePrice','giftTo','dispositionDate','dispositionNote','conditionStatus','damageDate','damageNote',
-      'nextCareDate','loanStatus','loanTo','loanDate','loanDue','loanReturnedDate'
-    ].forEach(k=>setField(k,item[k]));
-    $('forSale').checked=!!item.forSale;
-    document.querySelectorAll('[data-task]').forEach(x=>x.checked=tasksOf(item).includes(x.dataset.task));
-    $('crystalSystem').dataset.manual = item.crystalSystem ? '1' : '';
-    updateCrystalSystemFromMineral(false); updateTypeSuggestions('collectionGroup');
-    editingPhotos=[...(item.photos||[])]; editingLabelPhotos=[...(item.labelPhotos||[])]; editingTimeline=[...(item.timeline||[])];
-    $('dangerZone').hidden=false;
-    const locId=inferLocalityId(item); if($('localityId')) $('localityId').value=locId;
-    if(locId && $('knownLocalitySelect') && [...$('knownLocalitySelect').options].some(o=>o.value===locId)) $('knownLocalitySelect').value=locId;
+    safeEditorStep('载入标本资料',()=>{
+      $('editorTitle').textContent='编辑矿标'; $('recordId').value=item.id; $('favorite').checked=!!item.favorite;
+      [
+        'mineralName','crystalSystem','collectionGroup','collectionType','associated','nickname','accessionNo',
+        'identityConfidence','localityConfidence','country','province','city','mine','localityId','color','habit','size','storage',
+        'acquiredDate','source','provenanceNote','price','estimatedValue','saleAskPrice','minSalePrice','tags','notes','disposition','salePrice','giftTo','dispositionDate','dispositionNote','conditionStatus','damageDate','damageNote',
+        'nextCareDate','loanStatus','loanTo','loanDate','loanDue','loanReturnedDate'
+      ].forEach(k=>setField(k,item[k]));
+      $('forSale').checked=!!item.forSale;
+      document.querySelectorAll('[data-task]').forEach(x=>x.checked=tasksOf(item).includes(x.dataset.task));
+      $('crystalSystem').dataset.manual = item.crystalSystem ? '1' : '';
+      safeEditorStep('矿物科学资料',()=>updateCrystalSystemFromMineral(false));
+      safeEditorStep('私人分类',()=>updateTypeSuggestions('collectionGroup'));
+      editingPhotos=[...(item.photos||[])]; editingLabelPhotos=[...(item.labelPhotos||[])]; editingTimeline=[...(item.timeline||[])];
+      $('dangerZone').hidden=false;
+      const locId=inferLocalityId(item); if($('localityId')) $('localityId').value=locId;
+      if(locId && $('knownLocalitySelect') && [...$('knownLocalitySelect').options].some(o=>o.value===locId)) $('knownLocalitySelect').value=locId;
+    });
   }
-  updateLifecycleFields(); updateLoanFields(); renderMainPreviews(); renderLabelPreviews(); renderTimelineEditor(); updateCarePreview(false); updateCareReminderHint(); updateSizeClassHint(); updateDuplicateHint();
-  if(!els.editor.open) els.editor.showModal();
+
+  safeEditorStep('状态字段',()=>updateLifecycleFields());
+  safeEditorStep('借出字段',()=>updateLoanFields());
+  safeEditorStep('标本照片',()=>renderMainPreviews());
+  safeEditorStep('原标签照片',()=>renderLabelPreviews());
+  safeEditorStep('时间线',()=>renderTimelineEditor());
+  safeEditorStep('养护提示',()=>updateCarePreview(false));
+  safeEditorStep('养护提醒',()=>updateCareReminderHint());
+  safeEditorStep('尺寸分类',()=>updateSizeClassHint());
+  safeEditorStep('重复收藏提醒',()=>updateDuplicateHint());
+
+  // 某些浏览器在 showModal 前后滚动位置异常，统一回到表单顶部。
+  safeEditorStep('滚动到顶部',()=>{ const sheet=els.editor?.querySelector('.sheet'); if(sheet) sheet.scrollTop=0; });
 }
 function renderMainPreviews(){
   renderPhotoPreviews(els.photoPreview,editingPhotos,idx=>{
@@ -2568,7 +2631,7 @@ function openDetail(id) {
     `;
   $('detailContent').querySelector('[data-detail-action="card"]')?.addEventListener('click',()=>exportSpecimenCard(i));
   $('detailContent').querySelector('[data-detail-action="label"]')?.addEventListener('click',()=>exportSpecimenLabel(i));
-  els.detail.showModal();
+  showSheet(els.detail);
 }
 
 function makeBatchRow(){
@@ -2591,7 +2654,7 @@ function resetBatch(){
 }
 function openBatch(){
   resetBatch();
-  els.batch.showModal();
+  showSheet(els.batch);
 }
 function renderBatchItems(){
   const box=$('batchItems');
@@ -2676,7 +2739,7 @@ async function saveBatch(){
     };
     await put(item);
   }
-  const count=batchRows.length; els.batch.close(); await refresh(); showToast(`这一批 ${count} 件已保存并自动编号`);
+  const count=batchRows.length; closeSheet(els.batch); await refresh(); showToast(`这一批 ${count} 件已保存并自动编号`);
 }
 
 function renderTaxonomyManager(){
@@ -2892,7 +2955,7 @@ function openManage(panel='tasks'){
   document.querySelectorAll('.manage-tab').forEach(x=>x.classList.toggle('active',x.dataset.panel===panel));
   document.querySelectorAll('.manage-panel').forEach(x=>x.classList.remove('active'));
   $(`managePanel${panel.charAt(0).toUpperCase()+panel.slice(1)}`)?.classList.add('active');
-  els.manage.showModal();
+  showSheet(els.manage);
 }
 function exportSaleList(){
   const arr=allItems.filter(i=>i.forSale&&dispositionOf(i)==='held'); if(!arr.length){showToast('还没有准备出售的标本');return;}
@@ -2939,7 +3002,7 @@ async function importBackup(file) {
   }
   if(Array.isArray(payload.settings?.wishlist)){ wishlist=payload.settings.wishlist; saveWishlist(); }
   await refresh();
-  els.settings.close();
+  closeSheet(els.settings);
   showToast(`已恢复 ${payload.items.length} 件矿标`);
 }
 function csvEscape(v=''){
@@ -2965,9 +3028,13 @@ function exportCSV(){
 }
 
 function bindEvents(){
-  ['addBtnTop','addBtnEmpty','fab','addBtnBottom'].forEach(id=>$(id).onclick=()=>openEditor());
+  ['addBtnTop','addBtnEmpty','fab','addBtnBottom'].forEach(id=>{
+    const btn=$(id); if(!btn) return;
+    const handler=(e)=>{ e?.preventDefault?.(); e?.stopPropagation?.(); openEditor(null); };
+    btn.onclick=handler;
+  });
 
-  $('batchBtn').onclick=openBatch; $('closeBatch').onclick=()=>els.batch.close(); $('saveBatch').onclick=saveBatch;
+  $('batchBtn').onclick=openBatch; $('closeBatch').onclick=()=>closeSheet(els.batch); $('saveBatch').onclick=saveBatch;
   $('addBatchItem').onclick=()=>{ batchRows.push(makeBatchRow()); renderBatchItems(); };
   $('addThreeBatchItems').onclick=()=>{ batchRows.push(makeBatchRow(),makeBatchRow(),makeBatchRow()); renderBatchItems(); };
   $('batchCollectionGroup').addEventListener('input',()=>updateTypeSuggestions('batchCollectionGroup'));
@@ -2976,26 +3043,26 @@ function bindEvents(){
   $('batchKnownProvinceSelect').addEventListener('change',()=>populateKnownLocalities($('batchMineralName').value,'batchKnownLocalitySelect','batchKnownProvinceSelect'));
   $('batchKnownLocalitySelect').addEventListener('change',e=>applyKnownLocality(e.target.value,true));
 
-  $('taxonomyBtn').onclick=()=>{ renderTaxonomyManager(); els.taxonomy.showModal(); };
-  $('closeTaxonomy').onclick=()=>els.taxonomy.close();
+  $('taxonomyBtn').onclick=()=>{ renderTaxonomyManager(); showSheet(els.taxonomy); };
+  $('closeTaxonomy').onclick=()=>closeSheet(els.taxonomy);
   $('addGroupBtn').onclick=()=>{ const name=$('newGroupName').value.trim(); if(!name)return; if(!taxonomy.some(g=>g.name===name)) taxonomy.push({name,children:[]}); $('newGroupName').value=''; saveTaxonomy(); renderTaxonomyManager(); render(); };
   $('taxonomyList').addEventListener('click',e=>{ const btn=e.target.closest('button[data-action]'); if(btn) handleTaxonomyAction(btn); });
 
-  $('manageBtn').onclick=()=>openManage('tasks'); $('closeManage').onclick=()=>els.manage.close();
+  $('manageBtn').onclick=()=>openManage('tasks'); $('closeManage').onclick=()=>closeSheet(els.manage);
   document.querySelectorAll('.manage-tab').forEach(tab=>tab.onclick=()=>{ document.querySelectorAll('.manage-tab').forEach(t=>t.classList.remove('active')); tab.classList.add('active'); document.querySelectorAll('.manage-panel').forEach(p=>p.classList.remove('active')); $(`managePanel${tab.dataset.panel.charAt(0).toUpperCase()+tab.dataset.panel.slice(1)}`)?.classList.add('active'); if(tab.dataset.panel==='insights')renderInsights(); if(tab.dataset.panel==='map')renderLocalityMap(); });
   els.manage.addEventListener('click',e=>{
-    const open=e.target.closest('[data-open-item]'); if(open){ const id=open.dataset.openItem; els.manage.close(); openDetail(id); return; }
-    const wa=e.target.closest('[data-wish-action]'); if(wa){ const id=wa.dataset.wishId; const w=wishlist.find(x=>x.id===id); if(wa.dataset.wishAction==='delete'){wishlist=wishlist.filter(x=>x.id!==id);saveWishlist();renderWishlist();} else if(wa.dataset.wishAction==='acquired'&&w){els.manage.close();openEditor();$('mineralName').value=w.mineral||'';$('notes').value=w.notes||''; if(w.locality)$('mine').value=w.locality; updateCrystalSystemFromMineral(true);updateDuplicateHint();} return; }
-    const md=e.target.closest('[data-map-locality]'); if(md){ const loc=LOCALITY_CATALOG.find(x=>x.id===md.dataset.mapLocality); if(loc){ els.manage.close(); els.search.value=loc.mine.split('（')[0].trim(); render(); } }
+    const open=e.target.closest('[data-open-item]'); if(open){ const id=open.dataset.openItem; closeSheet(els.manage); openDetail(id); return; }
+    const wa=e.target.closest('[data-wish-action]'); if(wa){ const id=wa.dataset.wishId; const w=wishlist.find(x=>x.id===id); if(wa.dataset.wishAction==='delete'){wishlist=wishlist.filter(x=>x.id!==id);saveWishlist();renderWishlist();} else if(wa.dataset.wishAction==='acquired'&&w){closeSheet(els.manage);openEditor();$('mineralName').value=w.mineral||'';$('notes').value=w.notes||''; if(w.locality)$('mine').value=w.locality; updateCrystalSystemFromMineral(true);updateDuplicateHint();} return; }
+    const md=e.target.closest('[data-map-locality]'); if(md){ const loc=LOCALITY_CATALOG.find(x=>x.id===md.dataset.mapLocality); if(loc){ closeSheet(els.manage); els.search.value=loc.mine.split('（')[0].trim(); render(); } }
   });
   $('addWishBtn').onclick=()=>{ const mineral=$('wishMineral').value.trim(); if(!mineral){showToast('先写想要什么矿');return;} wishlist.unshift({id:'w_'+uid(),mineral,locality:$('wishLocality').value.trim(),budget:$('wishBudget').value.trim(),priority:$('wishPriority').value,notes:$('wishNotes').value.trim(),createdAt:new Date().toISOString()}); saveWishlist(); ['wishMineral','wishLocality','wishBudget','wishNotes'].forEach(id=>$(id).value=''); $('wishPriority').value='normal'; renderWishlist(); showToast('已加入愿望单'); };
   $('exportSaleListBtn').onclick=exportSaleList; $('reportYear').addEventListener('change',e=>renderYearReport(e.target.value)); $('exportYearReviewBtn').onclick=exportYearReview;
 
-  $('closeEditor').onclick=()=>els.editor.close(); $('closeDetail').onclick=()=>els.detail.close(); $('closeSettings').onclick=()=>els.settings.close(); $('settingsBtn').onclick=()=>els.settings.showModal(); $('homeBtn').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
-  $('editDetail').onclick=()=>{ const i=allItems.find(x=>x.id===detailId); els.detail.close(); if(i) openEditor(i); };
+  $('closeEditor').onclick=()=>closeSheet(els.editor); $('closeDetail').onclick=()=>closeSheet(els.detail); $('closeSettings').onclick=()=>closeSheet(els.settings); $('settingsBtn').onclick=()=>showSheet(els.settings); $('homeBtn').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+  $('editDetail').onclick=()=>{ const i=allItems.find(x=>x.id===detailId); closeSheet(els.detail); if(i) openEditor(i); };
 
-  els.form.addEventListener('submit',async e=>{ e.preventDefault(); if(!$('mineralName').value.trim()){showToast('先写一下主矿物名称');return;} const item=gatherForm(); ensureTaxonomyEntry(item.collectionGroup,item.collectionType); await put(item); els.editor.close(); await refresh(); showToast('矿标已保存'); });
-  $('deleteBtn').onclick=async()=>{ const id=$('recordId').value; if(id&&confirm('确定删除这件矿标吗？这个操作无法撤销。')){await removeItem(id);els.editor.close();await refresh();showToast('已删除');} };
+  els.form.addEventListener('submit',async e=>{ e.preventDefault(); if(!$('mineralName').value.trim()){showToast('先写一下主矿物名称');return;} const item=gatherForm(); ensureTaxonomyEntry(item.collectionGroup,item.collectionType); await put(item); closeSheet(els.editor); await refresh(); showToast('矿标已保存'); });
+  $('deleteBtn').onclick=async()=>{ const id=$('recordId').value; if(id&&confirm('确定删除这件矿标吗？这个操作无法撤销。')){await removeItem(id);closeSheet(els.editor);await refresh();showToast('已删除');} };
 
   els.photoInput.onchange=async()=>{ showToast('正在处理照片…'); editingPhotos.push(...await filesToImages(els.photoInput.files)); els.photoInput.value=''; renderMainPreviews(); showToast('照片已加入'); };
   els.labelPhotoInput.onchange=async()=>{ showToast('正在处理照片…'); editingLabelPhotos.push(...await filesToImages(els.labelPhotoInput.files)); els.labelPhotoInput.value=''; renderLabelPreviews(); showToast('原矿标照片已加入'); };
