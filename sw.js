@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mineral-cabinet-v20260901-locality-unified';
+const CACHE_NAME = 'mineral-cabinet-v20260902-garden-quartz-goethite-fix';
 const CORE = ['./index.html','./manifest.json','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install', event => {
   self.skipWaiting();
