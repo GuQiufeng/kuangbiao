@@ -715,6 +715,10 @@ body.dialog-lock { overflow:hidden !important; }
 .batch-mini-grid label { display:flex; flex-direction:column; gap:5px; color:var(--muted); font-size:10px; }
 .batch-mini-grid input, .batch-item textarea { border:1px solid var(--line); background:var(--bg); border-radius:12px; padding:10px 11px; outline:0; font-size:13px; width:100%; }
 .batch-item textarea { margin-top:8px; resize:vertical; }
+.batch-item-section-note { grid-column:1 / -1; margin:2px 1px 0; color:var(--muted); font-size:9px; line-height:1.5; }
+.batch-item-section-note b { color:var(--accent-2); }
+.batch-item .batch-associated { background:rgba(228,236,232,.45); }
+@media (max-width:420px){ .batch-mini-grid { grid-template-columns:1fr; } .batch-item-section-note { grid-column:auto; } }
 .batch-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0 0; }
 
 .taxonomy-intro { margin:14px 2px 18px; color:var(--muted); font-size:12px; line-height:1.7; }
@@ -932,9 +936,105 @@ body.dialog-lock { overflow:hidden !important; }
 
 /* 2026.08.22 single-add robustness fix */
 #addBtnTop,#addBtnEmpty,#fab,#addBtnBottom{touch-action:manipulation;pointer-events:auto!important;}
+
+
+/* ===== 2026.09 实用性增强：主图排序 / 批量结算 / 数据安全 ===== */
+.photo-thumb { overflow:hidden; }
+.photo-thumb.is-main { box-shadow:0 0 0 2px rgba(49,90,78,.32); }
+.photo-main-badge { position:absolute; left:6px; top:6px; z-index:2; padding:4px 7px; border-radius:999px; background:rgba(49,90,78,.92); color:white; font-size:8px; font-weight:800; letter-spacing:.04em; box-shadow:0 3px 10px rgba(31,39,35,.14); }
+.photo-actions { position:absolute; left:5px; right:5px; bottom:5px; z-index:3; display:flex; gap:4px; align-items:center; justify-content:center; flex-wrap:wrap; }
+.photo-actions button { position:static !important; width:auto !important; height:24px !important; min-width:24px; padding:0 6px !important; border-radius:999px !important; border:1px solid rgba(255,255,255,.32) !important; background:rgba(27,35,31,.78) !important; color:white !important; font-size:9px !important; line-height:1 !important; box-shadow:0 2px 7px rgba(20,28,24,.15); }
+.photo-actions button:disabled { opacity:.35; }
+.photo-actions .photo-main-btn { background:rgba(49,90,78,.93) !important; }
+.batch-thumb { position:relative; width:74px; min-width:74px; height:88px; border-radius:12px; overflow:hidden; background:var(--surface-2); }
+.batch-thumb img { width:74px !important; height:62px !important; border-radius:12px 12px 0 0 !important; display:block; }
+.batch-thumb-main { position:absolute; left:4px; top:4px; padding:3px 5px; border-radius:999px; background:rgba(49,90,78,.9); color:white; font-size:7px; font-weight:800; }
+.batch-thumb-actions { height:26px; display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:rgba(238,236,230,.96); }
+.batch-thumb-actions button { border:0; background:transparent; color:var(--accent-2); padding:0; font-size:10px; min-width:0; }
+.batch-thumb-actions button:disabled { opacity:.28; }
+.batch-settlement { margin:14px 0 10px; padding:14px; border:1px solid rgba(49,90,78,.14); border-radius:19px; background:linear-gradient(135deg,rgba(228,236,232,.72),rgba(251,250,247,.9)); }
+.batch-settlement-head { display:flex; justify-content:space-between; gap:10px; align-items:baseline; margin-bottom:10px; }
+.batch-settlement-head strong { font-family:"Songti SC","STSong",Georgia,serif; font-size:16px; }
+.batch-settlement-head span { color:var(--muted); font-size:9px; }
+.batch-settlement-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:7px; }
+.batch-settlement-stat { padding:10px; border-radius:13px; background:rgba(251,250,247,.82); border:1px solid rgba(42,54,48,.07); }
+.batch-settlement-stat b { display:block; font-family:Georgia,"Times New Roman",serif; font-size:18px; font-weight:500; }
+.batch-settlement-stat span { display:block; margin-top:4px; color:var(--muted); font-size:9px; line-height:1.35; }
+.batch-budget-result { margin-top:9px; padding:10px 11px; border-radius:13px; background:rgba(251,250,247,.78); color:var(--muted); font-size:10px; line-height:1.55; }
+.batch-budget-result.ok { color:var(--accent-2); background:rgba(228,236,232,.9); }
+.batch-budget-result.over { color:#8d4141; background:rgba(244,223,223,.9); font-weight:650; }
+.data-safety-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:12px 0; }
+.data-safety-stat { padding:10px 9px; border-radius:14px; background:var(--surface-2); min-width:0; }
+.data-safety-stat b { display:block; font-family:Georgia,"Times New Roman",serif; font-size:14px; overflow:hidden; text-overflow:ellipsis; }
+.data-safety-stat span { display:block; margin-top:4px; color:var(--muted); font-size:8px; line-height:1.35; }
+.data-safety-note { margin:8px 0 11px !important; padding:10px 11px; border-radius:13px; background:var(--warm-soft); color:#6c4b2e !important; font-size:10px !important; }
+.data-safety-note.good { background:var(--accent-soft); color:var(--accent-2) !important; }
+@media(max-width:420px){ .data-safety-grid{grid-template-columns:1fr;} }
+
+
+
+/* ===== 2026.09 第二轮：混合批量 / 消费分析 / 多选管理 ===== */
+.heading-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.bulk-toolbar{display:none;margin:-3px 0 15px;padding:12px;border:1px solid rgba(49,90,78,.16);border-radius:18px;background:linear-gradient(135deg,rgba(228,236,232,.88),rgba(251,250,247,.96));box-shadow:0 5px 18px rgba(34,46,40,.035)}
+.bulk-toolbar.active{display:block}
+.bulk-toolbar-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+.bulk-toolbar-head strong{font-family:"Songti SC","STSong",Georgia,serif;font-size:15px}
+.bulk-toolbar-head span{color:var(--muted);font-size:10px}
+.bulk-actions{display:flex;gap:6px;flex-wrap:wrap}
+.bulk-actions button{border:1px solid var(--line);background:var(--surface);color:var(--accent-2);border-radius:999px;padding:8px 10px;font-size:10px;font-weight:700}
+.bulk-actions button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.bulk-select-mark{position:absolute;right:10px;top:10px;z-index:5;width:27px;height:27px;border-radius:50%;display:grid;place-items:center;background:rgba(251,250,247,.95);border:2px solid rgba(49,90,78,.34);color:transparent;font-size:14px;font-weight:900;box-shadow:0 4px 14px rgba(31,39,35,.10)}
+.mineral-card.bulk-selected{outline:3px solid rgba(49,90,78,.56);outline-offset:2px}
+.mineral-card.bulk-selected .bulk-select-mark{background:var(--accent);border-color:var(--accent);color:white}
+.batch-override-box{grid-column:1/-1;margin:2px 0 4px;border:1px solid var(--line);border-radius:14px;background:rgba(238,236,230,.5);overflow:hidden}
+.batch-override-box>summary{list-style:none;cursor:pointer;padding:10px 11px;font-size:10px;font-weight:800;color:var(--accent-2)}
+.batch-override-box>summary::-webkit-details-marker{display:none}
+.batch-override-grid{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line)}
+.batch-override-grid label{padding:9px 10px;border-bottom:1px solid var(--line);font-size:9px;color:var(--muted);display:flex;flex-direction:column;gap:5px}
+.batch-override-grid label:nth-child(odd){border-right:1px solid var(--line)}
+.batch-override-grid input{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 9px;font-size:11px;width:100%;outline:0}
+.batch-override-note{grid-column:1/-1;padding:8px 10px;color:var(--muted);font-size:9px;line-height:1.5}
+.spend-list{display:grid;gap:8px;margin-top:9px}
+.spend-row{display:grid;grid-template-columns:76px 1fr auto;gap:8px;align-items:center;font-size:10px}
+.spend-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.spend-track{height:8px;border-radius:999px;background:var(--surface-2);overflow:hidden}
+.spend-fill{height:100%;border-radius:999px;background:var(--accent)}
+.spend-value{font-weight:700;color:var(--accent-2);white-space:nowrap}
+.expensive-list{display:grid;gap:7px;margin-top:8px}
+.expensive-item{display:flex;justify-content:space-between;gap:10px;padding:9px 10px;border-radius:12px;background:var(--surface-2);font-size:10px}
+.expensive-item strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.expensive-item span{white-space:nowrap;color:var(--accent-2);font-weight:800}
+@media(max-width:520px){.heading-actions{gap:5px}.heading-actions .mini-action{padding:8px 10px}.batch-override-grid{grid-template-columns:1fr}.batch-override-grid label:nth-child(odd){border-right:0}.spend-row{grid-template-columns:66px 1fr auto}}
+
+
+
+/* ===== 2026.09 整理版 v3：档案完善度 / 回收站 / 标签整理 / 信息收拢 ===== */
+.completeness-card{margin:10px 0 12px;padding:13px 14px;border:1px solid rgba(49,90,78,.13);border-radius:17px;background:linear-gradient(135deg,rgba(228,236,232,.72),rgba(251,250,247,.9))}
+.completeness-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.completeness-head strong{font-family:"Songti SC","STSong",Georgia,serif;font-size:14px}
+.completeness-head b{font-family:Georgia,"Times New Roman",serif;font-size:18px;color:var(--accent-2)}
+.completeness-track{height:8px;margin:8px 0;border-radius:999px;background:var(--surface-2);overflow:hidden}
+.completeness-fill{height:100%;border-radius:999px;background:var(--accent)}
+.completeness-note{font-size:9px;color:var(--muted);line-height:1.55}
+.completeness-note.warn{color:#8a542b}
+.settings-section-title{margin:19px 4px 7px;font-family:Georgia,"Songti SC",serif;font-size:10px;letter-spacing:.10em;text-transform:uppercase;color:var(--muted)}
+.trash-list,.tag-manager-list{display:grid;gap:8px;margin-top:10px}
+.trash-item,.tag-manager-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 11px;border-radius:13px;background:var(--surface-2)}
+.trash-item>div,.tag-manager-item>div{min-width:0}
+.trash-item strong,.tag-manager-item strong{display:block;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trash-item small,.tag-manager-item small{display:block;margin-top:3px;color:var(--muted);font-size:9px;line-height:1.4}
+.trash-actions,.tag-actions{display:flex;gap:5px;flex:0 0 auto}
+.trash-actions button,.tag-actions button{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:6px 8px;font-size:9px;color:var(--accent-2)}
+.trash-actions button.danger,.tag-actions button.danger{color:var(--danger);background:var(--danger-soft)}
+.settings-inline-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.settings-inline-actions button{flex:1;min-width:130px}
+.attention-auto{color:#8a542b}
+.detail-section-label{margin:17px 3px 7px;font-family:Georgia,"Songti SC",serif;font-size:10px;letter-spacing:.08em;color:var(--muted)}
+@media(max-width:420px){.trash-item,.tag-manager-item{align-items:flex-start}.trash-actions,.tag-actions{flex-direction:column}}
+
 </style>
   <title>我的矿标</title>
-  <!-- build: 2026-09-locality-unified -->
+  <!-- build: 2026-09-cleanup-v3-completeness-trash-tag-organization -->
 </head>
 <body>
   <div class="app-shell">
@@ -990,7 +1090,7 @@ body.dialog-lock { overflow:hidden !important; }
         <div class="chips">
           <button class="chip active" data-mode="all">全部</button>
           <button class="chip" data-mode="favorite">★ 最喜欢</button>
-          <button class="chip" data-mode="unlabeled">待补资料</button>
+          <button class="chip" data-mode="unlabeled">待完善</button>
           <button class="chip" data-mode="sold">已售出</button>
           <button class="chip" data-mode="gifted">已赠送</button>
           <button class="chip" data-mode="damaged">有损伤</button>
@@ -1004,7 +1104,19 @@ body.dialog-lock { overflow:hidden !important; }
           <h2>收藏</h2>
 <p id="resultText">还没有矿标</p>
         </div>
-        <button id="batchBtn" class="mini-action">批量添加</button>
+        <div class="heading-actions"><button id="multiSelectBtn" class="mini-action" type="button">多选管理</button><button id="batchBtn" class="mini-action">批量添加</button></div>
+      </section>
+
+      <section id="bulkToolbar" class="bulk-toolbar" aria-live="polite">
+        <div class="bulk-toolbar-head"><strong>批量管理</strong><span id="bulkSelectedCount">已选 0 件</span></div>
+        <div class="bulk-actions">
+          <button id="bulkSelectAllBtn" type="button">全选当前</button>
+          <button id="bulkMoveStorageBtn" type="button">移动柜位</button>
+          <button id="bulkAddTagBtn" type="button">加标签</button>
+          <button id="bulkGroupBtn" type="button">改收藏大类</button>
+          <button id="bulkTaskBtn" type="button">加待办</button>
+          <button id="bulkForSaleBtn" class="primary" type="button">准备出售</button>
+        </div>
       </section>
 
       <section id="collectionGrid" class="collection-grid" aria-live="polite"></section>
@@ -1087,12 +1199,13 @@ body.dialog-lock { overflow:hidden !important; }
         <label class="field"><span>颜色</span><input id="color" placeholder="紫色" /></label>
         <label class="field"><span>晶型 / 形态</span><input id="habit" placeholder="立方体、晶簇…" /></label>
         <label class="field"><span>尺寸</span><input id="size" placeholder="8 × 6 × 5 cm" /><small id="sizeClassHint" class="field-hint">按最大边自动给出收藏尺寸级别</small></label>
+        <label class="field"><span>重量</span><input id="weight" placeholder="例如：680 g / 1.2 kg" /><small class="field-hint">可以直接写 g 或 kg；完全可选，不计入“待完善”或任何必补判断。</small></label>
         <label class="field"><span>现在摆在哪里</span><input id="storage" placeholder="客厅玻璃柜 A · 2层 · 左侧" /><small class="field-hint">位置改变后会自动记进时间线</small></label>
         <label class="field"><span>收藏日期</span><input id="acquiredDate" type="date" /></label>
         <label class="field"><span>来源</span><input id="source" placeholder="矿展 / 商家 / 朋友…" /></label>
-        <label class="field"><span>来源 / 原藏备注</span><input id="provenanceNote" placeholder="例如：某某旧藏、附老标签、朋友交换" /><small class="field-hint">适合保存原藏、商家、旧标签与流转信息</small></label>
+        <label class="field"><span>原藏 / 来源补充</span><input id="provenanceNote" placeholder="例如：某某旧藏、附老标签、朋友交换" /><small class="field-hint">适合保存原藏、商家、旧标签与流转信息</small></label>
         <label class="field"><span>入手价（私密）</span><input id="price" inputmode="decimal" placeholder="例如：680" /><small class="field-hint">只填数字即可，账本会自动按人民币统计</small></label>
-        <label class="field"><span>标签</span><input id="tags" placeholder="老矿, 紫色, 柜藏" /></label>
+        <label class="field"><span>标签</span><input id="tags" placeholder="老矿, 精品, 待鉴定" /><small class="field-hint">标签用于筛选和管理；购买故事、聊天记录等长文字放到下面“收藏故事 / 备注”更合适。</small></label>
       </div>
 
       <h3 class="group-title">状态与去向</h3>
@@ -1120,9 +1233,8 @@ body.dialog-lock { overflow:hidden !important; }
             <label class="task-check"><input type="checkbox" data-task="clean">待清洗</label>
             <label class="task-check"><input type="checkbox" data-task="photo">待拍照</label>
             <label class="task-check"><input type="checkbox" data-task="locality">想补更详细产地</label>
-            <label class="task-check"><input type="checkbox" data-task="label">待补标签</label>
+            <label class="task-check"><input type="checkbox" data-task="label">待补原矿标 / 证书</label>
             <label class="task-check"><input type="checkbox" data-task="repair">待修复</label>
-            <label class="task-check"><input type="checkbox" data-task="sell">准备出售</label>
           </div>
           <div class="grid-two">
             <label class="field"><span>下次养护检查</span><input id="nextCareDate" type="date" /><small id="careIntervalHint" class="field-hint">可按矿物风险给你一个保守的检查周期</small></label>
@@ -1152,9 +1264,9 @@ body.dialog-lock { overflow:hidden !important; }
         </div>
       </details>
 
-      <h3 class="group-title">备注</h3>
+      <h3 class="group-title">收藏故事 / 备注</h3>
       <div class="form-card">
-        <label class="field"><textarea id="notes" rows="5" placeholder="比如：2025 上海矿展买的，背面有一点磕碰……"></textarea></label>
+        <label class="field"><textarea id="notes" rows="5" placeholder="比如：2025 上海矿展入手、当时为什么喜欢、商家说法、背面有一点磕碰……"></textarea><small class="field-hint">这里适合写故事和长备注；需要以后筛选的关键词请放“标签”。</small></label>
       </div>
 
       <h3 class="group-title">原矿标 / 证书</h3>
@@ -1167,7 +1279,7 @@ body.dialog-lock { overflow:hidden !important; }
       </div>
 
       <div class="danger-zone" id="dangerZone" hidden>
-        <button type="button" id="deleteBtn" class="danger-btn">删除这件矿标</button>
+        <button type="button" id="deleteBtn" class="danger-btn">移到回收站</button>
       </div>
       <div class="safe-bottom"></div>
     </form>
@@ -1181,7 +1293,7 @@ body.dialog-lock { overflow:hidden !important; }
         <h2>批量添加</h2>
         <button id="saveBatch" class="text-btn strong">全部保存</button>
       </div>
-      <div class="batch-intro">把这一批共同的矿物、产地、来源只填一次。下面每一件只需要各自拍照片，再补自己的名称、细分类或备注。</div>
+      <div class="batch-intro">共同矿物、产地、来源可以只填一次；每一件还能分别补照片、尺寸、重量、共生、颜色、晶型和价格。下面会实时算出这批总金额以及对当月预算的影响。</div>
 
       <h3 class="group-title">这一批共同信息</h3>
       <div class="form-card grid-two">
@@ -1210,6 +1322,11 @@ body.dialog-lock { overflow:hidden !important; }
 
       <h3 class="group-title">这一批的每一件</h3>
       <div id="batchItems" class="batch-items"></div>
+      <div id="batchSettlement" class="batch-settlement" aria-live="polite">
+        <div class="batch-settlement-head"><strong>保存前结算</strong><span>价格按“单件价优先，其次共同价”计算</span></div>
+        <div id="batchSettlementStats" class="batch-settlement-grid"></div>
+        <div id="batchSettlementBudget" class="batch-budget-result"></div>
+      </div>
       <div class="batch-actions">
         <button id="addBatchItem" type="button" class="secondary-btn">＋ 再加一件</button>
         <button id="addThreeBatchItems" type="button" class="secondary-btn">＋ 一次加 3 件</button>
@@ -1305,6 +1422,14 @@ body.dialog-lock { overflow:hidden !important; }
           <button id="exportYearReviewBtn" type="button" class="secondary-btn">导出年度回顾</button>
         </div>
         <div id="yearReport"></div>
+        <div class="manage-card">
+          <h3>消费分析</h3>
+          <p>按收藏日期和入手价统计。用于看最近是否收得太猛，不会把估值或出售金额混进来。</p>
+          <div id="spendingSummary" class="manage-grid"></div>
+          <h3 style="margin-top:15px">每月花费</h3><div id="monthlySpendBars" class="spend-list"></div>
+          <h3 style="margin-top:15px">来源 / 商家花费</h3><div id="sourceSpendBars" class="spend-list"></div>
+          <h3 style="margin-top:15px">这一年最贵的几件</h3><div id="expensiveSpecimens" class="expensive-list"></div>
+        </div>
         <div class="manage-card"><h3>矿物数量排行</h3><div id="mineralBars" class="bar-list"></div></div>
         <div class="manage-card"><h3>产地数量排行</h3><div id="localityBars" class="bar-list"></div></div>
       </section>
@@ -1356,13 +1481,27 @@ body.dialog-lock { overflow:hidden !important; }
       <div class="sheet-handle"></div>
       <div class="sheet-head">
         <button id="closeSettings" class="text-btn">关闭</button>
-        <h2>备份与数据</h2>
+        <h2>数据与设置</h2>
         <span></span>
       </div>
 
+      <div class="settings-section-title">数据安全</div>
+      <div class="settings-card accent" id="dataSafetyCard">
+        <h3>数据安全</h3>
+        <p>这里会检查上次完整备份、本站本地存储占用，以及浏览器是否允许把本站标记为“持久存储”。持久存储只能降低被浏览器自动清理的概率，手动清除网站数据仍会删除本地矿标。</p>
+        <div class="data-safety-grid">
+          <div class="data-safety-stat"><b id="lastBackupValue">—</b><span>上次完整备份</span></div>
+          <div class="data-safety-stat"><b id="localStorageValue">—</b><span>本站本地存储（估算）</span></div>
+          <div class="data-safety-stat"><b id="persistentStorageValue">—</b><span>持久存储状态</span></div>
+        </div>
+        <p id="dataSafetyNote" class="data-safety-note">正在检查数据安全状态…</p>
+        <button id="persistStorageBtn" type="button" class="secondary-btn full">提高本地保存稳定性</button>
+      </div>
+
+      <div class="settings-section-title">备份与导出</div>
       <div class="settings-card accent">
         <h3>完整备份</h3>
-        <p>会把矿标资料、全部照片、时间线、愿望单和你的自定义分类顺序一起导出成一个 <b>.mineralbackup</b> 文件。换手机时再导入即可恢复。</p>
+        <p>会把矿标资料、全部照片、时间线、愿望单、自定义分类，以及回收站中的记录一起导出成一个 <b>.mineralbackup</b> 文件。换手机时再导入即可恢复。</p>
         <button id="exportBtn" class="primary-btn full">导出完整备份</button>
       </div>
 
@@ -1381,6 +1520,22 @@ body.dialog-lock { overflow:hidden !important; }
         <button id="csvBtn" class="secondary-btn full">导出 CSV 清单</button>
       </div>
 
+      <div class="settings-section-title">整理与恢复</div>
+      <div class="settings-card">
+        <h3>标签整理</h3>
+        <p>把重复写法合并、改名或删除标签。只影响标签字段，不会动备注、矿物名或产地。</p>
+        <div class="settings-inline-actions"><button id="normalizeTagsBtn" type="button" class="secondary-btn">整理标签格式</button></div>
+        <div id="tagManagerList" class="tag-manager-list"></div>
+      </div>
+
+      <div class="settings-card">
+        <h3>最近删除 · 回收站 <span id="trashCountText" class="muted"></span></h3>
+        <p>删除矿标后先放到这里，不会立刻永久消失。需要时可以恢复；永久删除才会真正移除照片和记录。</p>
+        <div id="trashList" class="trash-list"></div>
+        <div class="settings-inline-actions"><button id="emptyTrashBtn" type="button" class="danger-btn">清空回收站</button></div>
+      </div>
+
+      <div class="settings-section-title">关于</div>
       <div class="settings-card muted">
         <h3>关于数据</h3>
         <p>这版不需要账号，也不把你的收藏上传到服务器。数据保存在当前浏览器 / PWA 的本地存储里，所以<strong>定期导出备份很重要</strong>。</p>
@@ -1398,6 +1553,7 @@ const DB_VERSION = 1;
 const STORE = 'specimens';
 let db;
 let allItems = [];
+let trashItems = [];
 const MINERAL_CATALOG = [
   {name:'萤石', system:'等轴晶系', formula:'CaF₂', hardness:'4', scienceClass:'卤化物', scienceSubclass:'简单卤化物', scienceGroup:'萤石族', aliases:['fluorite']},
   {name:'黄铁矿', system:'等轴晶系', formula:'FeS₂', hardness:'6–6.5', scienceClass:'硫化物与硫盐', scienceSubclass:'二硫化物', scienceGroup:'黄铁矿族', aliases:['pyrite']},
@@ -1412,7 +1568,7 @@ const MINERAL_CATALOG = [
   {name:'金刚石', system:'等轴晶系', formula:'C', hardness:'10', scienceClass:'自然元素', scienceSubclass:'非金属元素', scienceGroup:'碳族', aliases:['diamond']},
   {name:'赤铜矿', system:'等轴晶系', formula:'Cu₂O', hardness:'3.5–4', scienceClass:'氧化物与氢氧化物', scienceSubclass:'简单氧化物', scienceGroup:'赤铜矿族', aliases:['cuprite']},
   {name:'石盐', system:'等轴晶系', formula:'NaCl', hardness:'2–2.5', scienceClass:'卤化物', scienceSubclass:'简单卤化物', scienceGroup:'石盐族', aliases:['岩盐','halite']},
-  {name:'方钠石', system:'等轴晶系', formula:'Na₈(Al₆Si₆O₂₄)Cl₂', hardness:'5.5–6', scienceClass:'硅酸盐', scienceSubclass:'架状硅酸盐', scienceGroup:'方钠石族', aliases:['sodalite','蓝纹石','蘇打石','苏打石','加拿大青金石'], structureNote:'“蓝纹石”是收藏/商业市场中常见的方钠石称呼；科学矿物名仍归方钠石（Sodalite）。不要与“蓝文石（蓝色文石 / Aragonite）”混淆。'},
+  {name:'方钠石', system:'等轴晶系', formula:'Na₈(Al₆Si₆O₂₄)Cl₂', hardness:'5.5–6', scienceClass:'硅酸盐', scienceSubclass:'架状硅酸盐', scienceGroup:'方钠石族', aliases:['sodalite']},
   {name:'锆石', system:'四方晶系', formula:'ZrSiO₄', hardness:'7.5', scienceClass:'硅酸盐', scienceSubclass:'岛状硅酸盐', scienceGroup:'锆石族', aliases:['zircon']},
   {name:'金红石', system:'四方晶系', formula:'TiO₂', hardness:'6–6.5', scienceClass:'氧化物与氢氧化物', scienceSubclass:'简单氧化物', scienceGroup:'金红石族', aliases:['rutile']},
   {name:'锡石', system:'四方晶系', formula:'SnO₂', hardness:'6–7', scienceClass:'氧化物与氢氧化物', scienceSubclass:'简单氧化物', scienceGroup:'金红石族', aliases:['cassiterite']},
@@ -1424,12 +1580,12 @@ const MINERAL_CATALOG = [
   {name:'鱼眼石', system:'四方晶系', formula:'KCa₄(Si₈O₂₀)F·8H₂O（常见种）', hardness:'4.5–5', scienceClass:'硅酸盐', scienceSubclass:'层状硅酸盐', scienceGroup:'鱼眼石族', aliases:['apophyllite','氟鱼眼石-K','fluorapophyllite-k']},
   {name:'黄玉', system:'斜方晶系', formula:'Al₂SiO₄(F,OH)₂', hardness:'8', scienceClass:'硅酸盐', scienceSubclass:'岛状硅酸盐', scienceGroup:'黄玉', aliases:['托帕石','topaz']},
   {name:'橄榄石', system:'斜方晶系', formula:'(Mg,Fe)₂SiO₄', hardness:'6.5–7', scienceClass:'硅酸盐', scienceSubclass:'岛状硅酸盐', scienceGroup:'橄榄石族', aliases:['olivine','peridot','贵橄榄石']},
-  {name:'重晶石', system:'斜方晶系', formula:'BaSO₄', hardness:'3–3.5', scienceClass:'硫酸盐、铬酸盐、钼酸盐与钨酸盐', scienceSubclass:'无水硫酸盐', scienceGroup:'重晶石族', aliases:['barite','baryte','蓝重晶石','blue barite','blue baryte'], structureNote:'“蓝重晶石”是按颜色描述的收藏叫法，科学矿物名仍为重晶石（Barite / Baryte）。'},
+  {name:'重晶石', system:'斜方晶系', formula:'BaSO₄', hardness:'3–3.5', scienceClass:'硫酸盐、铬酸盐、钼酸盐与钨酸盐', scienceSubclass:'无水硫酸盐', scienceGroup:'重晶石族', aliases:['barite','baryte']},
   {name:'天青石', system:'斜方晶系', formula:'SrSO₄', hardness:'3–3.5', scienceClass:'硫酸盐、铬酸盐、钼酸盐与钨酸盐', scienceSubclass:'无水硫酸盐', scienceGroup:'重晶石族', aliases:['celestine','celestite']},
-  {name:'文石', system:'斜方晶系', formula:'CaCO₃', hardness:'3.5–4', scienceClass:'碳酸盐与硝酸盐', scienceSubclass:'无水碳酸盐', scienceGroup:'文石族', aliases:['aragonite','蓝文石','蓝色文石','blue aragonite'], structureNote:'“蓝文石”通常是蓝色文石的收藏/颜色称呼，科学矿物名仍为文石（Aragonite）。不要与“蓝纹石（方钠石 / Sodalite）”混淆。'},
+  {name:'文石', system:'斜方晶系', formula:'CaCO₃', hardness:'3.5–4', scienceClass:'碳酸盐与硝酸盐', scienceSubclass:'无水碳酸盐', scienceGroup:'文石族', aliases:['aragonite']},
   {name:'自然硫', system:'斜方晶系', formula:'S₈', hardness:'1.5–2.5', scienceClass:'自然元素', scienceSubclass:'非金属元素', scienceGroup:'硫族', aliases:['硫磺','sulfur','sulphur']},
   {name:'辉锑矿', system:'斜方晶系', formula:'Sb₂S₃', hardness:'2', scienceClass:'硫化物与硫盐', scienceSubclass:'金属硫化物', scienceGroup:'辉锑矿族', aliases:['stibnite']},
-  {name:'针铁矿', system:'斜方晶系', formula:'FeO(OH)', hardness:'5–5.5', scienceClass:'氧化物与氢氧化物', scienceSubclass:'氢氧化物/羟基氧化物', scienceGroup:'针铁矿族', aliases:['goethite','砧铁矿'], structureNote:'“砧铁矿”不是标准矿物名，这里仅作为常见输入/语音识别容错，自动归到针铁矿（Goethite）。'},
+  {name:'针铁矿', system:'斜方晶系', formula:'FeO(OH)', hardness:'5–5.5', scienceClass:'氧化物与氢氧化物', scienceSubclass:'氢氧化物/羟基氧化物', scienceGroup:'针铁矿族', aliases:['goethite']},
   {name:'石膏', system:'单斜晶系', formula:'CaSO₄·2H₂O', hardness:'2', scienceClass:'硫酸盐、铬酸盐、钼酸盐与钨酸盐', scienceSubclass:'含水硫酸盐', scienceGroup:'石膏', aliases:['gypsum','透石膏','selenite']},
   {name:'正长石', system:'单斜晶系', formula:'KAlSi₃O₈', hardness:'6', scienceClass:'硅酸盐', scienceSubclass:'架状硅酸盐', scienceGroup:'碱性长石族', aliases:['orthoclase']},
   {name:'透辉石', system:'单斜晶系', formula:'CaMgSi₂O₆', hardness:'5.5–6.5', scienceClass:'硅酸盐', scienceSubclass:'链状硅酸盐', scienceGroup:'辉石族', aliases:['diopside']},
@@ -1460,7 +1616,7 @@ const MINERAL_CATALOG = [
   {name:'磷氯铅矿', system:'六方晶系', formula:'Pb₅(PO₄)₃Cl', hardness:'3.5–4', scienceClass:'磷酸盐、砷酸盐与钒酸盐', scienceSubclass:'磷酸盐', scienceGroup:'磷灰石超族', aliases:['pyromorphite']},
   {name:'砷铅矿', system:'六方晶系', formula:'Pb₅(AsO₄)₃Cl', hardness:'3.5–4', scienceClass:'磷酸盐、砷酸盐与钒酸盐', scienceSubclass:'砷酸盐', scienceGroup:'磷灰石超族', aliases:['mimetite']},
   {name:'红锌矿', system:'六方晶系', formula:'ZnO', hardness:'4', scienceClass:'氧化物与氢氧化物', scienceSubclass:'简单氧化物', scienceGroup:'红锌矿族', aliases:['zincite']},
-  {name:'石英', system:'三方晶系', formula:'SiO₂', hardness:'7', scienceClass:'氧化物与氢氧化物', scienceSubclass:'SiO₂ 型氧化物', scienceGroup:'石英族', structureNote:'Strunz 把石英列在氧化物；从结构看它由 SiO₄ 四面体组成三维网络，教材中也常称架状硅酸盐。', aliases:['quartz','水晶','白水晶','白晶','紫水晶','紫晶','amethyst','烟晶','茶晶','smoky quartz','黄水晶','citrine','粉晶','粉水晶','rose quartz','发晶','钛晶','绿幽灵','红幽灵','幽灵水晶','利姆利亚','利姆利亚水晶','lemurian','骸骨','骸骨水晶','骨干水晶','elestial','红水晶','绿帘水晶','花园水晶','庭园水晶','庭院水晶','异象水晶','景观水晶','苔景水晶','lodolite','garden quartz','scenic quartz','landscape quartz','chalcedony','玉髓','玛瑙','agate']},
+  {name:'石英', system:'三方晶系', formula:'SiO₂', hardness:'7', scienceClass:'氧化物与氢氧化物', scienceSubclass:'SiO₂ 型氧化物', scienceGroup:'石英族', structureNote:'Strunz 把石英列在氧化物；从结构看它由 SiO₄ 四面体组成三维网络，教材中也常称架状硅酸盐。', aliases:['quartz','水晶','白水晶','白晶','紫水晶','紫晶','amethyst','烟晶','茶晶','smoky quartz','黄水晶','citrine','粉晶','粉水晶','rose quartz','发晶','钛晶','绿幽灵','红幽灵','幽灵水晶','利姆利亚','利姆利亚水晶','lemurian','骸骨','骸骨水晶','骨干水晶','elestial','红水晶','绿帘水晶','chalcedony','玉髓','玛瑙','agate']},
   {name:'方解石', system:'三方晶系', formula:'CaCO₃', hardness:'3', scienceClass:'碳酸盐与硝酸盐', scienceSubclass:'无水碳酸盐', scienceGroup:'方解石族', aliases:['calcite']},
   {name:'白云石', system:'三方晶系', formula:'CaMg(CO₃)₂', hardness:'3.5–4', scienceClass:'碳酸盐与硝酸盐', scienceSubclass:'无水碳酸盐', scienceGroup:'白云石族', aliases:['dolomite']},
   {name:'菱锰矿', system:'三方晶系', formula:'MnCO₃', hardness:'3.5–4', scienceClass:'碳酸盐与硝酸盐', scienceSubclass:'无水碳酸盐', scienceGroup:'方解石族', aliases:['rhodochrosite']},
@@ -1470,7 +1626,7 @@ const MINERAL_CATALOG = [
   {name:'刚玉', system:'三方晶系', formula:'Al₂O₃', hardness:'9', scienceClass:'氧化物与氢氧化物', scienceSubclass:'简单氧化物', scienceGroup:'刚玉族', aliases:['corundum','红宝石','ruby','蓝宝石','sapphire']},
   {name:'赤铁矿', system:'三方晶系', formula:'Fe₂O₃', hardness:'5–6', scienceClass:'氧化物与氢氧化物', scienceSubclass:'简单氧化物', scienceGroup:'刚玉族', aliases:['hematite']},
   {name:'电气石', system:'三方晶系', formula:'复杂硼硅酸盐（随种类变化）', hardness:'7–7.5', scienceClass:'硅酸盐', scienceSubclass:'环状硅酸盐', scienceGroup:'电气石超族', aliases:['碧玺','tourmaline','黑电气石','schorl']},
-  {name:'辰砂', system:'三方晶系', formula:'HgS', hardness:'2–2.5', scienceClass:'硫化物与硫盐', scienceSubclass:'金属硫化物', scienceGroup:'辰砂', aliases:['cinnabar','朱砂','丹砂']},
+  {name:'辰砂', system:'三方晶系', formula:'HgS', hardness:'2–2.5', scienceClass:'硫化物与硫盐', scienceSubclass:'金属硫化物', scienceGroup:'辰砂', aliases:['cinnabar']},
   {name:'硅锌矿', system:'三方晶系', formula:'Zn₂SiO₄', hardness:'5.5', scienceClass:'硅酸盐', scienceSubclass:'岛状硅酸盐', scienceGroup:'硅锌矿族', aliases:['willemite']},
   {name:'白铅矿', system:'斜方晶系', formula:'PbCO₃', hardness:'3–3.5', scienceClass:'碳酸盐与硝酸盐', scienceSubclass:'无水碳酸盐', scienceGroup:'文石族', aliases:['cerussite']},
   {name:'铅矾', system:'斜方晶系', formula:'PbSO₄', hardness:'2.5–3', scienceClass:'硫酸盐、铬酸盐、钼酸盐与钨酸盐', scienceSubclass:'无水硫酸盐', scienceGroup:'重晶石族', aliases:['anglesite']},
@@ -1485,7 +1641,7 @@ const MINERAL_CATALOG = [
   {name:'沸石类（未细分）', system:'不是单一晶系', formula:'成分随具体沸石种变化', hardness:'通常约 3.5–5.5（随种类变化）', scienceClass:'硅酸盐', scienceSubclass:'架状硅酸盐·沸石', scienceGroup:'沸石族群 / 未细分', aliases:['沸石','zeolite','zeolites'], structureNote:'“沸石”是一个矿物族群/收藏圈统称，不是单一矿物种。若能确定具体种类，建议改选方沸石、辉沸石、片沸石、钠沸石、菱沸石、浊沸石、丝光沸石等具体名称；暂时分不清时可以先用“沸石类（未细分）”记录。'}
 ];
 
-const MINERAL_CATALOG_VERSION = '2026.09 · 花园水晶 / 针铁矿别名补充 · 朱砂补充 · 矿物库系统体检 · 收藏常见矿扩展';
+const MINERAL_CATALOG_VERSION = '2026.09 · 整理版 v3 · 档案完善度 / 回收站 / 标签整理 · 批量与数据安全增强';
 function patchMineral(name, patch){ const x=MINERAL_CATALOG.find(v=>v.name===name); if(x) Object.assign(x, patch); }
 patchMineral('菱锰矿',{aliases:['rhodochrosite','红纹石','菱錳礦']});
 patchMineral('赤铁矿',{hardness:'5.5–6.5', aliases:['hematite','镜铁矿','鏡鐵礦','specularite','specular hematite','铁玫瑰','iron rose'], structureNote:'“镜铁矿 / Specularite”是具银灰色镜面光泽、常呈片状/板状集合体的赤铁矿变种/形态称呼；科学矿物种仍归赤铁矿。'});
@@ -1525,66 +1681,6 @@ IMA_RRUFF_FALLBACK.forEach(([name,formula,system,hardness])=>{
     aliases:[], structureNote:'已在 IMA/RRUFF 科学矿物名备用库中识别；中文名、细分分类与养护规则可能尚未完成本地化。'
   });
 });
-
-
-// === 2026.09 矿物库系统体检：收藏常见矿与别名扩展 ===
-// 目标：不把“没收录”误当成“不是矿物”。已有 5740 个 IMA/RRUFF 英文科学名备用，
-// 这里额外把收藏圈高频但此前缺失/不易搜到的矿物提升为中文/常用名可检索条目。
-const COLLECTOR_MINERAL_EXPANSION_2026_09 = [{"name":"Cavansite","system":"斜方晶系","formula":"Ca(V4+O)(Si4O10)·4H2O","hardness":"≈3.5","scienceClass":"硅酸盐","scienceSubclass":"层状硅酸盐","scienceGroup":"水硅钒钙石","aliases":["水硅钒钙石","水矽釩鈣石","蓝钒钙石","cavansite"],"structureNote":"水硅钒钙石（Cavansite）与五角石（Pentagonite）为同成分多形；两者是不同矿物种，录入时不要只按颜色互相替代。"},{"name":"Pentagonite","system":"斜方晶系","formula":"CaV4+OSi4O10·4H2O","hardness":"≈3.5","scienceClass":"硅酸盐","scienceSubclass":"层状硅酸盐","scienceGroup":"Pentagonite","aliases":["五角石","pentagonite"],"structureNote":"五角石（Pentagonite）与水硅钒钙石（Cavansite）为同成分多形；两者是不同矿物种。"},{"name":"Okenite","system":"三斜晶系","formula":"Ca10Si18O46·18H2O","hardness":"≈3","scienceClass":"硅酸盐","scienceSubclass":"层状硅酸盐","scienceGroup":"奥肯石","aliases":["奥肯石","okenite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Gyrolite","system":"三斜晶系","formula":"NaCa16(Si23Al)O60(OH)8·14H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"层状硅酸盐","scienceGroup":"水硅钙石","aliases":["水硅钙石","gyrolite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Mesolite","system":"斜方晶系","formula":"Na2Ca2(Si9Al6)O30·8H2O","hardness":"≈5","scienceClass":"硅酸盐","scienceSubclass":"架状硅酸盐·沸石","scienceGroup":"中沸石","aliases":["中沸石","mesolite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Thomsonite-Ca","system":"斜方晶系","formula":"NaCa2(Al5Si5)O20·6H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"架状硅酸盐·沸石","scienceGroup":"汤姆逊沸石族","aliases":["汤姆逊沸石","钙汤姆逊沸石","thomsonite","thomsonite-ca"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Stellerite","system":"斜方晶系 / 单斜晶系","formula":"Ca4(Si28Al8)O72·28H2O","hardness":"≈4.5","scienceClass":"硅酸盐","scienceSubclass":"架状硅酸盐·沸石","scienceGroup":"Stellerite","aliases":["stellerite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Phillipsite-Ca","system":"单斜晶系 / 斜方晶系","formula":"Ca3(Si10Al6)O32·12H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"架状硅酸盐·沸石","scienceGroup":"斐利普沸石族","aliases":["斐利普沸石","钙斐利普沸石","phillipsite","phillipsite-ca"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Harmotome","system":"单斜晶系","formula":"Ba2(Si12Al4)O32·12H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"架状硅酸盐·沸石","scienceGroup":"钡十字沸石","aliases":["钡十字沸石","harmotome"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Gismondine","system":"单斜晶系 / 斜方晶系","formula":"Ca2(Si4Al4)O16·8H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"架状硅酸盐·沸石","scienceGroup":"吉斯蒙沸石","aliases":["吉斯蒙沸石","gismondine"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Yugawaralite","system":"单斜晶系","formula":"Ca(Si6Al2)O16·4H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"架状硅酸盐·沸石","scienceGroup":"汤河原沸石","aliases":["汤河原沸石","yugawaralite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Goosecreekite","system":"单斜晶系","formula":"Ca(Si6Al2)O16·5H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"架状硅酸盐·沸石","scienceGroup":"鹅溪沸石","aliases":["鹅溪沸石","goosecreekite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Clinoptilolite-Ca","system":"单斜晶系","formula":"Ca3(Si30Al6)O72·20H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"架状硅酸盐·沸石","scienceGroup":"斜发沸石族","aliases":["斜发沸石-Ca","钙斜发沸石","斜发沸石","clinoptilolite-ca"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Clinoptilolite-K","system":"单斜晶系","formula":"K6(Si30Al6)O72·20H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"架状硅酸盐·沸石","scienceGroup":"斜发沸石族","aliases":["斜发沸石-K","钾斜发沸石","clinoptilolite-k"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Clinoptilolite-Na","system":"单斜晶系","formula":"Na6(Si30Al6)O72·20H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"架状硅酸盐·沸石","scienceGroup":"斜发沸石族","aliases":["斜发沸石-Na","钠斜发沸石","clinoptilolite-na"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Stilbite-Ca","system":"单斜晶系 / 斜方晶系","formula":"NaCa4(Si27Al9)O72·28H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"架状硅酸盐·沸石","scienceGroup":"辉沸石族","aliases":["辉沸石-Ca","钙辉沸石","stilbite-ca"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Heulandite-Ca","system":"单斜晶系","formula":"(Ca,Na,K)5(Si27Al9)O72·26H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"架状硅酸盐·沸石","scienceGroup":"片沸石族","aliases":["片沸石-Ca","钙片沸石","heulandite-ca"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Chabazite-Ca","system":"六方晶系 / trigonal, triclinic","formula":"Ca2[Al4Si8O24]·13H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"架状硅酸盐·沸石","scienceGroup":"菱沸石族","aliases":["菱沸石-Ca","钙菱沸石","chabazite-ca"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Erionite-Na","system":"六方晶系","formula":"Na10[Si26Al10O72]·30H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"架状硅酸盐·沸石","scienceGroup":"毛沸石族","aliases":["毛沸石-Na","钠毛沸石","erionite-na"],"structureNote":"毛沸石族可形成危险的可吸入纤维。不要刷、吹、磨、切或制造粉尘；收藏时建议明确标识并密闭保存。"},{"name":"Erionite-Ca","system":"六方晶系","formula":"Ca5[Si26Al10O72]·30H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"架状硅酸盐·沸石","scienceGroup":"毛沸石族","aliases":["毛沸石-Ca","钙毛沸石","erionite-ca"],"structureNote":"毛沸石族可形成危险的可吸入纤维。不要刷、吹、磨、切或制造粉尘；收藏时建议明确标识并密闭保存。"},{"name":"Erionite-K","system":"六方晶系","formula":"K10[Si26Al10O72]·30H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"架状硅酸盐·沸石","scienceGroup":"毛沸石族","aliases":["毛沸石-K","钾毛沸石","erionite-k"],"structureNote":"毛沸石族可形成危险的可吸入纤维。不要刷、吹、磨、切或制造粉尘；收藏时建议明确标识并密闭保存。"},{"name":"Fluorapophyllite-(K)","system":"四方晶系","formula":"KCa4Si8O20F·8H2O","hardness":"≈4.75","scienceClass":"硅酸盐","scienceSubclass":"层状硅酸盐","scienceGroup":"鱼眼石族","aliases":["氟鱼眼石-K","钾氟鱼眼石","鱼眼石","fluorapophyllite-(k)"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Hydroxyapophyllite-(K)","system":"四方晶系","formula":"KCa4Si8O20(OH,F)·8H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"层状硅酸盐","scienceGroup":"鱼眼石族","aliases":["羟鱼眼石-K","钾羟鱼眼石","hydroxyapophyllite-(k)"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Fluorapophyllite-(Na)","system":"斜方晶系","formula":"NaCa4Si8O20F·8H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"层状硅酸盐","scienceGroup":"鱼眼石族","aliases":["氟鱼眼石-Na","钠氟鱼眼石","fluorapophyllite-(na)"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Inesite","system":"三斜晶系","formula":"Ca2Mn2+7Si10O28(OH)2·5H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"链状硅酸盐","scienceGroup":"红硅钙锰矿","aliases":["红硅钙锰矿","红矽鈣錳礦","inesite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Hubeite","system":"三斜晶系","formula":"Ca2Mn2+Fe3+Si4O12(OH)·2H2O","hardness":"≈5.5","scienceClass":"硅酸盐","scienceSubclass":"双岛状硅酸盐","scienceGroup":"湖北石","aliases":["湖北石","hubeite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Babingtonite","system":"三斜晶系","formula":"Ca2Fe2+Fe3+Si5O14(OH)","hardness":"≈5.75","scienceClass":"硅酸盐","scienceSubclass":"链状硅酸盐","scienceGroup":"Babingtonite","aliases":["babingtonite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Pectolite","system":"三斜晶系","formula":"NaCa2Si3O8(OH)","hardness":"≈4.75","scienceClass":"硅酸盐","scienceSubclass":"链状硅酸盐","scienceGroup":"针钠钙石","aliases":["针钠钙石","拉利玛","Larimar","pectolite"],"structureNote":"Larimar / 拉利玛通常指蓝色的针钠钙石（Pectolite）宝石材料；科学矿物种仍为 Pectolite。"},{"name":"Bustamite","system":"三斜晶系","formula":"Mn2Ca2MnCa(Si3O9)2","hardness":"≈6","scienceClass":"硅酸盐","scienceSubclass":"链状硅酸盐","scienceGroup":"Bustamite","aliases":["bustamite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Axinite-(Fe)","system":"三斜晶系","formula":"Ca4Fe2+2Al4[B2Si8O30](OH)2","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"双岛状/环状硅酸盐","scienceGroup":"斧石族","aliases":["铁斧石","斧石","axinite-(fe)"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Axinite-(Mn)","system":"三斜晶系","formula":"Ca4Mn2+2Al4[B2Si8O30](OH)2","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"双岛状/环状硅酸盐","scienceGroup":"斧石族","aliases":["锰斧石","axinite-(mn)"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Axinite-(Mg)","system":"三斜晶系","formula":"Ca4Mg2Al4[B2Si8O30](OH)2","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"双岛状/环状硅酸盐","scienceGroup":"斧石族","aliases":["镁斧石","axinite-(mg)"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Clinozoisite","system":"单斜晶系","formula":"Ca2Al3[Si2O7][SiO4]O(OH)","hardness":"≈6.5","scienceClass":"硅酸盐","scienceSubclass":"双岛状硅酸盐","scienceGroup":"绿帘石族","aliases":["斜黝帘石","clinozoisite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Pumpellyite-(Mg)","system":"单斜晶系","formula":"Ca2MgAl2(Si2O7)(SiO4)(OH)2·H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"双岛状硅酸盐","scienceGroup":"绿纤石族","aliases":["镁绿纤石","pumpellyite","pumpellyite-(mg)"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Rosasite","system":"单斜晶系","formula":"CuZn(CO3)(OH)2","hardness":"≈4","scienceClass":"碳酸盐与硝酸盐","scienceSubclass":"含羟基碳酸盐","scienceGroup":"锌孔雀石族","aliases":["锌孔雀石","rosasite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Aurichalcite","system":"单斜晶系","formula":"(Zn,Cu)5(CO3)2(OH)6","hardness":"≈2","scienceClass":"碳酸盐与硝酸盐","scienceSubclass":"含羟基碳酸盐","scienceGroup":"水锌铜矿","aliases":["水锌铜矿","锌铜矿","aurichalcite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Shattuckite","system":"斜方晶系","formula":"Cu5(SiO3)4(OH)2","hardness":"≈3.5","scienceClass":"硅酸盐","scienceSubclass":"链状硅酸盐","scienceGroup":"蓝硅铜矿","aliases":["蓝硅铜矿","shattuckite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Plancheite","system":"斜方晶系","formula":"Cu8(Si4O11)2(OH)4·H2O","hardness":"≈5.75","scienceClass":"硅酸盐","scienceSubclass":"链状硅酸盐","scienceGroup":"纤硅铜矿","aliases":["纤硅铜矿","plancheite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Ajoite","system":"三斜晶系","formula":"K3Cu2+20Al3Si29O76(OH)16·8H2O","hardness":"≈2","scienceClass":"硅酸盐","scienceSubclass":"层状硅酸盐","scienceGroup":"Ajoite","aliases":["阿霍石","阿乔石","ajoite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Papagoite","system":"单斜晶系","formula":"CaCuAlSi2O6(OH)3","hardness":"≈5.25","scienceClass":"硅酸盐","scienceSubclass":"岛状硅酸盐","scienceGroup":"Papagoite","aliases":["帕帕戈石","papagoite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Kinoite","system":"单斜晶系","formula":"Ca2Cu2Si3O10·2H2O","hardness":"≈1.67","scienceClass":"硅酸盐","scienceSubclass":"岛状硅酸盐","scienceGroup":"Kinoite","aliases":["水硅铜钙石","kinoite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Tsumebite","system":"单斜晶系","formula":"Pb2Cu(PO4)(SO4)(OH)","hardness":"≈2","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"磷酸盐-硫酸盐复盐","scienceGroup":"楚梅布石","aliases":["楚梅布石","tsumebite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Arsentsumebite","system":"单斜晶系","formula":"Pb2Cu(AsO4)(SO4)(OH)","hardness":"","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"砷酸盐-硫酸盐复盐","scienceGroup":"砷楚梅布石","aliases":["砷楚梅布石","arsentsumebite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Duftite","system":"斜方晶系","formula":"PbCu(AsO4)(OH)","hardness":"≈4.5","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"砷酸盐","scienceGroup":"Duftite","aliases":["杜夫特石","duftite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Beudantite","system":"六方晶系","formula":"PbFe3+3(AsO4)(SO4)(OH)6","hardness":"≈4","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"砷酸盐-硫酸盐复盐","scienceGroup":"明矾石超族","aliases":["砷铅铁矾","beudantite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Cornwallite","system":"单斜晶系","formula":"Cu5(AsO4)2(OH)4","hardness":"≈4.5","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"砷酸盐","scienceGroup":"Cornwallite","aliases":["康沃尔石","cornwallite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Pseudomalachite","system":"单斜晶系 / 晶系待确认","formula":"Cu5(PO4)2(OH)4","hardness":"≈4.75","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"磷酸盐","scienceGroup":"假孔雀石","aliases":["假孔雀石","pseudomalachite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Cornetite","system":"斜方晶系","formula":"Cu3(PO4)(OH)3","hardness":"","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"磷酸盐","scienceGroup":"Cornetite","aliases":["cornetite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Antlerite","system":"斜方晶系","formula":"Cu2+3(SO4)(OH)4","hardness":"≈3.25","scienceClass":"硫酸盐、铬酸盐、钼酸盐与钨酸盐","scienceSubclass":"含羟基硫酸盐","scienceGroup":"Antlerite","aliases":["羟硫铜矿","antlerite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Cyanotrichite","system":"晶系待确认","formula":"Cu4Al2(SO4)(OH)12(H2O)2","hardness":"","scienceClass":"硫酸盐、铬酸盐、钼酸盐与钨酸盐","scienceSubclass":"含羟基硫酸盐","scienceGroup":"Cyanotrichite","aliases":["青针铜矿","cyanotrichite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Langite","system":"单斜晶系","formula":"Cu4(SO4)(OH)6·2H2O","hardness":"≈2.75","scienceClass":"硫酸盐、铬酸盐、钼酸盐与钨酸盐","scienceSubclass":"含羟基硫酸盐","scienceGroup":"Langite","aliases":["langite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Devilline","system":"单斜晶系","formula":"CaCu4(SO4)2(OH)6·3H2O","hardness":"≈2.5","scienceClass":"硫酸盐、铬酸盐、钼酸盐与钨酸盐","scienceSubclass":"含水羟基硫酸盐","scienceGroup":"Devilline","aliases":["devilline"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Spangolite","system":"六方晶系","formula":"Cu6Al(SO4)(OH)12Cl·3H2O","hardness":"","scienceClass":"硫酸盐、铬酸盐、钼酸盐与钨酸盐","scienceSubclass":"含羟基硫酸盐","scienceGroup":"Spangolite","aliases":["spangolite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Connellite","system":"六方晶系","formula":"Cu36(SO4)(OH)62Cl8·6H2O","hardness":"≈3","scienceClass":"卤化物","scienceSubclass":"含羟基卤化物/硫酸盐","scienceGroup":"Connellite","aliases":["connellite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Hopeite","system":"斜方晶系","formula":"Zn3(PO4)2·4H2O","hardness":"≈3.25","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"含水磷酸盐","scienceGroup":"Hopeite","aliases":["磷锌矿","hopeite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Legrandite","system":"单斜晶系","formula":"Zn2(AsO4)(OH)·H2O","hardness":"≈4.75","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"含水砷酸盐","scienceGroup":"Legrandite","aliases":["黄磷锌矿","legrandite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Stolzite","system":"四方晶系","formula":"Pb(WO4)","hardness":"","scienceClass":"硫酸盐、铬酸盐、钼酸盐与钨酸盐","scienceSubclass":"钨酸盐","scienceGroup":"白钨矿族","aliases":["钨铅矿","stolzite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Powellite","system":"四方晶系","formula":"Ca(MoO4)","hardness":"≈3.75","scienceClass":"硫酸盐、铬酸盐、钼酸盐与钨酸盐","scienceSubclass":"钼酸盐","scienceGroup":"白钨矿族","aliases":["钼钙矿","powellite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Clinohedrite","system":"单斜晶系","formula":"CaZn(SiO4)·H2O","hardness":"≈5.5","scienceClass":"硅酸盐","scienceSubclass":"岛状硅酸盐","scienceGroup":"Clinohedrite","aliases":["斜硅锌矿","clinohedrite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Esperite","system":"单斜晶系","formula":"PbCa2(ZnSiO4)3","hardness":"≈5.25","scienceClass":"硅酸盐","scienceSubclass":"岛状硅酸盐","scienceGroup":"Esperite","aliases":["esperite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Margarosanite","system":"三斜晶系","formula":"Ca2PbSi3O9","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"链状硅酸盐","scienceGroup":"Margarosanite","aliases":["margarosanite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Chrysoberyl","system":"斜方晶系","formula":"BeAl2O4","hardness":"≈8.5","scienceClass":"氧化物与氢氧化物","scienceSubclass":"铍铝氧化物","scienceGroup":"金绿宝石","aliases":["金绿宝石","亚历山大变石","变石","Alexandrite","金绿猫眼","猫眼金绿宝石","chrysoberyl"],"structureNote":"Alexandrite / 亚历山大变石是具变色效应的金绿宝石变种；金绿猫眼是具猫眼效应的金绿宝石，科学矿物种仍为 Chrysoberyl。"},{"name":"Jadeite","system":"单斜晶系","formula":"NaAlSi2O6","hardness":"≈6.75","scienceClass":"硅酸盐","scienceSubclass":"链状硅酸盐","scienceGroup":"辉石族","aliases":["硬玉","翡翠硬玉","jadeite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Omphacite","system":"单斜晶系","formula":"(Ca,Na)(Mg,Fe,Al)Si2O6","hardness":"≈5.5","scienceClass":"硅酸盐","scienceSubclass":"链状硅酸盐","scienceGroup":"辉石族","aliases":["绿辉石","omphacite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Charoite","system":"单斜晶系 / 斜方晶系","formula":"(K,Sr,Ba,Mn)15-16(Ca,Na)32[Si70(O,OH)180](OH,F)4·nH2O","hardness":"≈5.5","scienceClass":"硅酸盐","scienceSubclass":"链状硅酸盐","scienceGroup":"Charoite","aliases":["紫硅碱钙石","紫龙晶","charoite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Sugilite","system":"六方晶系","formula":"KNa2Fe3+2(Li3Si12)O30","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"环状硅酸盐","scienceGroup":"Sugilite","aliases":["舒俱来石","舒俱莱石","苏纪石","sugilite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Staurolite","system":"单斜晶系 / 斜方晶系","formula":"Fe2+2Al9Si4O23(OH)","hardness":"≈7.25","scienceClass":"硅酸盐","scienceSubclass":"岛状硅酸盐","scienceGroup":"十字石","aliases":["十字石","staurolite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Ulexite","system":"三斜晶系","formula":"NaCaB5O6(OH)6·5H2O","hardness":"≈2.5","scienceClass":"硼酸盐","scienceSubclass":"含水硼酸盐","scienceGroup":"钠硼解石","aliases":["钠硼解石","电视石","ulexite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Kernite","system":"单斜晶系","formula":"Na2B4O6(OH)2·3H2O","hardness":"≈2.75","scienceClass":"硼酸盐","scienceSubclass":"含水硼酸盐","scienceGroup":"Kernite","aliases":["钠硼砂石","kernite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Howlite","system":"单斜晶系","formula":"Ca2SiB5O9(OH)5","hardness":"≈3.5","scienceClass":"硼酸盐","scienceSubclass":"含羟基硼硅酸盐","scienceGroup":"Howlite","aliases":["Howlite","howlite"],"structureNote":"Howlite 是独立硼酸盐矿物。市场上的“白松石”一词可能被混用于染色 Howlite、菱镁矿或其他材料，因此数据库不把单独的“白松石”自动判定为 Howlite。"},{"name":"Hydroboracite","system":"单斜晶系","formula":"CaMg[B3O4(OH)3]2·3H2O","hardness":"≈2","scienceClass":"硼酸盐","scienceSubclass":"含水硼酸盐","scienceGroup":"Hydroboracite","aliases":["水硼镁钙石","hydroboracite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Lazulite","system":"单斜晶系","formula":"MgAl2(PO4)2(OH)2","hardness":"≈5.75","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"磷酸盐","scienceGroup":"天蓝石族","aliases":["天蓝石","lazulite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Scorzalite","system":"单斜晶系 / 六方晶系","formula":"Fe2+Al2(PO4)2(OH)2","hardness":"≈6","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"磷酸盐","scienceGroup":"天蓝石族","aliases":["蓝磷铝铁矿","scorzalite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Childrenite","system":"斜方晶系","formula":"Fe2+Al(PO4)(OH)2·H2O","hardness":"","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"含羟基磷酸盐","scienceGroup":"Childrenite","aliases":["childrenite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Eosphorite","system":"斜方晶系","formula":"Mn2+Al(PO4)(OH)2·H2O","hardness":"≈5","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"含羟基磷酸盐","scienceGroup":"Eosphorite","aliases":["eosphorite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Strengite","system":"斜方晶系","formula":"Fe3+(PO4)·2H2O","hardness":"≈2.5","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"含水磷酸盐","scienceGroup":"Strengite","aliases":["strengite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Beraunite","system":"单斜晶系","formula":"Fe2+Fe3+5(PO4)4(OH)5·6H2O","hardness":"","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"含水磷酸盐","scienceGroup":"Beraunite","aliases":["beraunite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Rockbridgeite","system":"斜方晶系","formula":"(Fe2+0.5Fe3+0.5)2Fe3+3(PO4)3(OH)5","hardness":"","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"含羟基磷酸盐","scienceGroup":"Rockbridgeite","aliases":["rockbridgeite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Hureaulite","system":"单斜晶系","formula":"Mn2+5(PO3OH)2(PO4)2·4H2O","hardness":"≈3.5","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"含水磷酸盐","scienceGroup":"Hureaulite","aliases":["hureaulite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Ludlamite","system":"单斜晶系","formula":"Fe2+3(PO4)2·4H2O","hardness":"≈3.5","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"含水磷酸盐","scienceGroup":"Ludlamite","aliases":["ludlamite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Purpurite","system":"斜方晶系","formula":"Mn3+(PO4)","hardness":"≈4.5","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"磷酸盐","scienceGroup":"Purpurite","aliases":["紫磷铁锰矿","purpurite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Wavellite","system":"斜方晶系","formula":"Al3(PO4)2(OH)3·5H2O","hardness":"≈3.75","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"含水磷酸盐","scienceGroup":"Wavellite","aliases":["磷铝钾石","wavellite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Fluorapatite","system":"六方晶系 / 单斜晶系","formula":"Ca5(PO4)3F","hardness":"","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"磷酸盐","scienceGroup":"磷灰石超族","aliases":["氟磷灰石","fluorapatite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Hydroxylapatite","system":"六方晶系","formula":"Ca5(PO4)3OH","hardness":"≈5","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"磷酸盐","scienceGroup":"磷灰石超族","aliases":["羟基磷灰石","羟磷灰石","hydroxylapatite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Chlorapatite","system":"六方晶系 / 单斜晶系","formula":"Ca5(PO4)3Cl","hardness":"","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"磷酸盐","scienceGroup":"磷灰石超族","aliases":["氯磷灰石","chlorapatite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Uranophane-alpha","system":"单斜晶系 / 晶系待确认","formula":"Ca(UO2)2(SiO3OH)2·5H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"铀酰硅酸盐","scienceGroup":"铀硅石族","aliases":["铀硅石","α-铀硅石","uranophane-alpha"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Uranophane-beta","system":"单斜晶系","formula":"Ca(UO2)2(SiO3OH)2·5H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"铀酰硅酸盐","scienceGroup":"铀硅石族","aliases":["β-铀硅石","uranophane-beta"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Zeunerite","system":"四方晶系","formula":"Cu(UO2)2(AsO4)2·12H2O","hardness":"≈2.5","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"铀酰砷酸盐","scienceGroup":"Zeunerite","aliases":["铜砷铀云母","zeunerite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Abernathyite","system":"四方晶系","formula":"K(UO2)(AsO4)·3H2O","hardness":"≈2.75","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"铀酰砷酸盐","scienceGroup":"Abernathyite","aliases":["砷铀云母","abernathyite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Neptunite","system":"单斜晶系","formula":"KNa2LiFe2+2Ti2Si8O24","hardness":"≈5.5","scienceClass":"硅酸盐","scienceSubclass":"环状硅酸盐","scienceGroup":"Neptunite","aliases":["海王石","neptunite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Joaquinite-(Ce)","system":"单斜晶系","formula":"NaBa2Fe2+Ti2Ce2(Si4O12)2O2(OH)·H2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"环状硅酸盐","scienceGroup":"Joaquinite族","aliases":["Joaquinite","钠钛钡石","joaquinite-(ce)"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Uvite","system":"六方晶系","formula":"CaMg3(Al5Mg)(Si6O18)(BO3)3(OH)3(OH)","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"环状硅酸盐","scienceGroup":"电气石超族","aliases":["钙电气石","uvite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Fluor-liddicoatite","system":"六方晶系","formula":"Ca(Li2Al)Al6(Si6O18)(BO3)3(OH)3F","hardness":"≈3.33","scienceClass":"硅酸盐","scienceSubclass":"环状硅酸盐","scienceGroup":"电气石超族","aliases":["氟锂钙电气石","Liddicoatite","fluor-liddicoatite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Perovskite","system":"斜方晶系 / cubic, monoclinic","formula":"CaTiO3","hardness":"","scienceClass":"氧化物与氢氧化物","scienceSubclass":"复合氧化物","scienceGroup":"钙钛矿","aliases":["钙钛矿","perovskite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Loparite-(Ce)","system":"四方晶系 / orthorhombic, cubic","formula":"(Na,Ce,Sr)(Ce,Th)(Ti,Nb)2O6","hardness":"","scienceClass":"氧化物与氢氧化物","scienceSubclass":"钛铌氧化物","scienceGroup":"钙钛矿超族","aliases":["铌钙矿","Loparite","loparite-(ce)"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Bixbyite","system":"等轴晶系","formula":"Mn3+2O3","hardness":"≈3.75","scienceClass":"氧化物与氢氧化物","scienceSubclass":"简单氧化物","scienceGroup":"Bixbyite","aliases":["方铁锰矿","bixbyite"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"},{"name":"Chevkinite-(Ce)","system":"单斜晶系","formula":"Ce4(Ti,Fe2+,Fe3+)5O8(Si2O7)2","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"岛状硅酸盐","scienceGroup":"Chevkinite族","aliases":["硅钛铈矿","Chevkinite","chevkinite-(ce)"],"structureNote":"2026.09 收藏常见矿扩展：基础科学名、化学式、晶系/硬度优先沿用本地 IMA/RRUFF 数据；若该矿物存在多型、系列或后续命名修订，以最新 IMA-CNMNC 为准。"}];
-const COLLECTOR_ALIAS_PATCHES_2026_09 = [{"target":"Baryte","aliases":["蓝重晶石","蓝色重晶石","金色重晶石","blue barite","blue baryte"]},{"target":"Sodalite","aliases":["Hackmanite","hackmanite","变色方钠石","紫方钠石"],"note":"Hackmanite 是具有可逆光致变色（tenebrescence）现象的方钠石变种/类型；科学矿物种仍为 Sodalite。"},{"target":"Beryl","aliases":["Heliodor","heliodor","金绿柱石","Goshenite","goshenite","无色绿柱石","Red Beryl","red beryl","红绿柱石","Bixbite"]},{"target":"Spodumene","aliases":["Hiddenite","hiddenite","翠绿锂辉石","绿锂辉石"]},{"target":"Opal","aliases":["fire opal","火欧泊","black opal","黑欧泊","boulder opal","砾背欧泊"]},{"target":"Quartz","aliases":["Chrysoprase","chrysoprase","绿玉髓","Aventurine Quartz","aventurine quartz","东陵石","Tiger's Eye","tiger eye","tiger's eye","虎眼石"]},{"target":"Fluorite","aliases":["Blue John","blue john","蓝约翰萤石"]},{"target":"Sphalerite","aliases":["Cleiophane","cleiophane","浅色闪锌矿"]}];
-
-function registerCollectorMineral(entry){
-  const candidateKeys=[entry.name,...(entry.aliases||[])].map(normalizeMineralKey).filter(Boolean);
-  let existing=null;
-  for(const k of candidateKeys){
-    if(MINERAL_LOOKUP.has(k)){ existing=MINERAL_LOOKUP.get(k); break; }
-  }
-  if(existing){
-    existing.aliases=[...new Set([...(existing.aliases||[]),...(entry.aliases||[]),entry.name])];
-    for(const alias of existing.aliases){
-      const k=normalizeMineralKey(alias);
-      if(k && !MINERAL_LOOKUP.has(k)) MINERAL_LOOKUP.set(k,existing);
-    }
-    return existing;
-  }
-  MINERAL_CATALOG.push(entry);
-  for(const alias of [entry.name,...(entry.aliases||[])]){
-    const k=normalizeMineralKey(alias);
-    if(k && !MINERAL_LOOKUP.has(k)) MINERAL_LOOKUP.set(k,entry);
-  }
-  return entry;
-}
-
-COLLECTOR_MINERAL_EXPANSION_2026_09.forEach(registerCollectorMineral);
-COLLECTOR_ALIAS_PATCHES_2026_09.forEach(p=>{
-  const existing=MINERAL_LOOKUP.get(normalizeMineralKey(p.target)) || IMA_RRUFF_LOOKUP.get(normalizeMineralKey(p.target));
-  if(!existing) return;
-  if(!MINERAL_CATALOG.includes(existing) && !MINERAL_LOOKUP.has(normalizeMineralKey(existing.name))){
-    MINERAL_CATALOG.push(existing);
-  }
-  existing.aliases=[...new Set([...(existing.aliases||[]),...(p.aliases||[])])];
-  if(p.note) existing.structureNote=[existing.structureNote,p.note].filter(Boolean).join(' ');
-  for(const alias of existing.aliases){
-    const k=normalizeMineralKey(alias);
-    if(k && !MINERAL_LOOKUP.has(k)) MINERAL_LOOKUP.set(k,existing);
-  }
-});
-
-// 明显的旧数据/系列表达修正：只修有把握的条目，不对不确定矿物“硬猜”。
-const SCIENCE_CORRECTIONS_2026_09 = [
-  ['菱钴矿',{system:'三方晶系',formula:'CoCO₃'}],
-  ['菱镍矿',{system:'三方晶系',formula:'NiCO₃'}],
-  ['橄榄铜矿',{system:'斜方晶系',formula:'Cu₂AsO₄(OH)'}],
-  ['铯榴石',{system:'等轴晶系'}]
-];
-SCIENCE_CORRECTIONS_2026_09.forEach(([name,patch])=>{
-  const e=MINERAL_LOOKUP.get(normalizeMineralKey(name));
-  if(e) Object.assign(e,patch);
-});
-
-// 新扩展中的沸石/柔软含水矿物默认走更保守的清洁路线；毛沸石仍由纤维危害逻辑升级到高风险。
-const EXTRA_WATER_CAUTION_2026_09 = ["Okenite", "Gyrolite", "Mesolite", "Thomsonite-Ca", "Stellerite", "Phillipsite-Ca", "Harmotome", "Gismondine", "Yugawaralite", "Goosecreekite", "Clinoptilolite-Ca", "Clinoptilolite-K", "Clinoptilolite-Na", "Stilbite-Ca", "Heulandite-Ca", "Chabazite-Ca", "Erionite-Na", "Erionite-Ca", "Erionite-K"];
-const EXTRA_FRAGILE_2026_09 = ["Cavansite", "Pentagonite", "Okenite", "Gyrolite", "Mesolite", "Thomsonite-Ca", "Stellerite", "Phillipsite-Ca", "Harmotome", "Gismondine", "Yugawaralite", "Goosecreekite", "Rosasite", "Aurichalcite", "Legrandite", "Ulexite", "Kernite"];
 
 
 
@@ -1699,7 +1795,9 @@ const COUNTRY_COORDS = {"斐济":[-17.8,178.0],"坦桑尼亚":[-6.21,34.14],"加
 const COUNTRY_MAP_ALIASES = {'中华人民共和国':'中国','中国大陆':'中国','China':'中国','PRC':'中国','India':'印度','United States':'美国','USA':'美国','U.S.A.':'美国','United Kingdom':'英国','UK':'英国','Brazil':'巴西','Australia':'澳大利亚','Canada':'加拿大','Mexico':'墨西哥','Russia':'俄罗斯','Japan':'日本','South Korea':'韩国','Korea':'韩国','Namibia':'纳米比亚','Madagascar':'马达加斯加','Pakistan':'巴基斯坦','Afghanistan':'阿富汗'};
 const WORLD_MAP_SVG = `<svg class="world-map-svg" viewBox="0 0 1000 500" preserveAspectRatio="none" aria-hidden="true"><path d="M996.1,296.2 L1000.0,296.0 L996.5,297.3 L996.1,296.2 Z M993.5,298.3 L996.0,300.4 L992.7,300.5 L993.5,298.3 Z M594.2,252.6 L608.9,263.0 L608.9,273.6 L612.0,278.7 L609.8,280.3 L596.0,282.0 L593.7,276.2 L585.4,273.2 L582.3,268.1 L581.5,262.5 L585.4,259.3 L584.5,253.2 L594.2,252.6 Z M475.9,173.2 L475.9,178.1 L466.8,178.0 L464.1,190.8 L452.6,191.7 L459.0,190.3 L468.4,175.3 L475.9,173.2 Z M158.8,113.9 L151.0,110.0 L146.0,108.8 L144.9,104.6 L137.5,99.2 L138.9,94.7 L123.7,83.9 L118.2,86.4 L108.3,82.5 L108.4,56.4 L120.8,58.6 L144.1,54.2 L150.7,57.0 L154.4,55.1 L154.8,57.2 L179.9,58.6 L183.6,60.0 L179.7,61.4 L184.7,62.0 L197.6,62.8 L200.6,61.4 L197.7,60.2 L199.5,59.3 L205.1,58.9 L218.2,62.1 L228.7,59.5 L233.0,60.4 L233.0,63.1 L238.2,58.1 L232.0,55.3 L235.5,50.2 L242.0,51.9 L245.8,55.0 L243.3,56.4 L248.5,57.0 L248.5,59.8 L252.2,57.6 L255.5,59.4 L257.4,63.3 L262.4,55.9 L270.5,56.5 L274.2,57.9 L272.3,60.7 L273.9,63.6 L261.8,65.1 L257.4,70.1 L248.0,73.3 L238.2,80.8 L237.0,86.3 L241.1,86.7 L243.6,91.4 L271.5,96.8 L271.9,102.0 L278.0,107.8 L281.7,104.0 L278.3,98.1 L287.4,93.0 L281.9,86.7 L285.2,83.7 L283.0,76.9 L294.9,76.5 L306.7,80.4 L307.5,86.2 L312.1,88.3 L320.6,82.4 L329.5,91.8 L328.3,93.5 L340.7,98.3 L345.3,105.1 L333.2,110.4 L315.6,110.5 L302.5,119.9 L319.3,113.2 L321.7,114.6 L319.1,116.5 L320.9,121.6 L324.5,122.9 L329.1,122.5 L331.9,119.4 L333.9,122.4 L318.4,129.0 L316.2,126.5 L321.0,124.2 L313.5,124.6 L311.7,119.3 L307.7,118.2 L301.4,125.0 L292.0,125.0 L271.0,134.2 L269.1,133.4 L271.8,129.0 L270.7,124.0 L254.5,115.8 L245.4,116.3 L236.6,112.8 L158.8,113.9 Z M266.7,76.5 L268.7,75.2 L272.6,75.3 L269.3,77.3 L266.7,76.5 Z M282.2,47.6 L275.5,45.3 L288.2,47.7 L282.2,47.6 Z M278.7,78.8 L278.0,76.7 L279.8,77.3 L278.7,78.8 Z M240.0,41.7 L238.5,42.8 L231.1,41.9 L236.5,39.9 L240.0,41.7 Z M239.3,34.7 L232.9,34.6 L232.1,33.8 L237.7,33.8 L239.3,34.7 Z M226.0,30.9 L234.6,32.2 L229.7,33.7 L226.0,30.9 Z M278.2,41.9 L243.3,42.1 L239.2,38.0 L230.2,36.8 L245.5,36.7 L252.3,40.0 L274.6,39.7 L278.2,41.9 Z M186.9,33.2 L194.8,33.3 L184.6,34.1 L186.9,33.2 Z M190.3,31.0 L195.4,31.7 L187.4,32.2 L190.3,31.0 Z M345.6,107.5 L342.2,111.6 L351.5,113.2 L352.6,120.4 L349.5,120.0 L349.3,117.4 L346.1,119.8 L335.4,117.8 L340.7,109.1 L345.6,107.5 Z M261.4,67.4 L273.5,72.3 L277.5,73.0 L257.7,73.5 L261.4,67.4 Z M275.7,49.8 L308.9,54.1 L314.0,57.8 L308.9,59.1 L328.2,64.3 L322.4,69.4 L311.1,65.9 L320.4,73.9 L319.4,75.9 L308.9,72.9 L316.2,78.0 L308.7,76.9 L292.1,70.3 L281.8,70.6 L294.6,68.2 L298.2,63.1 L296.4,60.9 L280.7,55.1 L253.7,54.4 L251.4,53.4 L254.3,52.2 L250.3,52.2 L249.4,49.3 L254.4,45.7 L261.6,45.0 L259.5,46.8 L261.7,48.5 L271.3,45.1 L275.7,49.8 Z M233.3,46.0 L243.3,44.2 L248.6,44.8 L235.0,49.8 L233.3,46.0 Z M158.7,38.6 L169.2,34.7 L177.2,34.3 L174.7,37.4 L158.7,38.6 Z M130.4,101.6 L134.0,99.7 L133.2,102.8 L135.6,105.1 L130.4,101.6 Z M207.0,29.7 L219.9,31.1 L223.1,33.6 L207.8,32.3 L210.5,31.5 L207.0,29.7 Z M156.9,115.2 L151.0,114.4 L143.4,109.0 L150.7,110.3 L156.9,115.2 Z M153.0,43.6 L173.5,43.9 L179.1,45.9 L168.8,48.6 L165.4,51.7 L158.1,53.1 L150.2,50.4 L155.7,45.3 L153.0,43.6 Z M195.6,36.7 L206.4,40.3 L188.3,43.3 L183.7,42.4 L189.5,41.2 L173.0,41.0 L179.4,37.6 L197.0,40.4 L193.1,37.7 L195.6,36.7 Z M204.1,47.0 L209.8,52.8 L219.2,56.7 L214.6,56.9 L215.5,59.0 L205.7,57.8 L185.2,59.6 L174.1,55.7 L187.7,54.5 L172.5,54.1 L171.0,53.0 L177.5,51.9 L168.3,51.2 L180.0,46.3 L182.9,46.9 L181.5,48.2 L194.7,47.3 L199.5,51.0 L198.9,47.0 L204.1,47.0 Z M221.0,48.0 L217.9,46.2 L229.5,45.1 L227.6,47.2 L231.8,48.4 L231.3,50.9 L226.8,52.0 L215.3,48.6 L221.0,48.0 Z M203.9,45.6 L207.6,45.4 L209.7,46.1 L207.3,47.9 L203.9,45.6 Z M215.1,38.0 L228.5,38.2 L227.3,41.7 L215.3,40.1 L215.1,38.0 Z M231.4,27.3 L243.3,24.3 L261.6,29.6 L242.0,32.4 L239.0,31.2 L241.3,29.5 L231.4,27.3 Z M245.6,22.5 L279.7,19.1 L328.2,20.5 L312.1,23.6 L318.1,23.6 L302.3,28.3 L286.4,29.7 L290.6,31.9 L278.4,35.5 L283.6,36.7 L276.2,38.4 L251.4,37.6 L256.2,35.6 L254.8,33.6 L264.0,34.6 L255.7,32.3 L263.6,29.6 L258.5,27.1 L272.6,26.5 L256.7,26.3 L245.6,22.5 Z M291.1,62.7 L286.1,63.6 L285.5,62.3 L289.2,60.3 L291.1,62.7 Z M227.2,55.2 L234.3,58.0 L232.6,59.0 L222.8,57.2 L227.2,55.2 Z M320.8,111.5 L325.4,111.9 L328.3,113.6 L323.4,112.8 L320.8,111.5 Z M321.8,121.1 L323.2,120.7 L327.7,121.0 L325.3,122.3 L321.8,121.1 Z M158.8,113.9 L236.6,112.8 L245.4,116.3 L254.5,115.8 L270.7,124.0 L270.3,134.2 L292.0,125.0 L301.4,125.0 L307.7,118.2 L311.7,119.3 L314.0,125.5 L305.2,128.7 L303.3,132.4 L305.7,134.3 L295.2,136.3 L300.2,136.3 L294.6,136.8 L291.9,141.8 L290.2,140.3 L291.5,143.3 L289.1,146.6 L287.9,141.3 L288.0,144.2 L286.1,143.8 L289.6,151.2 L274.1,162.7 L276.7,180.0 L273.0,178.1 L267.5,166.8 L260.0,165.6 L251.1,166.2 L251.6,169.0 L237.0,168.1 L230.2,172.7 L229.1,178.2 L224.9,176.7 L219.6,168.4 L211.3,168.7 L204.1,161.8 L191.6,163.0 L181.3,159.1 L174.6,159.6 L164.9,153.9 L154.4,138.0 L155.8,123.5 L153.6,116.2 L159.5,119.2 L158.8,113.9 Z M66.5,195.3 L70.0,195.8 L67.5,197.5 L66.5,195.3 Z M34.8,82.7 L39.8,82.5 L40.1,83.6 L34.8,82.7 Z M70.4,90.4 L77.4,90.0 L70.8,91.7 L70.4,90.4 Z M108.4,56.4 L108.3,82.5 L118.2,86.4 L123.7,83.9 L138.9,94.7 L137.4,97.8 L127.6,88.5 L120.5,88.3 L111.5,84.6 L91.3,80.9 L78.6,85.7 L81.6,79.8 L59.9,94.5 L41.8,98.4 L59.2,91.6 L63.8,86.3 L50.1,87.0 L48.6,83.4 L40.7,81.9 L39.6,77.6 L42.9,74.6 L53.4,72.9 L51.3,71.1 L53.4,70.0 L41.8,71.0 L33.0,67.6 L43.1,65.1 L50.9,66.3 L36.8,60.1 L38.3,58.7 L65.1,51.8 L108.4,56.4 Z M23.0,72.8 L26.4,73.1 L31.4,74.2 L29.1,75.1 L23.0,72.8 Z M742.7,113.3 L736.6,119.4 L731.1,118.5 L729.1,123.5 L722.1,125.2 L724.6,130.1 L722.9,132.4 L706.1,129.7 L704.1,131.9 L697.7,131.4 L690.6,137.0 L685.3,135.6 L680.3,128.5 L672.3,129.2 L662.5,123.4 L655.4,125.0 L655.5,135.3 L650.2,132.4 L645.8,133.9 L645.8,131.1 L639.7,126.1 L647.3,124.3 L647.3,119.9 L636.4,121.1 L629.1,115.6 L632.1,109.8 L634.9,111.5 L641.0,106.4 L654.8,109.4 L670.4,108.9 L666.6,105.7 L671.4,102.8 L670.7,100.0 L691.9,96.2 L704.0,101.4 L713.6,98.6 L722.3,108.7 L731.6,108.1 L742.7,113.3 Z M655.5,135.3 L655.4,125.0 L662.5,123.4 L672.3,129.2 L680.3,128.5 L685.3,135.6 L689.6,137.0 L697.1,132.6 L695.6,134.7 L702.9,136.5 L699.4,138.5 L692.6,136.9 L688.1,140.1 L690.0,144.0 L688.4,146.8 L662.9,131.2 L655.5,135.3 Z M891.7,257.2 L910.1,266.9 L908.9,270.5 L918.6,279.4 L910.9,278.1 L902.1,271.2 L896.2,275.9 L891.8,275.3 L891.7,257.2 Z M919.3,256.9 L924.5,263.2 L918.5,257.6 L919.3,256.9 Z M920.3,266.2 L915.9,267.5 L912.0,266.0 L918.9,265.2 L922.6,261.5 L920.3,266.2 Z M929.9,264.8 L933.4,268.2 L933.0,268.9 L931.0,268.2 L929.9,264.8 Z M891.7,257.2 L891.8,275.3 L889.3,273.0 L882.3,273.4 L885.2,270.3 L883.1,265.0 L871.3,259.8 L869.4,261.4 L866.6,257.8 L871.4,256.2 L862.6,252.6 L872.2,252.2 L873.4,257.7 L876.3,259.4 L881.8,254.7 L891.7,257.2 Z M847.1,274.7 L845.7,278.2 L842.9,278.4 L844.4,275.8 L847.1,274.7 Z M872.8,269.2 L872.5,267.1 L873.6,265.1 L874.2,267.3 L872.8,269.2 Z M827.5,238.5 L825.9,241.0 L830.5,247.5 L827.3,247.8 L822.6,261.1 L806.2,258.2 L802.6,248.8 L804.6,244.4 L807.0,247.9 L816.1,246.6 L821.8,238.0 L827.5,238.5 Z M855.3,259.4 L862.4,258.6 L863.4,260.7 L855.3,259.4 Z M852.8,258.7 L850.5,260.0 L850.0,258.8 L852.8,258.7 Z M855.4,244.0 L857.5,246.9 L855.8,252.5 L853.9,247.2 L855.4,244.0 Z M835.8,246.4 L847.9,246.1 L843.6,249.3 L833.8,249.3 L833.4,251.4 L835.9,253.9 L842.6,251.7 L837.5,255.3 L842.1,264.8 L839.5,264.7 L840.9,262.4 L837.5,262.7 L836.0,257.3 L832.8,265.8 L829.9,257.8 L832.8,249.6 L835.8,246.4 Z M834.2,278.5 L830.5,276.5 L833.1,276.0 L834.2,278.5 Z M833.1,274.5 L838.9,273.5 L841.4,272.5 L841.0,274.0 L833.1,274.5 Z M827.5,272.5 L830.9,274.2 L824.3,275.1 L827.5,272.5 Z M794.6,266.4 L812.8,269.3 L821.4,273.3 L792.7,269.0 L794.6,266.4 Z M770.8,235.4 L794.7,258.5 L793.9,266.3 L785.0,261.7 L764.7,234.8 L770.8,235.4 Z M309.3,396.2 L311.8,399.6 L319.3,401.9 L309.4,402.4 L309.3,396.2 Z M339.9,333.9 L337.5,345.6 L342.3,352.5 L335.5,357.6 L326.8,357.9 L325.7,364.0 L319.1,364.1 L319.5,366.8 L323.7,368.2 L318.9,370.8 L317.9,375.1 L313.1,376.5 L312.3,378.6 L317.7,381.2 L307.9,390.9 L310.7,395.4 L300.2,394.5 L296.1,387.0 L302.2,374.4 L299.6,367.4 L306.1,345.0 L304.1,337.1 L310.3,324.7 L310.0,318.1 L315.9,310.6 L321.2,313.3 L325.4,311.2 L339.5,319.9 L337.2,325.3 L345.3,326.1 L349.6,321.0 L351.0,324.8 L339.9,333.9 Z M309.3,396.2 L309.4,402.4 L314.0,402.5 L310.7,404.5 L302.8,402.9 L292.6,396.8 L302.5,400.2 L309.3,396.2 Z M306.7,298.8 L311.6,313.5 L313.9,313.9 L310.0,318.1 L310.3,324.7 L304.1,337.1 L306.1,345.0 L299.6,367.4 L302.2,374.4 L296.1,387.0 L300.2,394.5 L309.5,395.3 L301.6,399.6 L291.8,395.2 L290.0,385.2 L294.1,380.4 L289.9,379.6 L293.5,372.5 L296.6,373.5 L298.0,367.7 L293.5,370.1 L296.6,359.1 L295.6,353.2 L301.6,340.1 L304.5,301.0 L306.7,298.8 Z M581.5,262.5 L585.4,273.2 L579.8,273.7 L578.8,282.8 L582.3,283.8 L582.5,286.8 L575.5,282.2 L561.5,280.8 L560.4,270.3 L555.8,269.3 L548.5,272.4 L545.4,266.3 L533.8,266.1 L544.5,259.8 L554.1,236.0 L562.2,238.8 L571.3,235.4 L582.5,237.2 L586.6,243.9 L583.0,248.3 L581.5,262.5 Z M615.5,254.7 L613.8,242.3 L617.0,238.2 L624.9,236.1 L635.9,223.7 L636.0,218.3 L642.0,216.6 L635.0,235.2 L615.5,254.7 Z M608.9,263.0 L594.2,252.6 L597.3,244.7 L594.5,238.2 L598.1,234.7 L605.9,240.0 L616.3,239.1 L613.8,242.3 L615.5,254.7 L608.9,263.0 Z M568.2,227.1 L566.1,225.9 L565.2,225.1 L560.9,215.0 L564.0,206.4 L566.4,206.6 L566.3,194.4 L569.4,194.4 L569.4,188.9 L602.4,188.9 L604.1,198.3 L606.7,200.0 L602.4,202.9 L594.4,225.9 L591.0,216.0 L587.1,222.7 L574.3,223.7 L569.6,221.5 L566.4,226.1 L568.2,227.1 Z M566.2,195.6 L566.4,206.6 L564.0,206.4 L560.9,215.0 L563.5,219.0 L549.9,228.1 L542.4,229.4 L538.8,223.5 L543.0,222.3 L537.6,210.1 L542.4,203.8 L544.2,193.4 L541.3,186.5 L544.1,185.0 L566.2,195.6 Z M300.8,195.2 L300.8,199.9 L293.2,199.0 L299.1,198.1 L296.7,194.7 L300.8,195.2 Z M301.7,201.1 L301.1,194.8 L310.2,198.3 L301.7,201.1 Z M996.5,52.5 L1000.0,51.3 L1000.0,53.2 L996.5,52.5 Z M636.4,121.1 L629.7,126.1 L635.0,133.9 L632.8,135.7 L601.9,124.3 L608.7,119.3 L606.3,117.9 L610.4,116.9 L611.3,112.2 L598.2,109.5 L593.8,104.6 L588.3,105.3 L587.0,102.6 L590.8,101.8 L585.8,95.7 L578.3,94.0 L575.8,90.3 L576.2,86.9 L580.9,83.3 L578.0,81.9 L587.5,75.4 L583.4,73.5 L584.6,71.7 L582.1,69.6 L583.9,67.2 L580.7,64.0 L583.3,61.9 L579.0,60.1 L579.4,58.2 L589.3,55.8 L614.1,62.6 L614.2,64.5 L606.6,66.7 L592.2,64.9 L596.7,66.9 L597.1,71.1 L602.8,72.6 L603.3,69.0 L610.0,70.8 L612.3,70.1 L610.5,68.1 L616.9,65.3 L622.1,66.5 L623.7,64.6 L620.7,59.5 L628.5,60.4 L630.1,62.0 L626.6,63.9 L628.7,64.8 L649.2,58.7 L651.3,58.9 L648.6,60.6 L663.3,58.7 L666.5,60.3 L669.7,58.5 L666.8,56.9 L668.2,56.0 L690.3,60.9 L692.2,59.4 L685.9,57.1 L685.3,52.7 L694.3,47.1 L702.2,49.4 L699.6,51.6 L702.2,54.5 L701.6,58.3 L704.6,60.0 L698.0,65.8 L701.2,66.2 L708.5,61.8 L708.2,58.4 L704.4,56.6 L706.7,53.8 L703.1,51.5 L708.0,49.7 L707.4,47.7 L710.2,49.2 L709.1,51.8 L712.1,52.4 L710.8,50.3 L715.5,49.3 L726.4,50.7 L723.6,45.4 L741.2,44.6 L738.9,43.2 L742.1,41.3 L779.9,37.7 L789.9,34.2 L797.9,37.6 L817.0,39.3 L803.9,43.9 L842.2,47.3 L842.4,45.2 L852.7,45.7 L864.7,53.4 L867.4,50.5 L888.5,51.4 L886.5,48.8 L890.2,47.6 L915.3,49.4 L924.9,53.2 L941.7,53.1 L947.1,57.1 L966.2,56.7 L971.0,59.2 L974.5,58.3 L973.5,55.3 L1000.0,58.4 L1000.0,69.5 L992.8,70.5 L997.9,76.9 L982.4,78.7 L973.1,83.7 L969.2,81.7 L954.3,83.7 L950.0,88.2 L953.3,90.0 L950.3,97.6 L945.5,99.0 L935.5,108.3 L931.8,96.2 L933.1,92.3 L954.6,80.2 L956.9,76.2 L944.8,81.8 L942.5,78.4 L935.3,79.3 L928.4,84.0 L930.7,85.7 L895.0,86.0 L875.4,98.0 L883.8,100.7 L888.6,99.5 L892.6,102.5 L889.1,115.4 L874.6,129.4 L867.4,129.8 L863.3,132.7 L864.0,125.1 L869.7,124.6 L875.1,115.3 L863.9,117.2 L859.4,112.7 L854.6,111.8 L849.9,103.4 L843.3,101.5 L833.8,103.5 L835.4,105.7 L827.4,112.5 L817.7,110.4 L801.3,113.1 L774.6,105.4 L770.2,111.9 L756.2,108.9 L742.7,113.3 L731.6,108.1 L722.3,108.7 L713.6,98.6 L704.0,101.4 L691.9,96.2 L670.7,100.0 L671.4,102.8 L666.6,105.7 L670.4,108.9 L654.8,109.4 L641.0,106.4 L634.9,111.5 L632.1,109.8 L629.1,115.6 L636.4,121.1 Z M753.3,26.8 L766.5,24.3 L778.3,28.4 L777.6,30.9 L771.5,31.2 L753.3,26.8 Z M781.3,29.9 L792.7,31.4 L776.2,33.6 L781.3,29.9 Z M880.5,40.9 L893.0,38.6 L903.0,40.1 L900.8,42.2 L886.0,42.7 L880.5,40.9 Z M911.7,40.7 L918.7,41.4 L905.9,41.2 L911.7,40.7 Z M888.5,46.2 L894.6,44.8 L898.9,46.6 L894.7,46.7 L888.5,46.2 Z M624.6,26.1 L639.0,25.2 L643.1,25.8 L632.2,27.7 L624.6,26.1 Z M563.1,99.1 L558.0,99.1 L554.6,98.8 L559.1,96.7 L563.1,99.1 Z M648.6,45.1 L654.5,41.4 L669.9,38.2 L691.3,37.4 L662.4,43.6 L653.9,49.0 L659.8,53.6 L643.3,51.5 L651.2,45.5 L648.6,45.1 Z M895.0,99.4 L901.8,114.0 L897.7,113.0 L896.0,117.1 L898.6,121.8 L896.5,120.2 L894.7,122.3 L893.6,101.9 L895.0,99.4 Z M0.0,58.4 L15.7,65.7 L15.1,63.7 L22.6,64.1 L28.1,66.7 L20.7,68.2 L19.6,71.5 L3.6,66.4 L0.3,67.0 L0.0,69.5 L0.0,58.4 Z M6.7,52.0 L0.0,53.2 L0.0,51.3 L6.7,52.0 Z M590.2,124.1 L593.6,121.6 L601.5,123.7 L594.1,126.8 L590.2,124.1 Z M280.8,176.6 L283.8,175.4 L283.8,176.2 L280.8,176.6 Z M283.9,174.9 L286.1,176.1 L285.6,178.1 L285.2,176.3 L283.9,174.9 Z M282.2,181.7 L283.6,180.1 L284.6,184.0 L282.2,181.7 Z M330.0,394.0 L337.4,391.9 L339.6,393.2 L335.0,395.0 L330.0,394.0 Z M529.0,28.7 L547.2,27.6 L559.8,30.7 L544.2,36.7 L529.0,28.7 Z M586.4,56.8 L579.4,58.2 L580.6,56.2 L577.0,55.1 L568.7,59.3 L559.0,57.3 L555.2,60.0 L550.0,59.5 L537.7,72.1 L534.9,72.0 L534.2,83.0 L530.6,86.5 L528.8,84.8 L523.3,88.0 L515.7,87.3 L513.9,77.9 L553.3,56.1 L578.2,52.3 L586.9,54.3 L583.3,55.0 L586.4,56.8 Z M576.1,27.6 L564.0,29.4 L548.2,26.9 L563.7,26.0 L576.1,27.6 Z M568.7,33.7 L562.5,34.9 L557.6,34.2 L563.6,32.1 L568.7,33.7 Z M370.1,20.5 L424.7,18.0 L442.1,20.2 L411.4,21.7 L438.7,23.0 L435.6,24.6 L456.2,22.5 L466.1,24.2 L444.3,27.3 L450.7,27.4 L445.3,31.2 L445.4,34.3 L448.7,36.2 L439.8,37.1 L444.9,38.6 L445.6,41.0 L442.6,41.2 L446.2,43.6 L434.5,46.4 L438.1,49.5 L431.1,49.1 L439.6,53.7 L429.0,51.6 L430.0,53.5 L426.8,54.9 L437.9,55.2 L389.4,68.2 L381.1,75.9 L379.5,83.1 L365.9,80.9 L356.6,73.3 L350.1,63.4 L358.7,55.8 L348.1,56.6 L349.0,53.3 L357.2,54.0 L344.9,51.0 L348.0,48.4 L337.3,40.2 L309.7,38.7 L301.7,36.1 L314.5,35.1 L296.4,33.2 L317.5,29.5 L311.0,27.5 L327.1,24.1 L326.0,22.9 L360.0,21.0 L376.3,23.2 L370.1,20.5 Z M691.5,385.1 L695.9,386.3 L696.0,386.8 L691.0,388.3 L691.5,385.1 Z M847.5,276.1 L849.9,273.4 L853.7,273.3 L847.5,276.1 Z M545.4,329.4 L555.3,329.1 L555.3,318.8 L558.0,324.5 L560.0,324.2 L564.8,320.2 L571.3,320.8 L581.8,311.4 L586.6,311.8 L588.7,317.7 L588.4,321.8 L585.2,324.3 L591.2,324.3 L589.5,329.9 L578.4,341.0 L555.8,346.7 L551.0,344.8 L550.6,337.9 L545.4,329.4 Z M580.5,330.4 L578.1,334.8 L575.0,333.0 L578.0,330.1 L580.5,330.4 Z M174.6,159.6 L181.3,159.1 L191.6,163.0 L204.1,161.8 L211.3,168.7 L217.6,167.3 L224.9,176.7 L230.2,178.1 L228.1,187.7 L233.6,197.7 L237.7,199.6 L246.1,197.6 L249.2,191.7 L258.2,190.2 L256.0,199.3 L247.2,200.5 L248.7,205.4 L245.1,205.4 L243.8,209.6 L239.2,205.7 L231.8,206.5 L212.5,199.2 L207.0,194.6 L205.5,186.7 L188.3,169.6 L185.7,163.4 L180.7,162.8 L196.1,185.1 L194.8,186.6 L188.4,181.3 L188.1,177.7 L180.4,173.0 L182.9,170.6 L174.6,159.6 Z M339.9,333.9 L350.6,339.0 L350.5,345.5 L343.8,346.8 L337.7,344.2 L339.9,333.9 Z M351.7,343.8 L350.6,339.0 L339.9,333.9 L351.0,322.6 L348.3,321.5 L349.2,316.7 L346.1,316.5 L345.0,312.1 L339.1,311.4 L340.3,300.5 L338.2,295.3 L332.9,295.2 L331.9,288.3 L318.3,282.1 L318.5,277.1 L304.0,280.6 L304.2,276.4 L299.5,277.9 L294.5,270.9 L297.5,264.7 L305.9,261.9 L305.5,248.5 L307.7,247.3 L306.1,245.2 L312.4,244.3 L317.9,247.8 L324.0,243.9 L320.0,238.7 L324.7,239.5 L331.3,235.6 L333.4,236.1 L336.0,246.3 L344.5,245.0 L344.5,243.0 L352.9,244.1 L357.5,238.3 L361.2,245.2 L360.0,250.2 L364.9,250.7 L365.0,253.4 L367.2,251.6 L375.3,254.3 L376.2,257.5 L388.9,258.0 L401.1,264.3 L403.5,270.4 L402.4,275.0 L392.6,286.3 L390.9,299.6 L386.3,310.9 L367.6,319.1 L364.2,329.7 L351.7,343.8 Z M306.9,280.4 L318.5,277.1 L318.3,282.1 L331.9,288.3 L332.9,295.2 L338.2,295.3 L339.3,305.5 L328.4,304.5 L325.9,311.8 L322.3,311.1 L321.2,313.3 L315.9,310.6 L311.6,313.5 L306.7,298.8 L309.3,284.9 L306.9,280.4 Z M305.9,261.9 L297.5,264.7 L294.5,270.9 L299.5,277.9 L304.2,276.4 L304.0,280.6 L306.9,280.4 L309.3,284.9 L308.4,295.8 L304.5,301.0 L288.9,290.7 L273.9,263.2 L276.9,259.5 L276.5,262.3 L281.6,262.6 L291.4,250.2 L297.0,256.4 L305.4,257.6 L303.6,260.4 L305.9,261.9 Z M314.2,246.5 L312.4,244.3 L306.1,245.2 L307.7,247.3 L305.5,248.5 L305.9,261.9 L303.6,260.4 L305.4,257.6 L297.0,256.4 L291.4,250.2 L284.9,248.9 L280.6,245.3 L285.8,239.3 L284.8,226.3 L289.8,223.8 L291.9,219.2 L301.7,215.6 L296.4,224.6 L300.1,230.6 L312.9,233.1 L311.6,242.2 L314.2,246.5 Z M285.1,225.9 L283.7,229.9 L280.2,225.0 L275.3,229.9 L269.9,227.6 L269.6,223.7 L273.8,225.6 L280.5,223.5 L285.1,225.9 Z M270.7,223.4 L269.5,227.2 L261.3,219.7 L267.6,219.6 L270.7,223.4 Z M267.6,219.6 L261.9,219.2 L256.5,214.1 L269.0,208.3 L267.6,219.6 Z M269.0,208.3 L257.5,213.9 L251.8,209.9 L255.8,205.9 L263.9,205.6 L269.0,208.3 Z M251.8,209.9 L256.3,211.7 L255.8,213.5 L249.7,211.8 L251.8,209.9 Z M243.8,209.6 L245.1,205.4 L248.7,205.4 L247.2,200.5 L252.4,200.5 L252.1,205.9 L254.9,206.3 L251.8,209.9 L249.7,211.8 L243.8,209.6 Z M252.4,200.5 L255.3,199.0 L253.0,205.9 L252.1,205.9 L252.4,200.5 Z M331.3,235.6 L324.7,239.5 L320.0,238.7 L324.0,243.9 L315.8,248.0 L311.6,242.2 L312.9,233.1 L300.1,230.6 L296.4,224.6 L297.5,221.0 L300.1,217.8 L301.9,217.3 L299.8,222.6 L302.0,224.6 L301.7,219.5 L305.7,216.2 L310.6,220.7 L328.1,220.2 L325.7,221.1 L334.0,226.8 L329.4,233.4 L331.3,235.6 Z M342.9,244.7 L334.3,245.0 L333.4,236.1 L329.4,233.4 L334.0,226.8 L341.3,233.4 L338.8,238.7 L342.9,244.7 Z M348.5,243.6 L342.9,244.7 L340.0,240.7 L341.3,233.4 L350.1,234.0 L348.5,243.6 Z M356.5,238.5 L352.9,244.1 L348.5,243.6 L350.1,234.0 L356.5,238.5 Z M507.0,107.9 L522.5,113.8 L516.8,120.2 L520.7,128.6 L505.1,132.4 L494.7,129.4 L496.7,122.2 L487.2,114.8 L495.5,114.9 L494.6,111.7 L497.3,112.9 L507.0,107.9 Z M524.4,134.5 L526.1,130.5 L525.6,135.1 L524.4,134.5 Z M290.6,250.4 L290.2,254.3 L281.6,262.6 L276.5,262.3 L278.4,257.4 L275.1,256.2 L275.2,252.9 L277.5,247.9 L281.0,246.2 L290.6,250.4 Z M313.6,198.6 L317.8,199.4 L313.4,200.1 L313.6,198.6 Z M282.4,199.4 L286.4,198.9 L288.3,200.3 L282.4,199.4 Z M271.5,185.6 L282.4,187.5 L293.9,193.7 L284.0,194.8 L285.9,193.3 L281.3,190.0 L272.8,187.1 L264.0,189.2 L271.5,185.6 Z M586.6,311.8 L577.8,309.7 L570.2,299.3 L575.1,299.8 L584.1,293.1 L591.2,296.4 L590.7,306.4 L586.6,311.8 Z M581.8,311.4 L571.3,320.8 L564.8,320.2 L560.0,324.2 L558.0,324.5 L555.3,318.8 L558.1,300.7 L570.2,299.3 L577.8,309.7 L581.8,311.4 Z M558.1,300.7 L555.3,329.1 L545.4,329.4 L532.6,298.1 L569.7,298.8 L558.1,300.7 Z M453.6,212.2 L451.0,209.1 L455.2,204.3 L459.5,203.9 L466.2,209.4 L468.0,215.4 L453.7,215.6 L453.2,213.5 L461.5,212.5 L453.6,212.2 Z M468.0,215.4 L467.6,207.3 L484.6,206.9 L482.1,180.7 L486.3,180.6 L508.8,197.1 L511.9,196.8 L510.1,206.8 L497.0,208.4 L488.9,212.6 L485.0,221.2 L477.7,221.6 L474.6,215.8 L468.0,215.4 Z M452.6,191.7 L464.1,190.8 L466.8,178.0 L475.9,178.1 L475.9,173.9 L486.3,180.6 L482.1,180.7 L484.6,206.9 L467.6,207.3 L466.2,209.4 L459.5,203.9 L454.3,205.2 L454.8,194.2 L452.6,191.7 Z M507.5,232.6 L505.2,232.9 L502.1,220.9 L507.9,216.0 L510.5,220.2 L507.5,232.6 Z M541.3,186.5 L544.2,193.4 L542.4,203.8 L537.6,210.1 L540.5,213.0 L539.4,215.3 L536.3,212.2 L525.0,214.4 L515.1,211.5 L511.4,212.4 L510.0,217.6 L502.8,214.3 L501.0,208.5 L510.1,206.8 L511.9,196.8 L533.3,184.8 L541.3,186.5 Z M507.5,232.6 L512.1,211.8 L525.0,214.4 L536.3,212.2 L540.5,216.4 L532.6,230.6 L525.6,232.1 L523.6,236.7 L516.4,238.2 L512.0,232.6 L507.5,232.6 Z M540.3,214.3 L543.0,222.3 L538.8,223.5 L542.9,228.6 L540.2,236.9 L544.3,245.2 L526.8,243.7 L524.3,234.8 L528.1,230.4 L532.6,230.6 L540.3,214.3 Z M502.5,219.5 L505.2,232.9 L502.9,233.5 L499.9,220.3 L502.5,219.5 Z M500.1,219.4 L502.9,233.5 L492.1,236.1 L491.8,219.5 L500.1,219.4 Z M477.7,221.6 L492.1,223.2 L492.1,236.1 L478.6,237.9 L479.0,234.1 L476.1,232.0 L477.7,221.6 Z M461.9,215.0 L474.6,215.8 L477.7,221.6 L477.0,228.6 L474.4,229.7 L472.9,226.3 L470.8,226.8 L469.1,222.1 L463.2,225.3 L458.0,219.3 L461.9,215.0 Z M453.7,215.6 L461.9,215.0 L461.8,217.2 L458.0,219.3 L453.7,215.6 Z M476.6,228.6 L476.1,232.0 L479.0,234.1 L478.6,237.9 L468.2,231.2 L471.6,226.6 L474.4,229.7 L476.6,228.6 Z M463.2,225.3 L469.1,222.1 L471.6,226.6 L468.2,231.2 L463.2,225.3 Z M485.0,221.2 L488.1,213.3 L497.0,208.4 L501.0,208.5 L502.8,214.3 L506.0,214.9 L502.5,219.5 L491.8,219.5 L492.1,223.2 L485.0,221.2 Z M576.0,235.5 L562.2,238.8 L554.1,236.0 L544.5,243.7 L540.2,234.9 L542.4,229.4 L549.9,228.1 L563.5,219.0 L565.2,225.1 L576.0,235.5 Z M551.3,240.3 L544.5,259.8 L540.5,263.8 L533.1,264.0 L530.8,261.1 L531.9,257.7 L534.9,255.4 L538.9,256.9 L540.1,253.7 L539.7,246.7 L536.3,243.7 L544.3,245.2 L547.6,239.6 L551.3,240.3 Z M531.3,243.7 L536.0,243.6 L539.7,246.7 L540.1,253.7 L538.9,256.9 L534.9,255.4 L531.9,257.7 L530.8,261.1 L524.4,253.1 L526.4,247.2 L531.3,247.1 L531.3,243.7 Z M526.8,243.7 L531.3,243.7 L531.3,247.1 L526.4,247.2 L526.8,243.7 Z M585.4,273.2 L592.3,276.9 L592.3,288.8 L583.8,291.1 L575.1,299.8 L564.5,298.7 L560.8,294.7 L560.9,285.8 L566.7,285.9 L566.4,280.4 L582.5,286.8 L582.3,283.8 L578.8,282.8 L579.0,275.5 L585.4,273.2 Z M591.0,275.6 L595.2,278.2 L596.0,287.7 L599.1,290.6 L597.3,296.7 L595.7,290.6 L590.8,288.1 L593.0,279.2 L591.0,275.6 Z M596.0,282.0 L604.1,282.1 L612.0,278.7 L613.3,290.8 L609.6,296.4 L596.6,305.0 L598.5,317.0 L589.1,324.3 L586.6,311.8 L590.7,306.4 L591.2,296.4 L584.3,294.1 L583.8,291.1 L592.3,288.8 L595.7,290.6 L597.3,296.7 L599.1,290.6 L596.0,287.7 L596.0,282.0 Z M589.1,324.3 L585.2,324.3 L586.2,321.5 L588.4,321.8 L589.1,324.3 Z M533.1,264.0 L535.1,263.9 L533.8,266.1 L533.1,264.0 Z M534.2,266.9 L545.4,266.3 L548.5,272.4 L555.8,269.3 L560.4,270.3 L561.5,280.8 L566.7,281.2 L566.7,285.9 L560.9,285.8 L560.8,294.7 L564.5,298.7 L532.6,298.1 L538.2,281.4 L534.2,266.9 Z M584.6,256.7 L585.4,259.3 L581.5,262.5 L580.6,257.9 L584.6,256.7 Z M599.2,159.1 L597.2,161.5 L597.0,168.1 L595.2,163.3 L597.5,158.1 L599.2,159.1 Z M601.7,155.0 L597.6,158.1 L601.2,153.9 L601.7,155.0 Z M637.6,284.6 L639.9,293.6 L638.0,293.6 L630.8,319.3 L626.1,321.1 L622.3,319.4 L620.4,313.3 L623.5,304.0 L622.1,298.4 L637.6,284.6 Z M598.7,160.0 L597.0,162.9 L597.7,159.6 L598.7,160.0 Z M453.2,213.5 L458.1,211.5 L461.5,212.5 L453.2,213.5 Z M526.3,165.8 L520.9,155.3 L523.4,147.4 L526.4,146.3 L530.6,147.0 L528.2,154.6 L531.9,158.0 L526.3,165.8 Z M475.9,173.9 L475.9,169.9 L496.4,160.4 L494.0,152.3 L496.6,150.8 L523.4,147.4 L520.9,155.3 L527.2,168.3 L525.9,177.5 L533.3,184.8 L515.8,195.6 L508.8,197.1 L475.9,173.9 Z M598.7,160.0 L607.8,157.3 L608.9,160.7 L602.8,162.5 L605.6,165.3 L600.2,168.9 L597.0,168.1 L598.7,160.0 Z M643.3,182.7 L650.0,183.0 L656.3,178.6 L652.8,187.5 L644.4,186.1 L643.3,182.7 Z M641.1,181.2 L641.0,179.2 L642.5,177.5 L643.4,180.0 L641.1,181.2 Z M631.4,166.5 L634.5,170.7 L629.4,169.2 L631.4,166.5 Z M608.9,160.7 L607.8,157.3 L613.9,154.4 L614.7,149.0 L618.8,146.2 L624.4,146.7 L628.0,150.9 L626.2,155.6 L634.9,166.9 L624.2,168.9 L608.9,160.7 Z M652.8,194.4 L656.7,180.8 L666.1,188.0 L660.3,197.4 L647.5,203.7 L644.4,197.2 L652.8,194.4 Z M964.5,294.1 L966.2,295.7 L965.3,296.1 L964.5,294.1 Z M964.6,293.7 L962.9,292.8 L962.9,290.6 L964.6,293.7 Z M785.0,216.1 L786.1,210.5 L794.6,211.4 L795.8,209.5 L798.9,212.4 L798.6,215.7 L793.9,217.9 L795.1,219.6 L787.5,220.5 L785.0,216.1 Z M792.3,210.4 L786.1,210.5 L785.0,216.1 L778.0,212.8 L775.6,224.3 L783.7,232.7 L781.0,234.2 L772.6,226.8 L776.6,217.0 L772.8,208.0 L774.7,205.1 L770.5,198.8 L778.1,193.3 L781.3,195.9 L780.7,201.4 L786.7,199.1 L790.9,201.6 L792.3,210.4 Z M798.3,210.5 L792.3,210.4 L793.3,206.7 L788.8,199.3 L780.7,201.4 L781.3,195.9 L778.1,193.3 L782.8,191.2 L782.4,188.0 L790.1,192.3 L791.2,194.8 L788.6,196.5 L798.1,205.8 L798.3,210.5 Z M781.0,189.3 L770.5,198.8 L774.7,205.1 L772.8,208.0 L776.6,217.0 L773.8,222.4 L769.9,203.0 L764.9,206.3 L761.6,205.5 L762.0,199.4 L756.4,190.3 L764.2,176.2 L769.8,174.8 L770.4,171.5 L774.1,173.6 L771.1,183.6 L774.1,183.2 L775.7,188.6 L781.0,189.3 Z M789.8,220.9 L798.6,215.7 L798.8,207.8 L788.6,196.5 L791.2,194.8 L790.1,192.3 L786.7,192.3 L783.8,187.6 L792.6,185.1 L800.1,190.1 L793.5,197.1 L802.4,207.6 L803.3,217.6 L792.1,226.1 L789.8,220.9 Z M862.9,132.2 L854.3,139.6 L856.1,143.4 L846.4,144.1 L848.3,140.6 L845.2,139.1 L847.4,137.3 L861.1,130.6 L862.9,132.2 Z M850.5,145.1 L856.5,142.7 L859.6,147.8 L858.6,152.5 L851.3,154.5 L850.3,148.0 L852.4,147.5 L850.5,145.1 Z M743.8,113.1 L756.2,108.9 L770.2,111.9 L774.6,105.4 L801.3,113.1 L824.1,111.4 L821.5,117.4 L828.0,116.5 L832.7,119.3 L815.2,125.5 L810.8,124.7 L810.6,128.5 L806.7,130.9 L791.6,134.5 L767.6,131.3 L764.7,127.1 L752.6,124.2 L752.7,119.8 L743.8,113.1 Z M770.4,171.5 L769.8,174.8 L764.2,176.2 L757.4,188.8 L756.0,184.4 L753.2,184.7 L756.6,180.6 L749.8,179.8 L746.0,176.5 L747.0,179.9 L744.7,181.9 L746.9,189.7 L741.6,190.3 L740.3,194.0 L723.1,205.8 L721.8,221.2 L715.4,227.9 L704.3,205.6 L701.8,190.7 L695.8,192.0 L689.4,184.2 L697.3,182.3 L693.1,175.2 L699.4,172.5 L709.1,160.4 L704.9,154.7 L716.2,151.4 L719.2,154.7 L718.7,162.5 L725.3,166.2 L722.5,170.0 L731.4,174.0 L744.6,176.6 L746.5,172.0 L749.3,175.8 L755.6,175.4 L754.7,172.9 L767.0,168.2 L767.4,171.1 L770.4,171.5 Z M756.0,184.4 L756.6,192.6 L753.9,186.8 L747.3,188.7 L744.7,181.9 L747.0,179.9 L746.0,176.5 L749.8,179.8 L756.6,180.6 L753.2,184.7 L756.0,184.4 Z M750.0,171.4 L755.6,175.4 L746.8,174.7 L750.0,171.4 Z M744.8,172.6 L744.6,176.6 L742.3,176.7 L722.5,170.0 L726.5,165.5 L744.8,172.6 Z M716.2,151.4 L704.9,154.7 L709.1,160.4 L699.4,172.5 L693.1,175.2 L697.3,182.3 L689.4,184.2 L684.4,179.4 L670.8,180.3 L675.9,175.7 L669.1,167.1 L684.3,167.0 L685.9,163.0 L692.5,161.4 L699.6,148.6 L708.8,146.9 L716.2,151.4 Z M679.9,146.9 L692.2,146.8 L696.7,143.1 L699.6,147.9 L708.8,146.9 L698.0,149.8 L698.9,152.4 L694.3,155.5 L692.5,161.4 L685.9,163.0 L684.3,167.0 L669.1,167.1 L671.6,164.6 L668.2,158.4 L670.0,151.0 L675.0,151.7 L679.9,146.9 Z M688.4,146.8 L690.0,144.0 L688.1,140.1 L696.3,136.2 L697.3,138.2 L693.0,140.2 L704.7,140.5 L708.3,146.1 L699.6,147.9 L696.7,143.1 L688.4,146.8 Z M695.6,134.7 L706.1,129.7 L722.9,132.4 L704.7,140.5 L693.0,140.2 L702.9,136.5 L695.6,134.7 Z M645.8,133.9 L650.2,132.4 L658.6,135.2 L662.9,131.2 L684.8,146.2 L682.6,145.4 L672.9,152.0 L659.3,144.4 L649.8,146.7 L649.7,141.8 L646.4,138.8 L647.0,136.5 L652.0,136.2 L649.2,133.0 L646.7,135.7 L645.8,133.9 Z M634.9,166.9 L626.2,155.6 L628.0,150.9 L622.5,140.5 L628.2,142.4 L633.5,140.0 L636.7,145.6 L641.2,147.6 L657.3,144.1 L669.8,148.6 L668.2,158.4 L671.6,164.6 L669.1,167.1 L675.9,175.7 L670.8,180.3 L659.4,178.5 L658.3,175.1 L648.6,175.5 L643.1,172.6 L639.2,166.3 L634.9,166.9 Z M599.2,159.1 L602.1,147.7 L617.6,146.6 L613.9,154.4 L602.3,160.2 L599.2,159.1 Z M629.2,142.3 L621.3,138.2 L621.1,135.9 L626.6,136.6 L629.2,142.3 Z M530.6,86.5 L535.1,79.7 L533.1,74.6 L546.6,61.1 L557.3,58.0 L565.4,61.3 L566.4,66.6 L549.6,75.7 L547.6,79.6 L552.2,83.1 L546.7,86.9 L544.1,94.2 L536.0,96.2 L530.6,86.5 Z M578.3,94.0 L585.8,95.7 L590.8,101.8 L587.0,102.6 L588.3,105.3 L584.9,107.4 L565.4,106.7 L565.2,100.2 L578.3,94.0 Z M584.9,107.4 L593.8,104.6 L598.2,109.5 L611.3,112.2 L610.4,116.9 L597.3,123.0 L588.0,120.3 L579.7,124.2 L580.2,121.0 L583.4,121.0 L579.6,116.3 L561.3,115.5 L566.5,109.9 L565.4,106.7 L584.9,107.4 Z M565.2,100.2 L566.7,109.2 L563.3,113.8 L544.9,109.9 L539.1,102.8 L539.2,100.7 L549.0,97.6 L565.2,100.2 Z M547.2,116.3 L544.5,120.3 L540.6,121.0 L526.3,119.2 L535.9,118.1 L537.8,114.2 L547.2,116.3 Z M547.2,116.3 L563.1,117.0 L558.4,121.3 L551.3,122.9 L545.0,119.9 L547.2,116.3 Z M573.9,116.1 L579.6,116.3 L583.4,121.0 L578.4,123.6 L573.9,116.1 Z M578.4,123.6 L582.2,124.2 L579.3,128.6 L563.7,128.3 L556.2,121.9 L564.3,116.4 L573.9,116.1 L578.4,123.6 Z M573.6,95.5 L570.9,99.2 L565.2,100.2 L558.5,94.4 L569.1,93.4 L573.6,95.5 Z M575.8,90.3 L578.3,94.0 L573.6,95.5 L569.1,93.4 L558.5,94.4 L562.6,89.6 L564.8,91.6 L569.9,89.0 L575.8,90.3 Z M577.7,84.8 L575.8,90.3 L567.5,89.5 L564.8,85.6 L577.7,84.8 Z M539.2,100.7 L541.7,108.0 L534.0,110.4 L537.8,114.2 L535.9,118.1 L520.7,117.7 L522.5,113.8 L516.8,110.8 L519.7,100.9 L527.6,97.3 L530.4,100.0 L539.2,100.7 Z M563.8,135.2 L563.7,128.3 L579.3,128.6 L577.8,133.3 L563.8,135.2 Z M573.0,151.9 L568.7,153.0 L565.3,152.0 L565.8,150.8 L573.0,151.9 Z M563.8,135.2 L573.9,134.5 L565.9,137.0 L567.8,138.5 L562.9,138.2 L566.8,145.4 L564.2,144.7 L564.3,148.8 L562.5,148.9 L556.0,139.9 L563.8,135.2 Z M624.4,146.7 L602.1,147.7 L600.4,150.5 L600.4,148.2 L596.4,147.8 L582.5,149.6 L576.8,148.2 L572.7,140.4 L581.2,135.5 L593.1,133.3 L606.5,136.3 L618.4,134.5 L624.4,139.7 L622.5,140.5 L624.4,146.7 Z M572.5,133.8 L577.8,133.3 L580.5,135.3 L573.2,138.5 L572.5,133.8 Z M558.4,136.5 L556.0,139.9 L553.9,138.2 L554.8,131.4 L558.4,136.5 Z M546.0,120.8 L553.9,124.3 L543.8,125.5 L551.3,132.0 L537.9,124.6 L546.0,120.8 Z M526.7,118.0 L528.8,120.9 L516.7,121.5 L518.7,117.9 L526.7,118.0 Z M516.1,110.9 L517.2,112.6 L515.8,112.4 L516.1,110.9 Z M517.1,108.9 L515.8,112.4 L507.0,107.9 L513.8,107.0 L517.1,108.9 Z M519.2,101.4 L517.1,108.9 L509.2,107.4 L513.1,102.5 L519.2,101.4 Z M474.9,133.7 L482.3,135.1 L478.2,147.7 L475.3,147.6 L473.5,142.4 L474.9,133.7 Z M479.3,147.0 L479.2,139.9 L482.3,135.1 L474.9,133.7 L473.9,130.5 L477.8,128.5 L508.3,132.0 L502.3,136.1 L500.3,142.4 L494.0,148.1 L485.1,150.1 L479.3,147.0 Z M482.8,100.4 L481.1,104.8 L472.3,106.1 L474.5,103.2 L473.1,100.3 L479.0,96.9 L479.0,99.8 L482.8,100.4 Z M956.8,305.9 L964.2,311.6 L955.6,305.8 L956.8,305.9 Z M949.8,279.0 L949.2,280.1 L948.1,278.3 L949.8,279.0 Z M947.0,273.1 L948.7,277.2 L946.1,273.1 L947.0,273.1 Z M946.8,277.4 L944.0,277.2 L943.6,275.7 L945.5,276.1 L946.8,277.4 Z M939.9,270.3 L944.2,273.7 L939.5,270.6 L939.9,270.3 Z M995.9,354.7 L988.9,364.7 L985.1,364.7 L986.7,362.4 L982.8,359.7 L985.3,353.8 L979.5,345.9 L988.8,354.3 L995.9,354.7 Z M963.0,378.4 L980.0,362.5 L984.0,364.9 L980.8,371.8 L976.3,372.9 L973.9,377.5 L970.4,379.6 L963.0,378.4 Z M910.2,363.4 L910.9,370.0 L905.7,371.0 L902.1,363.1 L910.2,363.4 Z M850.4,339.5 L843.5,344.1 L833.0,344.4 L827.8,347.4 L819.5,345.0 L821.7,339.5 L814.8,322.5 L817.3,323.1 L815.9,312.4 L835.7,304.7 L849.1,289.5 L853.0,288.4 L860.1,291.6 L862.8,284.8 L868.3,283.7 L867.7,280.9 L879.1,282.9 L876.4,291.7 L889.5,299.2 L895.9,279.6 L899.8,290.4 L903.8,291.6 L906.6,302.7 L913.5,306.6 L915.8,312.1 L918.7,312.2 L924.6,320.2 L926.6,328.1 L924.7,337.9 L916.7,354.0 L906.4,358.4 L902.9,355.3 L898.9,357.8 L890.7,355.6 L887.7,350.4 L883.7,348.9 L883.9,345.5 L880.1,347.9 L882.8,341.4 L877.7,346.9 L873.0,340.6 L864.8,337.5 L850.4,339.5 Z M727.2,229.1 L723.2,233.4 L722.6,222.7 L724.6,224.3 L727.2,229.1 Z M804.1,199.5 L801.7,196.2 L807.7,194.2 L806.5,198.1 L804.1,199.5 Z M704.7,140.5 L724.6,130.1 L722.1,125.2 L729.1,123.5 L731.1,118.5 L736.6,119.4 L738.2,115.4 L743.8,113.1 L752.7,119.8 L752.6,124.2 L764.7,127.1 L767.6,131.3 L791.6,134.5 L803.5,131.9 L810.6,128.5 L810.8,124.7 L815.2,125.5 L826.2,120.4 L832.4,120.3 L828.0,116.5 L820.8,116.3 L824.1,111.4 L831.4,110.7 L835.4,105.7 L833.8,103.5 L839.6,101.6 L849.9,103.4 L854.6,111.8 L859.4,112.7 L863.9,117.2 L875.1,115.3 L869.7,124.6 L864.0,125.1 L862.9,132.2 L861.1,130.6 L856.1,134.8 L852.4,133.8 L836.3,142.0 L839.4,137.7 L837.9,136.3 L826.5,142.4 L832.5,146.8 L839.9,146.0 L831.0,153.0 L838.6,162.0 L838.0,171.6 L829.6,181.8 L821.9,186.7 L807.7,190.6 L806.8,193.5 L805.2,190.6 L797.3,189.4 L792.6,185.1 L782.4,188.0 L782.8,191.2 L775.7,188.6 L774.1,183.2 L771.1,183.6 L774.1,173.6 L767.4,171.1 L767.0,168.2 L757.0,172.5 L750.0,171.4 L746.7,174.2 L746.5,172.0 L738.4,171.7 L718.7,162.5 L719.2,154.7 L711.6,150.3 L704.7,140.5 Z M837.5,179.7 L836.6,186.7 L835.4,189.0 L833.6,184.6 L837.5,179.7 Z M529.0,119.7 L538.4,120.8 L538.7,123.4 L534.2,123.9 L535.0,127.5 L551.0,137.9 L550.8,139.4 L546.9,137.7 L547.4,141.9 L543.6,144.7 L542.8,138.8 L531.1,132.3 L528.3,128.0 L520.7,128.6 L519.0,122.2 L529.0,119.7 Z M534.5,145.5 L543.1,143.8 L541.9,148.3 L534.5,145.5 Z M522.7,136.2 L527.2,137.5 L524.5,141.9 L522.7,136.2 Z M527.6,97.3 L523.7,97.3 L522.5,92.9 L529.4,89.6 L530.3,93.2 L527.6,97.3 Z M534.4,94.1 L533.6,97.8 L530.7,96.2 L530.3,95.1 L534.4,94.1 Z M484.3,98.5 L479.0,99.8 L479.0,96.9 L484.3,98.5 Z M491.4,101.7 L482.9,92.3 L486.1,87.1 L491.7,87.1 L488.7,90.1 L494.6,89.8 L491.3,94.5 L504.7,103.5 L504.0,107.5 L484.0,110.7 L490.5,107.1 L485.4,105.6 L488.3,104.7 L487.3,101.4 L491.4,101.7 Z M459.7,65.4 L462.2,69.1 L448.2,73.6 L436.8,72.3 L439.5,71.1 L433.5,69.7 L438.3,68.4 L432.4,67.7 L438.5,65.5 L442.8,67.4 L459.7,65.4 Z M628.9,133.7 L632.8,135.7 L635.0,133.9 L640.0,138.2 L637.7,138.4 L635.8,143.6 L633.5,140.0 L629.2,142.3 L626.7,139.2 L624.9,135.4 L629.2,135.9 L628.9,133.7 Z M628.2,142.4 L626.3,142.0 L624.4,139.7 L627.1,140.4 L628.2,142.4 Z M611.0,129.3 L626.3,131.9 L629.5,135.6 L615.4,134.6 L615.1,131.5 L611.0,129.3 Z M836.8,216.1 L834.2,212.6 L837.6,213.7 L836.8,216.1 Z M841.7,224.9 L841.5,219.8 L842.6,221.5 L844.7,218.8 L841.7,224.9 Z M851.0,226.6 L848.3,234.5 L843.4,228.2 L838.7,230.0 L843.0,225.9 L848.5,225.0 L848.4,222.9 L851.0,226.6 Z M832.5,220.7 L825.5,226.8 L832.0,218.4 L832.5,220.7 Z M839.8,199.4 L838.1,210.2 L844.3,211.7 L844.7,215.2 L835.1,211.5 L836.1,209.7 L833.1,207.2 L835.3,198.6 L839.8,199.4 Z M838.9,221.0 L838.6,217.0 L842.0,217.8 L838.9,221.0 Z M845.2,215.1 L849.4,219.3 L847.3,218.6 L846.7,221.8 L845.2,215.1 Z M778.0,232.0 L786.0,234.7 L789.5,246.4 L781.6,242.3 L778.0,232.0 Z M827.5,238.5 L821.8,238.0 L818.4,246.0 L805.1,246.3 L804.6,244.4 L808.8,244.9 L817.2,237.4 L820.4,238.0 L824.2,230.8 L831.1,235.0 L827.5,238.5 Z M820.7,234.9 L820.4,238.0 L818.5,238.9 L817.2,237.4 L820.7,234.9 Z M538.4,120.8 L545.0,119.9 L546.0,120.8 L542.6,123.7 L538.1,123.6 L538.4,120.8 Z M580.6,56.2 L579.0,60.1 L583.3,61.9 L580.7,64.0 L586.5,76.8 L578.0,81.9 L563.5,83.8 L559.2,81.3 L559.8,74.5 L570.6,69.1 L565.5,65.6 L565.4,61.3 L557.3,58.0 L568.7,59.3 L577.0,55.1 L580.6,56.2 Z M562.7,113.7 L549.6,117.3 L546.9,115.4 L551.5,112.5 L562.7,113.7 Z M541.7,108.0 L548.8,110.1 L552.4,112.5 L539.8,115.1 L534.8,112.4 L534.0,110.4 L541.7,108.0 Z M601.2,209.9 L602.4,202.9 L606.7,200.0 L609.1,205.8 L619.7,214.7 L611.2,209.7 L601.2,209.9 Z M894.1,141.2 L889.6,152.4 L877.2,157.0 L875.2,153.9 L863.9,155.9 L866.7,157.9 L864.8,162.6 L861.7,162.7 L859.5,157.5 L868.4,151.6 L876.9,151.3 L879.8,146.4 L881.6,147.7 L887.3,143.8 L889.7,135.6 L892.7,135.1 L894.1,141.2 Z M901.7,127.9 L903.7,126.7 L904.3,129.8 L888.8,134.5 L894.4,123.5 L901.7,127.9 Z M867.7,157.0 L872.0,154.5 L874.4,156.1 L869.5,159.2 L867.7,157.0 Z M335.8,303.8 L339.1,311.4 L345.0,312.1 L346.1,316.5 L349.2,316.7 L345.3,326.1 L337.2,325.3 L339.5,319.9 L325.9,311.8 L328.4,304.5 L335.8,303.8 Z M644.4,197.2 L647.5,203.7 L644.9,206.7 L620.8,214.9 L618.3,207.7 L620.5,201.2 L630.6,202.9 L636.4,198.3 L644.4,197.2 Z M597.1,168.5 L604.2,166.7 L605.6,165.3 L602.8,162.5 L608.9,160.7 L624.2,168.9 L631.8,169.4 L639.3,175.9 L644.4,186.1 L653.4,186.9 L652.8,194.4 L636.4,198.3 L630.6,202.9 L620.5,201.2 L618.8,204.6 L608.7,190.9 L606.9,184.2 L596.2,172.1 L597.1,168.5 Z M594.4,152.6 L591.5,151.7 L596.0,150.9 L594.4,152.6 Z M591.6,154.0 L592.7,152.3 L594.5,152.8 L591.6,154.0 Z M494.0,152.3 L496.4,160.4 L475.9,169.9 L475.6,174.7 L468.4,175.3 L459.0,190.3 L452.7,190.5 L459.9,177.1 L473.4,166.9 L476.0,157.7 L483.5,150.7 L494.0,152.3 Z M602.4,188.9 L569.4,188.9 L569.9,162.3 L595.2,163.3 L597.0,168.1 L594.9,172.7 L589.8,167.3 L602.4,188.9 Z M569.2,161.4 L569.4,194.4 L566.2,195.6 L544.1,185.0 L539.3,187.5 L528.6,182.3 L525.9,177.5 L527.6,162.8 L531.9,158.0 L553.0,165.9 L557.9,159.1 L569.2,161.4 Z M632.7,227.8 L624.9,236.1 L609.9,240.5 L600.4,237.6 L591.5,228.4 L601.2,209.9 L605.3,208.4 L615.6,212.6 L617.6,215.2 L616.0,219.3 L618.8,219.6 L621.3,224.5 L632.7,227.8 Z M617.6,215.2 L620.3,215.6 L618.8,219.6 L616.0,219.3 L617.6,215.2 Z M636.0,218.3 L635.9,223.7 L632.7,227.8 L621.3,224.5 L618.2,220.6 L619.8,218.2 L622.5,221.0 L636.0,218.3 Z M594.2,252.6 L582.2,253.7 L586.8,239.5 L594.5,238.2 L595.8,240.1 L597.3,244.7 L594.2,252.6 Z M584.5,253.2 L585.4,256.4 L580.6,257.9 L581.4,254.5 L584.5,253.2 Z M551.6,131.5 L545.7,127.7 L544.3,124.4 L553.8,125.4 L551.6,131.5 Z M562.2,132.4 L563.8,135.2 L557.2,135.9 L557.7,133.2 L562.2,132.4 Z M552.3,122.5 L556.2,121.9 L563.1,126.2 L562.6,132.1 L553.4,129.1 L552.3,122.5 Z M555.8,131.7 L553.8,133.7 L551.3,132.0 L553.4,129.1 L555.8,131.7 Z M557.2,133.7 L557.3,130.0 L560.5,131.4 L559.9,132.7 L557.2,133.7 Z M327.9,222.0 L330.8,219.8 L330.7,221.9 L327.9,222.0 Z M585.6,240.3 L582.5,237.2 L577.7,237.8 L566.4,226.1 L571.6,221.1 L574.3,223.7 L587.1,222.7 L589.1,216.7 L592.2,216.2 L594.4,225.9 L591.5,228.4 L598.1,234.7 L592.8,239.5 L585.6,240.3 Z"></path></svg>`;
 const ACQ_BUDGETS_KEY = 'mineralCatalogAcquisitionBudgetsV1';
-const TASK_LABELS = {clean:'待清洗',photo:'待拍照',locality:'想补更详细产地',label:'待补标签',repair:'待修复',sell:'准备出售'};
+const LAST_BACKUP_KEY = 'mineralCatalogLastFullBackupAtV1';
+const BACKUP_REMINDER_KEY = 'mineralCatalogBackupReminderShownAtV1';
+const TASK_LABELS = {clean:'待清洗',photo:'待拍照',locality:'想补更详细产地',label:'待补原矿标 / 证书',repair:'待修复',sell:'准备出售'};
 const CONFIDENCE_LABELS = {confirmed:'确定',dealer:'商家 / 原标签标注',self:'自己判断',unknown:'待确认'};
 const TIMELINE_LABELS = {note:'备注',acquired:'入手',cleaned:'清洗 / 养护',moved:'换柜位',damaged:'损坏',repaired:'修复',provenance:'来源 / 转手',loaned:'借出',returned:'归还',sold:'售出',gifted:'赠送'};
 const WISHLIST_KEY = 'mineralCatalogWishlistV1';
@@ -1711,8 +1809,6 @@ const FRAGILE_MINERALS = new Set(['萤石','方解石','文石','重晶石','天
 const LIGHT_SENSITIVE_MINERALS = new Set(['雄黄','雌黄','辰砂','锂辉石','氯银矿','淡红银矿','浓红银矿','砷华']);
 const LOW_HUMIDITY_MINERALS = new Set(['黄铁矿','白铁矿','磁黄铁矿']);
 const WATER_CAUTION_MINERALS = new Set(['鱼眼石','辉沸石','片沸石','孔雀石','蓝铜矿','绿松石','蛋白石','硅孔雀石','浊沸石','菱沸石','钠沸石','钙十字沸石','丝光沸石','沸石类（未细分）']);
-EXTRA_WATER_CAUTION_2026_09.forEach(n=>WATER_CAUTION_MINERALS.add(n));
-EXTRA_FRAGILE_2026_09.forEach(n=>FRAGILE_MINERALS.add(n));
 
 function splitAssociatedNames(text=''){
   return String(text||'').split(/[,，、;+＋/]+/).map(x=>x.trim()).filter(Boolean);
@@ -1729,7 +1825,7 @@ function hazardHintsFromText(name='', info=null){
   if(f.includes('Tl') || /铊/.test(t)) add('thallium',3,'含铊：属于高毒性元素风险。不要制造粉尘、研磨或自行化学清洗；建议密闭、明确标识并减少直接接触。');
   if(/PbCrO|铬铅矿/.test(f+t)) add('chromate',3,'铬酸盐/含铅组合：按高风险粉尘处理，不自行化学清洗或研磨。');
   if(/(^|[^A-Za-z])U(?![a-z])|Th/.test(f) || /铀|钍/.test(t)) add('radioactive',3,'可能具有放射性：不要放在卧室、床头或长期近身位置；与常用生活区保持距离，单独标识保存。较大或数量多的标本建议用辐射仪实测并咨询专业人员。');
-  if(info?.name==='温石棉' || info?.name==='毛沸石' || /^Erionite-/i.test(info?.name||'') || info?.scienceGroup==='毛沸石族' || /青石棉|crocidolite|chrysotile|erionite/i.test(t)) add('fibrous-high',3,'高风险纤维矿物：不要刷、吹、磨、切或用压缩空气清理；尽量保持封闭、少搬动，并明确标识。若已有松散纤维/粉尘，不建议自行清理。');
+  if(info?.name==='温石棉' || info?.name==='毛沸石' || /青石棉|crocidolite|chrysotile|erionite/i.test(t)) add('fibrous-high',3,'高风险纤维矿物：不要刷、吹、磨、切或用压缩空气清理；尽量保持封闭、少搬动，并明确标识。若已有松散纤维/粉尘，不建议自行清理。');
   else if(['透闪石','阳起石','直闪石','钠铁闪石'].includes(info?.name) || /石棉/.test(t)) add('fibrous',2,'若标本呈纤维状、棉絮状或易掉纤维，按潜在有害矿物纤维对待：不要刷、吹、磨或切，建议密闭展示。');
   if(info?.name==='毒重石') add('barium',2,'碳酸钡矿物：避免入口和粉尘，也不要用酸处理（酸会生成更易溶的钡盐）；处理后洗手。');
   if(['胆矾','芒硝','泻利盐','光卤石','硼砂'].includes(info?.name)) add('soluble-salt',1,'水溶/易失水盐类：避免水洗和高湿，最好密闭、干燥、温湿度稳定保存。');
@@ -2178,6 +2274,8 @@ let pendingTimelinePhotos = [];
 let detailId = null;
 let toastTimer;
 let batchRows = [];
+let bulkMode = false;
+const selectedBulkIds = new Set();
 let wishlist = loadWishlist();
 let acquisitionBudgets = loadAcquisitionBudgets();
 let selectedAcquisitionDate = '';
@@ -2305,7 +2403,32 @@ function placeOf(i) { return [i.country,i.province,i.city,i.mine].filter(Boolean
 function localityPrecisionLabel(i){ if(i?.mine) return '矿区级'; if(i?.city) return '城市 / 县级'; if(i?.province) return '省 / 州级'; if(i?.country) return '国家级'; return '未填写'; }
 function collectionPath(i){ return [i.collectionGroup,i.collectionType].filter(Boolean).join(' › '); }
 function sciencePathOf(i){ return [i.scienceClass,i.scienceSubclass,i.scienceGroup].filter(Boolean).join(' › '); }
-function isIncomplete(i) { return !i.mineralName || !placeOf(i) || !(i.photos && i.photos.length); }
+function coreMissingLabels(i){
+  const out=[];
+  if(!String(i?.mineralName||'').trim()) out.push('主矿物');
+  if(!(Array.isArray(i?.photos)&&i.photos.length)) out.push('主图');
+  if(!placeOf(i||{})) out.push('产地');
+  return out;
+}
+function isIncomplete(i) { return coreMissingLabels(i).length>0; }
+function specimenCompleteness(i){
+  const checks=[
+    ['主矿物',!!String(i?.mineralName||'').trim(),true],
+    ['主图',!!(Array.isArray(i?.photos)&&i.photos.length),true],
+    ['产地',!!placeOf(i||{}),true],
+    ['收藏日期',!!i?.acquiredDate,false],
+    ['来源',!!String(i?.source||'').trim(),false],
+    ['尺寸',!!String(i?.size||'').trim(),false],
+    ['收藏分类',!!String(i?.collectionGroup||i?.collectionType||'').trim(),false]
+  ];
+  const done=checks.filter(x=>x[1]).length;
+  const score=Math.round(done/checks.length*100);
+  return {score,coreMissing:checks.filter(x=>x[2]&&!x[1]).map(x=>x[0]),optionalMissing:checks.filter(x=>!x[2]&&!x[1]).map(x=>x[0])};
+}
+function attentionLabels(i){
+  const auto=coreMissingLabels(i).map(x=>'缺'+x);
+  return [...auto,...taskLabels(i)];
+}
 function moneyNumber(v){
   if(v===null||v===undefined||v==='') return 0;
   const n=Number(String(v).replace(/[,，￥¥元\s]/g,''));
@@ -2342,8 +2465,6 @@ function reconcileTaskCheckboxesFromEditor(){
   if(photoCb && editingPhotos.length>0) photoCb.checked=false;
   const labelCb=document.querySelector('[data-task="label"]');
   if(labelCb && editingLabelPhotos.length>0) labelCb.checked=false;
-  const sellCb=document.querySelector('[data-task="sell"]');
-  if(sellCb && (($('disposition')?.value||'held')!=='held')) sellCb.checked=false;
   const repairCb=document.querySelector('[data-task="repair"]');
   if(repairCb && (($('conditionStatus')?.value||'normal')==='repaired')) repairCb.checked=false;
   const localityCb=document.querySelector('[data-task="locality"]');
@@ -2354,7 +2475,7 @@ function reconcileTaskCheckboxesFromEditor(){
 }
 function nextSpecimenCode(excludeId=''){
   let max=0;
-  allItems.forEach(i=>{
+  [...allItems,...trashItems].forEach(i=>{
     if(i.id===excludeId) return;
     const m=String(i.accessionNo||'').match(/M-(\d+)/i);
     if(m) max=Math.max(max,Number(m[1]));
@@ -2408,12 +2529,34 @@ function addMonthsToDate(dateStr,months){
 }
 function sameText(a,b){ return String(a||'').trim()===String(b||'').trim(); }
 function eventEntry(type,note,date='',photos=[]){ return {id:'e_'+uid(),type,date:date||todayStr(),note:String(note||'').trim(),photos:[...(photos||[])],createdAt:new Date().toISOString()}; }
+function automaticAcquiredEvent(note,date=''){
+  return {id:'e_'+uid(),type:'acquired',date:date||'',note:String(note||'').trim(),photos:[],createdAt:new Date().toISOString(),autoGenerated:true};
+}
+function automaticAcquiredNote(item){ return [item?.source,item?.provenanceNote].filter(Boolean).join(' · ')||'建立馆藏记录'; }
+function findAutomaticAcquiredIndex(events,existing){
+  let idx=events.findIndex(e=>e?.type==='acquired'&&e?.autoGenerated);
+  if(idx>=0) return idx;
+  if(!existing) return -1;
+  const oldNote=automaticAcquiredNote(existing);
+  const createdDay=String(existing.createdAt||'').slice(0,10);
+  const legacyNotes=new Set([oldNote,String(existing.source||'').trim(),'建立馆藏记录','批量入藏'].filter(Boolean));
+  idx=events.findIndex(e=>{
+    if(e?.type!=='acquired'||!legacyNotes.has(String(e.note||'').trim())) return false;
+    const d=String(e.date||'').slice(0,10), oldDate=String(existing.acquiredDate||'').slice(0,10);
+    return oldDate ? d===oldDate : (!!createdDay && d===createdDay);
+  });
+  return idx;
+}
 function appendAutomaticEvents(existing,next){
-  const events=[...(next.timeline||[])];
+  const events=[...(next.timeline||[])].map(e=>({...e}));
   const push=(type,note,date)=>events.push(eventEntry(type,note,date));
   if(!existing){
-    push('acquired',[next.source,next.provenanceNote].filter(Boolean).join(' · ')||'建立馆藏记录',next.acquiredDate||todayStr());
+    events.push(automaticAcquiredEvent(automaticAcquiredNote(next),next.acquiredDate||''));
     return events;
+  }
+  const acqIdx=findAutomaticAcquiredIndex(events,existing);
+  if(acqIdx>=0){
+    events[acqIdx]={...events[acqIdx],date:next.acquiredDate||'',note:automaticAcquiredNote(next),autoGenerated:true};
   }
   if(!sameText(existing.storage,next.storage) && next.storage) push('moved',`收藏位置：${existing.storage||'未记录'} → ${next.storage}`);
   if(dispositionOf(existing)!==dispositionOf(next)){
@@ -2461,13 +2604,33 @@ async function filesToImages(fileList) {
   for (const f of files) out.push(await fileToCompressedDataURL(f));
   return out;
 }
-function renderPhotoPreviews(container, photos, onRemove) {
+function moveArrayItem(list,from,to){
+  if(!Array.isArray(list)||from===to||from<0||to<0||from>=list.length||to>=list.length) return;
+  const [v]=list.splice(from,1); list.splice(to,0,v);
+}
+function renderPhotoPreviews(container, photos, onRemove, options={}) {
   container.innerHTML='';
+  const reorder=!!options.reorder;
   photos.forEach((src,idx)=>{
     const wrap=document.createElement('div');
-    wrap.className='photo-thumb';
-    wrap.innerHTML=`<img src="${src}" alt="照片 ${idx+1}"><button type="button" aria-label="移除">×</button>`;
-    wrap.querySelector('button').onclick=()=>onRemove(idx);
+    wrap.className='photo-thumb'+(options.main && idx===0?' is-main':'');
+    const controls=[];
+    if(options.main && idx===0) controls.push('<span class="photo-main-badge">主图</span>');
+    let actionHtml='<div class="photo-actions">';
+    if(options.main && idx>0) actionHtml+=`<button type="button" class="photo-main-btn" data-photo-action="main" aria-label="设为主图">主图</button>`;
+    if(reorder){
+      actionHtml+=`<button type="button" data-photo-action="left" aria-label="左移" ${idx===0?'disabled':''}>←</button>`;
+      actionHtml+=`<button type="button" data-photo-action="right" aria-label="右移" ${idx===photos.length-1?'disabled':''}>→</button>`;
+    }
+    actionHtml+='<button type="button" data-photo-action="remove" aria-label="移除照片">×</button></div>';
+    wrap.innerHTML=`<img src="${src}" alt="照片 ${idx+1}">${controls.join('')}${actionHtml}`;
+    wrap.querySelectorAll('[data-photo-action]').forEach(btn=>btn.onclick=()=>{
+      const action=btn.dataset.photoAction;
+      if(action==='remove') onRemove?.(idx);
+      else if(action==='main') options.onMain?.(idx);
+      else if(action==='left' && idx>0) options.onMove?.(idx,idx-1);
+      else if(action==='right' && idx<photos.length-1) options.onMove?.(idx,idx+1);
+    });
     container.appendChild(wrap);
   });
 }
@@ -2518,7 +2681,7 @@ function filteredItems() {
       i.mineralName,i.collectionGroup,i.collectionType,i.associated,i.nickname,i.accessionNo,
       i.country,i.province,i.city,i.mine,i.color,i.crystalSystem,i.habit,
       i.scientificName,i.formula,i.hardness,i.scienceClass,i.scienceSubclass,i.scienceGroup,...itemAliases(i),
-      i.size,specimenSizeClass(i.size),i.storage,i.source,i.provenanceNote,i.tags,i.notes,i.price,i.salePrice,i.estimatedValue,i.saleAskPrice,i.minSalePrice,i.giftTo,i.dispositionNote,i.damageNote,
+      i.size,i.weight,specimenSizeClass(i.size),i.storage,i.source,i.provenanceNote,i.tags,i.notes,i.price,i.salePrice,i.estimatedValue,i.saleAskPrice,i.minSalePrice,i.giftTo,i.dispositionNote,i.damageNote,
       taskLabels(i).join(' '),i.loanTo,dispositionLabel(dispositionOf(i)),conditionLabel(conditionOf(i)),confidenceLabel(i.identityConfidence),confidenceLabel(i.localityConfidence)
     ].join(' ').toLowerCase();
     return hay.includes(q);
@@ -2536,9 +2699,63 @@ function filteredItems() {
   return arr;
 }
 
+function renderBulkToolbar(){
+  const bar=$('bulkToolbar'), count=$('bulkSelectedCount'), btn=$('multiSelectBtn');
+  if(bar) bar.classList.toggle('active',bulkMode);
+  if(count) count.textContent=`已选 ${selectedBulkIds.size} 件`;
+  if(btn) btn.textContent=bulkMode?'退出多选':'多选管理';
+}
+function toggleBulkSelection(id){
+  if(selectedBulkIds.has(id)) selectedBulkIds.delete(id); else selectedBulkIds.add(id);
+  render();
+}
+function setBulkMode(on){
+  bulkMode=!!on;
+  if(!bulkMode) selectedBulkIds.clear();
+  render();
+}
+async function updateBulkSelected(mutator,successText){
+  const ids=[...selectedBulkIds];
+  if(!ids.length){ showToast('先选择要批量处理的矿标'); return; }
+  for(const id of ids){
+    const old=allItems.find(i=>i.id===id); if(!old) continue;
+    let next={...old,timeline:[...(old.timeline||[])]};
+    const result=mutator(next,old); if(result===false) continue;
+    next.updatedAt=new Date().toISOString();
+    next.tasks=reconciledTasks(next);
+    next.timeline=appendAutomaticEvents(old,next);
+    await put(next);
+  }
+  await refresh();
+  showToast(successText||`已批量更新 ${ids.length} 件`);
+}
+async function bulkMoveStorage(){
+  const v=prompt('把已选矿标移动到哪里？\n例如：客厅玻璃柜 B · 3层'); if(v===null) return; const storage=v.trim(); if(!storage)return;
+  await updateBulkSelected(next=>{next.storage=storage;},`已把 ${selectedBulkIds.size} 件移动到新柜位`);
+}
+async function bulkAddTag(){
+  const v=prompt('给已选矿标添加什么标签？\n可以输入一个或多个，用逗号分开。'); if(v===null) return; const add=tagsOf(v); if(!add.length)return;
+  await updateBulkSelected(next=>{next.tags=[...new Set([...tagsOf(next.tags),...add])].join(', ');},`已给 ${selectedBulkIds.size} 件添加标签`);
+}
+async function bulkChangeGroup(){
+  const v=prompt('把已选矿标放进哪个“收藏大类”？\n例如：水晶 / 萤石 / 金属矿'); if(v===null) return; const group=v.trim(); if(!group)return;
+  ensureTaxonomyEntry(group,'');
+  await updateBulkSelected(next=>{next.collectionGroup=group;},`已修改 ${selectedBulkIds.size} 件的收藏大类`);
+}
+async function bulkAddTask(){
+  const v=prompt('添加哪一个待办？\n1 待清洗\n2 待拍照\n3 想补更详细产地\n4 待补原矿标 / 证书\n5 待修复\n\n“准备出售”请直接用旁边的准备出售按钮。'); if(v===null)return;
+  const map={'1':'clean','2':'photo','3':'locality','4':'label','5':'repair','待清洗':'clean','待拍照':'photo','想补更详细产地':'locality','待补原矿标':'label','待补原矿标 / 证书':'label','待补标签':'label','待修复':'repair'};
+  const task=map[v.trim()]; if(!task){showToast('没有识别到这个待办');return;}
+  await updateBulkSelected(next=>{next.tasks=[...new Set([...tasksOf(next),task])];if(task==='locality')next.localityTaskManual=true;if(task==='sell')next.forSale=true;},`已给 ${selectedBulkIds.size} 件加入待办`);
+}
+async function bulkMarkForSale(){
+  if(!selectedBulkIds.size){showToast('先选择要准备出售的矿标');return;}
+  if(!confirm(`把已选的 ${selectedBulkIds.size} 件标记为“准备出售”？\n不会自动填写售价。`)) return;
+  await updateBulkSelected(next=>{if(dispositionOf(next)==='held'){next.forSale=true;next.tasks=[...new Set([...tasksOf(next),'sell'])];}},`已将 ${selectedBulkIds.size} 件标记为准备出售`);
+}
 function makeCard(i){
   const card=document.createElement('button');
-  card.className='mineral-card';
+  card.className='mineral-card'+(bulkMode&&selectedBulkIds.has(i.id)?' bulk-selected':'');
   card.type='button';
   const img=(i.photos||[])[0];
   const tagList=tagsOf(i.tags).slice(0,1);
@@ -2553,14 +2770,15 @@ function makeCard(i){
   const statusBadges=statusBits.length?`<div class="card-status-stack">${statusBits.join('')}</div>`:'';
   const taskMark=tasksOf(i).length?`<div class="card-task-mark">${tasksOf(i).length} 个待办</div>`:'';
   const codeMark=i.accessionNo?`<div class="card-code">${esc(i.accessionNo)}</div>`:'';
+  const selectMark=bulkMode?`<span class="bulk-select-mark">✓</span>`:'';
   card.innerHTML=`
-    <div class="card-image">${img?`<img src="${img}" alt="${esc(i.mineralName||'矿标')}">`:'<div class="card-placeholder"></div>'}${statusBadges}${safetyBadge}${i.favorite?'<div class="favorite-mark">★</div>':''}${codeMark}${taskMark}</div>
+    <div class="card-image">${img?`<img src="${img}" alt="${esc(i.mineralName||'矿标')}">`:'<div class="card-placeholder"></div>'}${statusBadges}${safetyBadge}${i.favorite?'<div class="favorite-mark">★</div>':''}${codeMark}${taskMark}${selectMark}</div>
     <div class="card-body">
       <h3>${esc(i.nickname||i.collectionType||i.mineralName||'未命名矿标')}</h3>
       <p>${esc(placeOf(i)||'产地待补')}</p>
       <div class="card-tags"><span>${esc(classLabel)}</span>${tagList.map(t=>`<span>#${esc(t)}</span>`).join('')}</div>
     </div>`;
-  card.onclick=()=>openDetail(i.id);
+  card.onclick=()=>bulkMode?toggleBulkSelection(i.id):openDetail(i.id);
   return card;
 }
 function appendCardGrid(parent,items){
@@ -2673,7 +2891,8 @@ function render() {
   els.grid.innerHTML='';
   els.grid.className = browseMode==='grid' ? 'collection-grid' : 'grouped-view';
   const modeText=browseMode==='mineral-tree'?'我的分类':browseMode==='science-tree'?'科学分类':browseMode==='locality-tree'?'产地目录':'照片墙';
-  $('resultText').textContent = allItems.length===0 ? '还没有矿标' : `${modeText} · ${arr.length} / ${allItems.length} 件`;
+  $('resultText').textContent = allItems.length===0 ? '还没有矿标' : `${modeText} · ${arr.length} / ${allItems.length} 件${bulkMode?' · 已选 '+selectedBulkIds.size+' 件':''}`;
+  renderBulkToolbar();
   els.empty.hidden = allItems.length !== 0 || !!els.search.value.trim() || currentMode!=='all' || !!els.mineralFilter.value;
   if(arr.length===0 && allItems.length>0){
     els.grid.innerHTML='<div style="text-align:center;color:#77717f;padding:42px 12px">没有找到符合条件的矿标</div>';
@@ -2685,10 +2904,10 @@ function render() {
   else arr.forEach(i=>els.grid.appendChild(makeCard(i)));
 }
 async function refresh() {
-  allItems=await getAll();
-  let maxCode=0; allItems.forEach(i=>{const m=String(i.accessionNo||'').match(/M-(\d+)/i); if(m) maxCode=Math.max(maxCode,Number(m[1]));});
+  const stored=await getAll();
+  let maxCode=0; stored.forEach(i=>{const m=String(i.accessionNo||'').match(/M-(\d+)/i); if(m) maxCode=Math.max(maxCode,Number(m[1]));});
   const enriched=[];
-  for(const i0 of allItems){
+  for(const i0 of stored){
     let i=i0; const info=findMineralInfo(i.mineralName); const patch={};
     if(info){ Object.assign(patch,{crystalSystem:i.crystalSystem||info.system,scientificName:info.name,formula:info.formula||'',hardness:info.hardness||'',scienceClass:info.scienceClass||'',scienceSubclass:info.scienceSubclass||'',scienceGroup:info.scienceGroup||'',structureNote:info.structureNote||''}); }
     if(!i.accessionNo){ maxCode+=1; patch.accessionNo=`M-${String(maxCode).padStart(4,'0')}`; }
@@ -2708,7 +2927,11 @@ async function refresh() {
     const changed=Object.keys(patch).length && Object.entries(patch).some(([k,v])=>JSON.stringify(i[k])!==JSON.stringify(v));
     const next=changed?{...i,...patch}:i; enriched.push(next); if(changed) await put(next);
   }
-  allItems=enriched; populateCategorySuggestions(); render();
+  trashItems=enriched.filter(i=>!!i.deletedAt);
+  allItems=enriched.filter(i=>!i.deletedAt);
+  populateCategorySuggestions(); render();
+  if($('trashList')) renderTrash();
+  if($('tagManagerList')) renderTagManager();
 }
 
 function updateDuplicateHint(){
@@ -2843,7 +3066,7 @@ function openEditor(item=null) {
       $('editorTitle').textContent='编辑矿标'; $('recordId').value=item.id; $('favorite').checked=!!item.favorite;
       [
         'mineralName','crystalSystem','collectionGroup','collectionType','associated','nickname','accessionNo',
-        'identityConfidence','localityConfidence','country','province','city','mine','localityId','color','habit','size','storage',
+        'identityConfidence','localityConfidence','country','province','city','mine','localityId','color','habit','size','weight','storage',
         'acquiredDate','source','provenanceNote','price','estimatedValue','saleAskPrice','minSalePrice','tags','notes','disposition','salePrice','giftTo','dispositionDate','dispositionNote','conditionStatus','damageDate','damageNote',
         'nextCareDate','loanStatus','loanTo','loanDate','loanDue','loanReturnedDate'
       ].forEach(k=>setField(k,item[k]));
@@ -2882,6 +3105,10 @@ function openEditor(item=null) {
 function renderMainPreviews(){
   renderPhotoPreviews(els.photoPreview,editingPhotos,idx=>{
     editingPhotos.splice(idx,1); renderMainPreviews();
+  },{
+    reorder:true, main:true,
+    onMain:idx=>{ moveArrayItem(editingPhotos,idx,0); renderMainPreviews(); showToast('已设为主图'); },
+    onMove:(from,to)=>{ moveArrayItem(editingPhotos,from,to); renderMainPreviews(); }
   });
 }
 function renderLabelPreviews(){
@@ -2928,7 +3155,7 @@ function gatherForm() {
     scienceClass:info?.scienceClass||existing?.scienceClass||'', scienceSubclass:info?.scienceSubclass||existing?.scienceSubclass||'', scienceGroup:info?.scienceGroup||existing?.scienceGroup||'', structureNote:info?.structureNote||existing?.structureNote||'',
     collectionGroup:get('collectionGroup'), collectionType:get('collectionType'), associated:get('associated'), nickname:get('nickname'), favorite:$('favorite').checked,
     country:get('country'), province:get('province'), city:get('city'), mine:get('mine'), localityId:get('localityId')||inferLocalityId({country:get('country'),province:get('province'),city:get('city'),mine:get('mine')}),
-    color:get('color'), crystalSystem:get('crystalSystem'), habit:get('habit'), size:get('size'), sizeClass:specimenSizeClass(get('size')), storage:get('storage'),
+    color:get('color'), crystalSystem:get('crystalSystem'), habit:get('habit'), size:get('size'), sizeClass:specimenSizeClass(get('size')), weight:get('weight'), storage:get('storage'),
     acquiredDate:get('acquiredDate'), source:get('source'), provenanceNote:get('provenanceNote'), price:get('price'),
     estimatedValue:get('estimatedValue'), saleAskPrice:get('saleAskPrice'), minSalePrice:get('minSalePrice'), forSale:!!$('forSale')?.checked && (get('disposition')||'held')==='held',
     disposition:get('disposition')||'held', salePrice:get('salePrice'), giftTo:get('giftTo'), dispositionDate:get('dispositionDate'), dispositionNote:get('dispositionNote'),
@@ -2960,6 +3187,8 @@ function openDetail(id) {
   const labelPhotos=i.labelPhotos||[];
   const tlabels=taskLabels(i);
   const careDue=i.nextCareDate ? (i.nextCareDate<todayStr()?'已到检查日':`下次检查 ${fmtDate(i.nextCareDate)}`) : '';
+  const comp=specimenCompleteness(i);
+  const compText=comp.coreMissing.length?`建议先补：${comp.coreMissing.join('、')}`:comp.optionalMissing.length?`可选还可补：${comp.optionalMissing.join('、')}`:'核心资料和常用档案已经很完整';
   $('detailContent').innerHTML=`
     ${photos[0]?`<div class="detail-hero"><img src="${photos[0]}" alt="${esc(i.mineralName)}"></div>`:''}
     <div class="detail-title">
@@ -2974,10 +3203,12 @@ function openDetail(id) {
       ${i.sizeClass||specimenSizeClass(i.size)?`<span class="detail-pill">${esc(i.sizeClass||specimenSizeClass(i.size))}</span>`:''}
       ${careDue?`<span class="reminder-badge">${esc(careDue)}</span>`:''}
     </div>
+    <div class="completeness-card"><div class="completeness-head"><strong>档案完善度</strong><b>${comp.score}%</b></div><div class="completeness-track"><div class="completeness-fill" style="width:${comp.score}%"></div></div><div class="completeness-note ${comp.coreMissing.length?'warn':''}">${esc(compText)}。重量完全可选，不参与待完善判断。</div></div>
     <div class="detail-actions-grid">
       <button type="button" class="secondary-btn" data-detail-action="card">预览 / 导出标本卡</button>
       <button type="button" class="secondary-btn" data-detail-action="label">馆藏标签 / 二维码</button>
     </div>
+    <div class="detail-section-label">标本与矿物</div>
     <div class="detail-section">
       ${infoRow('收藏分类',collectionPath(i))}
       ${infoRow('常用叫法 / 主矿物',i.mineralName)}
@@ -2990,13 +3221,19 @@ function openDetail(id) {
       ${infoRow('颜色',i.color)}
       ${infoRow('晶型 / 形态',i.habit)}
       ${infoRow('尺寸',i.size)}
+      ${infoRow('重量（可选）',i.weight)}
+    </div>
+    <div class="detail-section-label">产地与收藏记录</div>
+    <div class="detail-section">
+      ${infoRow('产地',placeOf(i))}
       ${infoRow('收藏位置',i.storage)}
       ${infoRow('收藏日期',fmtDate(i.acquiredDate))}
       ${infoRow('来源',i.source)}
-      ${infoRow('来源 / 原藏',i.provenanceNote)}
+      ${infoRow('原藏 / 来源补充',i.provenanceNote)}
       ${infoRow('标签',tagsOf(i.tags).map(t=>'#'+t).join('  '))}
-      ${tlabels.length?infoRow('待办',tlabels.join(' · ')):''}
+      ${tlabels.length?infoRow('手动待办',tlabels.join(' · ')):''}
     </div>
+    <div class="detail-section-label">状态与财务</div>
     <div class="detail-section">
       ${infoRow('入手价（私密）',i.price?moneyText(moneyNumber(i.price)):'')}
       ${infoRow('当前估值（私密）',i.estimatedValue?moneyText(moneyNumber(i.estimatedValue)):'')}
@@ -3014,7 +3251,7 @@ function openDetail(id) {
       ${(i.loanStatus||'none')!=='none'?infoRow('借出状态',i.loanStatus==='loaned'?`借给 ${i.loanTo||'未填写'}${i.loanDue?' · 预计 '+fmtDate(i.loanDue)+' 归还':''}`:`已归还${i.loanReturnedDate?' · '+fmtDate(i.loanReturnedDate):''}`):''}
     </div>
     ${detailCareHTML(i)}
-    ${i.notes?`<div class="detail-section"><div class="detail-row"><span>备注</span><strong class="detail-notes">${esc(i.notes)}</strong></div></div>`:''}
+    ${i.notes?`<div class="detail-section-label">收藏故事 / 备注</div><div class="detail-section"><div class="detail-row"><span>记录</span><strong class="detail-notes">${esc(i.notes)}</strong></div></div>`:''}
     ${detailTimelineHTML(i)}
     ${photos.length>1?`<h3 class="group-title">更多照片</h3><div class="detail-gallery">${photos.slice(1).map(p=>`<img src="${p}" alt="矿标照片">`).join('')}</div>`:''}
     ${labelPhotos.length?`<h3 class="group-title">原矿标 / 证书</h3><div class="detail-gallery">${labelPhotos.map(p=>`<img src="${p}" alt="原矿标照片">`).join('')}</div>`:''}
@@ -3025,111 +3262,100 @@ function openDetail(id) {
 }
 
 function makeBatchRow(){
-  return {id:uid(), photos:[], nickname:'', collectionType:'', price:'', notes:''};
+  return {id:uid(), photos:[], nickname:'', mineralName:'', collectionGroup:'', collectionType:'', price:'', size:'', weight:'', associated:'', color:'', habit:'', country:'', province:'', city:'', mine:'', acquiredDate:'', source:'', notes:''};
+}
+function mergeBatchAssociated(commonText='', itemText=''){
+  const names=[...splitAssociatedNames(commonText),...splitAssociatedNames(itemText)];
+  const seen=new Set();
+  return names.filter(name=>{const key=String(name||'').trim().toLowerCase();if(!key||seen.has(key))return false;seen.add(key);return true;}).join('、');
+}
+function resolveBatchLocality(common,row){
+  const r={country:String(row.country||'').trim(),province:String(row.province||'').trim(),city:String(row.city||'').trim(),mine:String(row.mine||'').trim()};
+  if(!r.country&&!r.province&&!r.city&&!r.mine) return {country:common.country,province:common.province,city:common.city,mine:common.mine};
+  let country=r.country||common.country, province=r.province||common.province, city=r.city||common.city, mine=r.mine||common.mine;
+  if(r.country && normCountry(r.country)!==normCountry(common.country)){ province=r.province; city=r.city; mine=r.mine; }
+  else if(r.province && normProvince(r.province)!==normProvince(common.province)){ city=r.city; mine=r.mine; }
+  else if(r.city && String(r.city).trim()!==String(common.city||'').trim()){ mine=r.mine; }
+  return {country,province,city,mine};
+}
+function batchSettlementState(){
+  const commonPrice=$('batchPrice')?.value?.trim?.()||'', commonDate=$('batchAcquiredDate')?.value||'';
+  const perMonth=new Map(); let total=0,photoCount=0,unknownPrices=0,undated=0;
+  batchRows.forEach(row=>{
+    const rawPrice=(row.price||'').trim()||commonPrice; total+=moneyNumber(rawPrice); if(!rawPrice)unknownPrices++;
+    if(Array.isArray(row.photos)&&row.photos.length)photoCount++;
+    const d=(row.acquiredDate||'').trim()||commonDate; const ym=/^\d{4}-\d{2}-\d{2}$/.test(d)?d.slice(0,7):'';
+    if(!ym){undated++;return;} perMonth.set(ym,(perMonth.get(ym)||0)+moneyNumber(rawPrice));
+  });
+  const monthStates=[...perMonth.entries()].sort().map(([ym,batchTotal])=>{const monthSpent=allItems.filter(i=>String(i.acquiredDate||'').startsWith(ym+'-')).reduce((s,i)=>s+moneyNumber(i.price),0);const budget=moneyNumber(acquisitionBudgets[ym]);return {ym,batchTotal,monthSpent,budget,after:monthSpent+batchTotal,over:budget>0&&monthSpent+batchTotal>budget};});
+  return {count:batchRows.length,photoCount,total,unknownPrices,undated,monthStates,overBudgetMonths:monthStates.filter(x=>x.over)};
+}
+function renderBatchSettlement(){
+  const stats=$('batchSettlementStats'),budgetBox=$('batchSettlementBudget'); if(!stats||!budgetBox)return; const s=batchSettlementState();
+  const monthLabel=s.monthStates.length===1?moneyText(s.monthStates[0].after):s.monthStates.length>1?`${s.monthStates.length} 个月`:'—';
+  stats.innerHTML=`<div class="batch-settlement-stat"><b>${s.count}</b><span>本批件数</span></div><div class="batch-settlement-stat"><b>${s.photoCount} / ${s.count}</b><span>已有照片</span></div><div class="batch-settlement-stat"><b>${moneyText(s.total)}</b><span>本批合计${s.unknownPrices?` · ${s.unknownPrices} 件未记价`:''}</span></div><div class="batch-settlement-stat"><b>${monthLabel}</b><span>${s.monthStates.length===1?'该月加上本批后':s.monthStates.length>1?'涉及多个入手月份':'填日期后可对预算'}</span></div>`;
+  budgetBox.className='batch-budget-result';
+  const lines=s.monthStates.map(x=>x.budget>0?(x.over?`⚠ ${x.ym}：预算 ${moneyText(x.budget)}，保存后 ${moneyText(x.after)}，超 ${moneyText(x.after-x.budget)}`:`${x.ym}：预算 ${moneyText(x.budget)}，保存后 ${moneyText(x.after)}，余 ${moneyText(x.budget-x.after)}`):`${x.ym}：保存后预计 ${moneyText(x.after)}（未设预算）`);
+  if(s.undated) lines.push(`${s.undated} 件没有收藏日期，暂不参与月预算比较。`);
+  budgetBox.textContent=lines.join(' · ')||'这一批还没有可用于月预算比较的收藏日期。';
+  if(s.overBudgetMonths.length)budgetBox.classList.add('over'); else if(s.monthStates.some(x=>x.budget>0))budgetBox.classList.add('ok');
 }
 function resetBatch(){
-  [
-    'batchMineralName','batchCollectionGroup','batchCollectionType','batchAssociated',
-    'batchCountry','batchProvince','batchCity','batchMine','batchAcquiredDate',
-    'batchSource','batchPrice','batchStorage','batchTags'
-  ].forEach(id=>{ if($(id)) $(id).value=''; });
-  setScienceDisplay('batch',null,'');
-  ['batchKnownCountrySelect','batchKnownProvinceSelect','batchKnownCitySelect','batchKnownLocalitySelect'].forEach(id=>{if($(id)) $(id).value='';});
-  syncHierarchySelects(true);
-  populateKnownLocalities('','batchKnownLocalitySelect','batchKnownProvinceSelect');
-  updateCarePreview(true);
-  batchRows=[makeBatchRow()];
-  renderBatchItems();
-  populateCategorySuggestions();
+  ['batchMineralName','batchCollectionGroup','batchCollectionType','batchAssociated','batchCountry','batchProvince','batchCity','batchMine','batchAcquiredDate','batchSource','batchPrice','batchStorage','batchTags'].forEach(id=>{if($(id))$(id).value='';});
+  setScienceDisplay('batch',null,''); syncHierarchySelects(true); populateKnownLocalities('','batchKnownLocalitySelect','batchKnownProvinceSelect'); updateCarePreview(true);
+  batchRows=[makeBatchRow()]; renderBatchItems(); populateCategorySuggestions(); renderBatchSettlement();
 }
-function openBatch(){
-  resetBatch();
-  showSheet(els.batch);
-}
+function openBatch(){resetBatch();showSheet(els.batch);}
 function renderBatchItems(){
-  const box=$('batchItems');
-  box.innerHTML='';
+  const box=$('batchItems'); box.innerHTML='';
   batchRows.forEach((row,idx)=>{
-    const el=document.createElement('div');
-    el.className='batch-item';
-    el.dataset.id=row.id;
-    el.innerHTML=`
-      <div class="batch-item-head">
-        <strong>第 ${idx+1} 件</strong>
-        ${batchRows.length>1?'<button type="button" class="batch-remove" title="移除">×</button>':''}
-      </div>
-      ${row.photos.length?`<div class="batch-thumb-strip">${row.photos.map(p=>`<img src="${p}" alt="照片">`).join('')}</div>`:''}
-      <label class="batch-photo-label">
-        <input class="batch-photo-input" type="file" accept="image/*" capture="environment" multiple hidden>
-        ＋ 拍照 / 选这件的照片
-      </label>
+    const el=document.createElement('div'); el.className='batch-item'; el.dataset.id=row.id;
+    const photoHtml=row.photos.length?`<div class="batch-thumb-strip">${row.photos.map((p,pi)=>`<div class="batch-thumb"><img src="${p}" alt="照片 ${pi+1}">${pi===0?'<span class="batch-thumb-main">主图</span>':''}<div class="batch-thumb-actions">${pi>0?`<button type="button" data-batch-photo-action="main" data-photo-index="${pi}" title="设主图">★</button>`:'<button type="button" disabled>★</button>'}<button type="button" data-batch-photo-action="left" data-photo-index="${pi}" ${pi===0?'disabled':''} title="左移">←</button><button type="button" data-batch-photo-action="right" data-photo-index="${pi}" ${pi===row.photos.length-1?'disabled':''} title="右移">→</button><button type="button" data-batch-photo-action="remove" data-photo-index="${pi}" title="删除">×</button></div></div>`).join('')}</div>`:'';
+    el.innerHTML=`<div class="batch-item-head"><strong>第 ${idx+1} 件</strong>${batchRows.length>1?'<button type="button" class="batch-remove" title="移除">×</button>':''}</div>${photoHtml}<label class="batch-photo-label"><input class="batch-photo-input" type="file" accept="image/*" capture="environment" multiple hidden>＋ 拍照 / 选这件的照片</label>
       <div class="batch-mini-grid">
-        <label>名称 / 编号
-          <input class="batch-nickname" value="${esc(row.nickname)}" placeholder="例如：内蒙萤石 03">
-        </label>
-        <label>细分类（可覆盖共同项）
-          <input class="batch-type" value="${esc(row.collectionType)}" list="collectionTypeSuggestions" placeholder="例如：骸骨">
-        </label>
-        <label>入手价（可覆盖共同价）
-          <input class="batch-price" inputmode="decimal" value="${esc(row.price)}" placeholder="例如：180">
-        </label>
-      </div>
-      <textarea class="batch-notes" rows="2" placeholder="这件自己的备注…">${esc(row.notes)}</textarea>`;
-    const sync=()=>{
-      row.nickname=el.querySelector('.batch-nickname').value;
-      row.collectionType=el.querySelector('.batch-type').value;
-      row.price=el.querySelector('.batch-price').value;
-      row.notes=el.querySelector('.batch-notes').value;
-    };
-    el.querySelectorAll('.batch-nickname,.batch-type,.batch-price,.batch-notes').forEach(x=>x.addEventListener('input',sync));
-    const remove=el.querySelector('.batch-remove');
-    if(remove) remove.onclick=()=>{
-      batchRows=batchRows.filter(x=>x.id!==row.id);
-      renderBatchItems();
-    };
-    el.querySelector('.batch-photo-input').onchange=async e=>{
-      showToast('正在处理照片…');
-      row.photos.push(...await filesToImages(e.target.files));
-      renderBatchItems();
-      showToast(`第 ${idx+1} 件照片已加入`);
-    };
-    box.appendChild(el);
-  });
+        <label>名称 / 编号<input class="batch-nickname" value="${esc(row.nickname)}" placeholder="例如：展会 03"></label>
+        <label>细分类（可覆盖共同项）<input class="batch-type" value="${esc(row.collectionType)}" list="collectionTypeSuggestions" placeholder="例如：骸骨"></label>
+        <label>尺寸<input class="batch-size" value="${esc(row.size)}" placeholder="例如：8 × 6 × 5 cm"></label>
+        <label>重量<input class="batch-weight" value="${esc(row.weight)}" placeholder="例如：680 g / 1.2 kg"></label>
+        <label>这件额外的共生矿物<input class="batch-associated" value="${esc(row.associated)}" placeholder="例如：方解石、石英"></label>
+        <div class="batch-item-section-note">额外共生会和共同共生自动合并；尺寸、重量、颜色、晶型和价格按每件保存。</div>
+        <label>颜色<input class="batch-color" value="${esc(row.color)}" placeholder="例如：紫色 / 绿色"></label>
+        <label>晶型 / 形态<input class="batch-habit" value="${esc(row.habit)}" placeholder="例如：立方体 / 晶簇"></label>
+        <label>入手价（可覆盖共同价）<input class="batch-price" inputmode="decimal" value="${esc(row.price)}" placeholder="例如：180"></label>
+        <details class="batch-override-box"><summary>这件与共同信息不同？展开单独覆盖 ▾</summary><div class="batch-override-grid">
+          <label>主矿物<input class="batch-item-mineral" value="${esc(row.mineralName)}" list="mineralSuggestions" placeholder="留空继承共同主矿物"></label>
+          <label>收藏大类<input class="batch-item-group" value="${esc(row.collectionGroup)}" list="collectionGroupSuggestions" placeholder="留空继承共同大类"></label>
+          <label>收藏日期<input class="batch-item-date" type="date" value="${esc(row.acquiredDate)}"></label>
+          <label>来源 / 商家<input class="batch-item-source" value="${esc(row.source)}" placeholder="留空继承共同来源"></label>
+          <label>国家 / 地区<input class="batch-item-country" value="${esc(row.country)}" placeholder="留空继承共同产地"></label>
+          <label>省 / 州<input class="batch-item-province" value="${esc(row.province)}" placeholder="只在不同的时候填"></label>
+          <label>市 / 县<input class="batch-item-city" value="${esc(row.city)}" placeholder="只在不同的时候填"></label>
+          <label>矿山 / 矿区<input class="batch-item-mine" value="${esc(row.mine)}" placeholder="只在不同的时候填"></label>
+          <div class="batch-override-note">如果这一件的主矿物、日期、商家或产地和整批不一样，就在这里填。留空仍然继承上面的共同信息。</div>
+        </div></details>
+      </div><textarea class="batch-notes" rows="2" placeholder="这件自己的备注…">${esc(row.notes)}</textarea>`;
+    const sync=()=>{row.nickname=el.querySelector('.batch-nickname').value;row.collectionType=el.querySelector('.batch-type').value;row.size=el.querySelector('.batch-size').value;row.weight=el.querySelector('.batch-weight').value;row.associated=el.querySelector('.batch-associated').value;row.color=el.querySelector('.batch-color').value;row.habit=el.querySelector('.batch-habit').value;row.price=el.querySelector('.batch-price').value;row.notes=el.querySelector('.batch-notes').value;row.mineralName=el.querySelector('.batch-item-mineral').value;row.collectionGroup=el.querySelector('.batch-item-group').value;row.acquiredDate=el.querySelector('.batch-item-date').value;row.source=el.querySelector('.batch-item-source').value;row.country=el.querySelector('.batch-item-country').value;row.province=el.querySelector('.batch-item-province').value;row.city=el.querySelector('.batch-item-city').value;row.mine=el.querySelector('.batch-item-mine').value;renderBatchSettlement();};
+    el.querySelectorAll('input,textarea').forEach(x=>x.addEventListener('input',sync)); el.querySelectorAll('input[type="date"]').forEach(x=>x.addEventListener('change',sync));
+    const remove=el.querySelector('.batch-remove'); if(remove)remove.onclick=()=>{batchRows=batchRows.filter(x=>x.id!==row.id);renderBatchItems();};
+    el.querySelectorAll('[data-batch-photo-action]').forEach(btn=>btn.onclick=()=>{const pi=Number(btn.dataset.photoIndex),action=btn.dataset.batchPhotoAction;if(action==='remove')row.photos.splice(pi,1);else if(action==='main'&&pi>0)moveArrayItem(row.photos,pi,0);else if(action==='left'&&pi>0)moveArrayItem(row.photos,pi,pi-1);else if(action==='right'&&pi<row.photos.length-1)moveArrayItem(row.photos,pi,pi+1);renderBatchItems();});
+    el.querySelector('.batch-photo-input').onchange=async e=>{showToast('正在处理照片…');row.photos.push(...await filesToImages(e.target.files));renderBatchItems();showToast(`第 ${idx+1} 件照片已加入`);}; box.appendChild(el);
+  }); renderBatchSettlement();
 }
 async function saveBatch(){
-  const get=id=>$(id).value.trim();
-  const mineralName=get('batchMineralName');
-  if(!mineralName){ showToast('先写这一批的主矿物'); return; }
-  if(!batchRows.length){ showToast('至少加一件矿标'); return; }
-
-  const common={
-    mineralName, collectionGroup:get('batchCollectionGroup'), collectionType:get('batchCollectionType'), associated:get('batchAssociated'),
-    country:get('batchCountry'), province:get('batchProvince'), city:get('batchCity'), mine:get('batchMine'),
-    localityId:$('batchKnownLocalitySelect')?.value||inferLocalityId({country:get('batchCountry'),province:get('batchProvince'),city:get('batchCity'),mine:get('batchMine')}),
-    acquiredDate:get('batchAcquiredDate'), source:get('batchSource'), price:get('batchPrice'), storage:get('batchStorage'), tags:get('batchTags')
-  };
-  const info=findMineralInfo(mineralName); const now=new Date().toISOString();
-  let maxCode=0; allItems.forEach(i=>{const m=String(i.accessionNo||'').match(/M-(\d+)/i); if(m) maxCode=Math.max(maxCode,Number(m[1]));});
-
-  ensureTaxonomyEntry(common.collectionGroup, common.collectionType);
-  for(let idx=0; idx<batchRows.length; idx++){
-    const row=batchRows[idx]; const type=row.collectionType.trim()||common.collectionType;
-    if(common.collectionGroup && type) ensureTaxonomyEntry(common.collectionGroup,type);
-    const tasks=[]; if(!row.photos.length) tasks.push('photo'); if(!common.country) tasks.push('locality');
-    const accessionNo=`M-${String(maxCode+idx+1).padStart(4,'0')}`;
-    const item={
-      id:uid(), accessionNo, ...common, collectionType:type,
-      identityConfidence:'confirmed', localityConfidence:'confirmed',
-      crystalSystem:info?.system||'', scientificName:info?.name||'', formula:info?.formula||'', hardness:info?.hardness||'', scienceClass:info?.scienceClass||'', scienceSubclass:info?.scienceSubclass||'', scienceGroup:info?.scienceGroup||'', structureNote:info?.structureNote||'',
-      nickname:row.nickname.trim(), notes:row.notes.trim(), favorite:false, color:'', habit:'', size:'', sizeClass:'', price:row.price.trim()||common.price||'', provenanceNote:'',
-      estimatedValue:'', saleAskPrice:'', minSalePrice:'', forSale:false,
-      disposition:'held', salePrice:'', giftTo:'', dispositionDate:'', dispositionNote:'', conditionStatus:'normal', damageDate:'', damageNote:'',
-      tasks, localityTaskManual:false, nextCareDate:'', loanStatus:'none', loanTo:'', loanDate:'', loanDue:'', loanReturnedDate:'',
-      photos:[...row.photos], labelPhotos:[], timeline:[eventEntry('acquired',common.source||'批量入藏',common.acquiredDate||todayStr())], createdAt:now, updatedAt:now
-    };
-    await put(item);
+  const get=id=>$(id)?.value?.trim?.()||''; const commonMineral=get('batchMineralName');
+  if(!commonMineral && !batchRows.every(r=>String(r.mineralName||'').trim())){showToast('先写共同主矿物，或给每一件单独写主矿物');return;}
+  if(!batchRows.length){showToast('至少加一件矿标');return;}
+  const settlement=batchSettlementState();
+  if(settlement.overBudgetMonths.length){const msg=settlement.overBudgetMonths.map(x=>`${x.ym} 超 ${moneyText(x.after-x.budget)}`).join('；');if(!confirm(`这一批会让月预算超出：${msg}\n\n仍然保存吗？`))return;}
+  const common={mineralName:commonMineral,collectionGroup:get('batchCollectionGroup'),collectionType:get('batchCollectionType'),associated:get('batchAssociated'),country:get('batchCountry'),province:get('batchProvince'),city:get('batchCity'),mine:get('batchMine'),acquiredDate:get('batchAcquiredDate'),source:get('batchSource'),price:get('batchPrice'),storage:get('batchStorage'),tags:get('batchTags')};
+  const now=new Date().toISOString(); let maxCode=0; [...allItems,...trashItems].forEach(i=>{const m=String(i.accessionNo||'').match(/M-(\d+)/i);if(m)maxCode=Math.max(maxCode,Number(m[1]));});
+  for(let idx=0;idx<batchRows.length;idx++){
+    const row=batchRows[idx]; const itemMineral=String(row.mineralName||'').trim()||common.mineralName; const info=findMineralInfo(itemMineral); const itemGroup=String(row.collectionGroup||'').trim()||common.collectionGroup; const type=row.collectionType.trim()||common.collectionType; if(itemGroup)ensureTaxonomyEntry(itemGroup,type);
+    const loc=resolveBatchLocality(common,row); const itemDate=String(row.acquiredDate||'').trim()||common.acquiredDate; const itemSource=String(row.source||'').trim()||common.source; const itemPrice=row.price.trim()||common.price||'';
+    const tasks=[]; if(!row.photos.length)tasks.push('photo'); if(!loc.country)tasks.push('locality'); const accessionNo=`M-${String(maxCode+idx+1).padStart(4,'0')}`; const itemSize=row.size.trim(); const itemAssociated=mergeBatchAssociated(common.associated,row.associated);
+    const item={id:uid(),accessionNo,mineralName:itemMineral,collectionGroup:itemGroup,collectionType:type,associated:itemAssociated,country:loc.country,province:loc.province,city:loc.city,mine:loc.mine,localityId:inferLocalityId(loc),acquiredDate:itemDate,source:itemSource,price:itemPrice,storage:common.storage,tags:common.tags,identityConfidence:'confirmed',localityConfidence:'confirmed',crystalSystem:info?.system||'',scientificName:info?.name||'',formula:info?.formula||'',hardness:info?.hardness||'',scienceClass:info?.scienceClass||'',scienceSubclass:info?.scienceSubclass||'',scienceGroup:info?.scienceGroup||'',structureNote:info?.structureNote||'',nickname:row.nickname.trim(),notes:row.notes.trim(),favorite:false,color:row.color.trim(),habit:row.habit.trim(),size:itemSize,sizeClass:specimenSizeClass(itemSize),weight:row.weight.trim(),provenanceNote:'',estimatedValue:'',saleAskPrice:'',minSalePrice:'',forSale:false,disposition:'held',salePrice:'',giftTo:'',dispositionDate:'',dispositionNote:'',conditionStatus:'normal',damageDate:'',damageNote:'',tasks,localityTaskManual:false,nextCareDate:'',loanStatus:'none',loanTo:'',loanDate:'',loanDue:'',loanReturnedDate:'',photos:[...row.photos],labelPhotos:[],timeline:[automaticAcquiredEvent(itemSource||'批量入藏',itemDate||'')],createdAt:now,updatedAt:now}; await put(item);
   }
-  const count=batchRows.length; closeSheet(els.batch); await refresh(); showToast(`这一批 ${count} 件已保存并自动编号`);
+  const count=batchRows.length;closeSheet(els.batch);await refresh();showToast(`这一批 ${count} 件已保存并自动编号`);
 }
 
 function renderTaxonomyManager(){
@@ -3309,6 +3535,7 @@ function exportSpecimenCard(i){
       <div class="row"><span>晶型 / 形态</span><b>${esc(i.habit||'—')}</b></div>
       <div class="row"><span>颜色</span><b>${esc(i.color||'—')}</b></div>
       <div class="row"><span>尺寸 / 级别</span><b>${esc([i.size,i.sizeClass||specimenSizeClass(i.size)].filter(Boolean).join(' · ')||'—')}</b></div>
+      <div class="row"><span>重量</span><b>${esc(i.weight||'—')}</b></div>
       <div class="row"><span>共生矿物</span><b>${esc(i.associated||'—')}</b></div>
       <div class="row"><span>我的收藏分类</span><b>${esc(collectionPath(i)||'—')}</b></div>
       <div class="row"><span>标本状况</span><b>${esc(condition)}</b></div>
@@ -3319,7 +3546,7 @@ function exportSpecimenCard(i){
       <div class="row"><span>产地可信度</span><b>${esc(confMap[i.localityConfidence]||'—')}</b></div>
     </div>
     ${science?`<div class="museum-block"><span>科学分类</span><b>${esc(science)}</b></div>`:''}
-    ${i.provenanceNote?`<div class="museum-block"><span>来源 / 原藏</span><b>${esc(i.provenanceNote)}</b></div>`:''}
+    ${i.provenanceNote?`<div class="museum-block"><span>原藏 / 来源补充</span><b>${esc(i.provenanceNote)}</b></div>`:''}
     <div class="museum-block"><span>养护摘要</span><b>${esc(care.label)} · ${esc(care.water)}</b><p>${esc(care.storage)}</p></div>
     ${care.level>=2?`<div class="museum-block warning"><span>安全提示</span><b>${esc(care.hazard)}</b></div>`:''}
     ${tags.length?`<div class="tags">${tags.map(t=>`<span class="tag">#${esc(t)}</span>`).join('')}</div>`:''}
@@ -3334,7 +3561,7 @@ function exportSpecimenLabel(i){
   const hosted=location.protocol==='http:'||location.protocol==='https:';
   const target=hosted?`${location.origin}${location.pathname}?specimen=${encodeURIComponent(code)}`:`MINERAL:${code}`;
   const qr=`https://quickchart.io/qr?size=240&margin=1&text=${encodeURIComponent(target)}`;
-  const body=`<div class="label"><div><div class="muted small">PRIVATE MINERAL CABINET</div><div class="code">${esc(code)}</div><h2 style="margin:8px 0 4px">${esc(i.mineralName||'待确认矿物')}</h2><div>${esc(placeOf(i)||'产地待补')}</div><p class="small muted">${esc([i.formula,i.crystalSystem,i.size].filter(Boolean).join(' · '))}</p><p class="small">${hosted?'扫码会打开这件矿标的档案。':'当前是本地预览；二维码记录馆藏编号。等网页正式安装到 HTTPS 地址后，会自动变成可打开档案的二维码。'}</p></div><img class="qr" src="${qr}" alt="二维码"></div>`;
+  const body=`<div class="label"><div><div class="muted small">PRIVATE MINERAL CABINET</div><div class="code">${esc(code)}</div><h2 style="margin:8px 0 4px">${esc(i.mineralName||'待确认矿物')}</h2><div>${esc(placeOf(i)||'产地待补')}</div><p class="small muted">${esc([i.formula,i.crystalSystem,i.size,i.weight&&('重量 '+i.weight)].filter(Boolean).join(' · '))}</p><p class="small">${hosted?'扫码会打开这件矿标的档案。':'当前是本地预览；二维码记录馆藏编号。等网页正式安装到 HTTPS 地址后，会自动变成可打开档案的二维码。'}</p></div><img class="qr" src="${qr}" alt="二维码"></div>`;
   downloadBlob(new Blob([printableHtml(`${code} 馆藏标签`,body)],{type:'text/html;charset=utf-8'}),`${code}_馆藏标签.html`);
   showToast('馆藏标签已导出（二维码需联网显示）');
 }
@@ -3345,12 +3572,12 @@ function renderBarList(id,entries,maxItems=8){
 }
 function renderManageTasks(){
   const today=todayStr();
-  const todo=allItems.filter(i=>tasksOf(i).length);
+  const attention=allItems.filter(i=>isIncomplete(i)||tasksOf(i).length);
   const due=allItems.filter(i=>i.nextCareDate && i.nextCareDate<=today && dispositionOf(i)==='held');
   const loaned=allItems.filter(i=>(i.loanStatus||'none')==='loaned');
-  const unknown=allItems.filter(i=>(i.identityConfidence||'confirmed')==='unknown'||(i.localityConfidence||'confirmed')==='unknown');
-  $('manageTaskStats').innerHTML=`<div class="manage-stat"><b>${todo.length}</b><span>有待办</span></div><div class="manage-stat"><b>${due.length}</b><span>到期养护</span></div><div class="manage-stat"><b>${loaned.length}</b><span>借出中</span></div><div class="manage-stat"><b>${unknown.length}</b><span>待确认资料</span></div>`;
-  $('manageTodoList').innerHTML=todo.length?todo.slice(0,30).map(i=>`<div class="todo-item"><div class="todo-item-head"><div><strong>${esc(i.accessionNo||'')} ${esc(i.nickname||i.mineralName||'矿标')}</strong><small>${esc(taskLabels(i).join(' · '))}</small></div><button type="button" class="text-btn" data-open-item="${esc(i.id)}">查看</button></div></div>`).join(''):'<p>现在没有待办，很干净 ✨</p>';
+  const incomplete=allItems.filter(isIncomplete);
+  $('manageTaskStats').innerHTML=`<div class="manage-stat"><b>${attention.length}</b><span>需要处理</span></div><div class="manage-stat"><b>${incomplete.length}</b><span>核心资料待完善</span></div><div class="manage-stat"><b>${due.length}</b><span>到期养护</span></div><div class="manage-stat"><b>${loaned.length}</b><span>借出中</span></div>`;
+  $('manageTodoList').innerHTML=attention.length?attention.slice(0,40).map(i=>{const labels=attentionLabels(i);return `<div class="todo-item"><div class="todo-item-head"><div><strong>${esc(i.accessionNo||'')} ${esc(i.nickname||i.mineralName||'矿标')}</strong><small>${esc(labels.join(' · '))}</small></div><button type="button" class="text-btn" data-open-item="${esc(i.id)}">查看</button></div></div>`;}).join(''):'<p>现在没有需要处理的资料或待办，很干净 ✨</p>';
   $('manageCareList').innerHTML=due.length?due.sort((a,b)=>a.nextCareDate.localeCompare(b.nextCareDate)).map(i=>`<div class="todo-item"><div class="todo-item-head"><div><strong>${esc(i.accessionNo||'')} ${esc(i.mineralName||'矿标')}</strong><small>${esc(fmtDate(i.nextCareDate))} · ${esc(combineCare(i.mineralName||'',i.associated||'').storage)}</small></div><button type="button" class="text-btn" data-open-item="${esc(i.id)}">查看</button></div></div>`).join(''):'<p>没有到期的养护检查。</p>';
   $('manageLoanList').innerHTML=loaned.length?loaned.map(i=>`<div class="loan-item"><div class="loan-item-head"><div><strong>${esc(i.accessionNo||'')} ${esc(i.mineralName||'矿标')}</strong><small>借给 ${esc(i.loanTo||'未填写')} ${i.loanDue?'· 预计 '+esc(fmtDate(i.loanDue))+' 归还':''}</small></div><button type="button" class="text-btn" data-open-item="${esc(i.id)}">查看</button></div></div>`).join(''):'<p>目前没有借出的标本。</p>';
 }
@@ -3365,11 +3592,24 @@ function renderSalePanel(){
   $('saleListView').innerHTML=arr.length?arr.map(i=>`<div class="sale-item"><div class="sale-item-head"><div><strong>${esc(i.accessionNo||'')} ${esc(i.nickname||i.mineralName||'矿标')}</strong><small>${esc(placeOf(i)||'产地待补')} · ${esc(i.size||'尺寸待补')}</small><small class="sale-price-line">挂牌 ${i.saleAskPrice?moneyText(moneyNumber(i.saleAskPrice)):'未定价'}${i.minSalePrice?' · 私密底价 '+moneyText(moneyNumber(i.minSalePrice)):''}</small></div><button type="button" class="text-btn" data-open-item="${esc(i.id)}">查看</button></div></div>`).join(''):'<p>还没有标本挂牌准备出售。</p>';
 }
 function reportItemsForYear(year){ return allItems.filter(i=>String(i.acquiredDate||i.createdAt||'').slice(0,4)===String(year)); }
+function renderSpendRows(id,entries){
+  const el=$(id); if(!el)return; const top=entries.filter(x=>x[1]>0).slice(0,12); const max=Math.max(1,...top.map(x=>x[1]));
+  el.innerHTML=top.length?top.map(([label,value])=>`<div class="spend-row"><div class="spend-label">${esc(label)}</div><div class="spend-track"><div class="spend-fill" style="width:${Math.max(2,Math.round(value/max*100))}%"></div></div><div class="spend-value">${moneyText(value)}</div></div>`).join(''):'<p class="muted">还没有已记录价格的数据。</p>';
+}
+function renderSpendingInsights(year){
+  const y=String(year||new Date().getFullYear()); const arr=allItems.filter(i=>String(i.acquiredDate||'').slice(0,4)===y); const priced=arr.filter(i=>String(i.price||'').trim()); const spent=priced.reduce((s,i)=>s+moneyNumber(i.price),0); const avg=priced.length?spent/priced.length:0;
+  const now=new Date(), start30=new Date(now); start30.setDate(start30.getDate()-29); start30.setHours(0,0,0,0); const recent=allItems.filter(i=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(String(i.acquiredDate||'')))return false;const d=new Date(i.acquiredDate+'T00:00:00');return d>=start30&&d<=now;}); const recentSpent=recent.reduce((s,i)=>s+moneyNumber(i.price),0);
+  const maxItem=[...priced].sort((a,b)=>moneyNumber(b.price)-moneyNumber(a.price))[0];
+  $('spendingSummary').innerHTML=`<div class="manage-stat"><b>${moneyText(spent)}</b><span>${y} 年入手</span></div><div class="manage-stat"><b>${moneyText(recentSpent)}</b><span>最近 30 天</span></div><div class="manage-stat"><b>${moneyText(avg)}</b><span>有价格记录的平均单件</span></div><div class="manage-stat"><b>${maxItem?moneyText(moneyNumber(maxItem.price)):'¥0'}</b><span>${maxItem?'本年最高单件':'本年最高单件'}</span></div>`;
+  const months=[]; for(let m=1;m<=12;m++){const ym=`${y}-${String(m).padStart(2,'0')}`;months.push([`${m}月`,arr.filter(i=>String(i.acquiredDate||'').startsWith(ym+'-')).reduce((s,i)=>s+moneyNumber(i.price),0)]);} renderSpendRows('monthlySpendBars',months);
+  const sources=new Map(); arr.forEach(i=>{const k=String(i.source||'').trim()||'未填写来源';sources.set(k,(sources.get(k)||0)+moneyNumber(i.price));}); renderSpendRows('sourceSpendBars',[...sources.entries()].sort((a,b)=>b[1]-a[1]));
+  const top=[...priced].sort((a,b)=>moneyNumber(b.price)-moneyNumber(a.price)).slice(0,5); $('expensiveSpecimens').innerHTML=top.length?top.map(i=>`<div class="expensive-item"><strong>${esc([i.accessionNo,i.nickname||i.mineralName].filter(Boolean).join(' · '))}</strong><span>${moneyText(moneyNumber(i.price))}</span></div>`).join(''):'<p class="muted">这一年还没有价格记录。</p>';
+}
 function renderInsights(){
   const years=[...new Set(allItems.map(i=>String(i.acquiredDate||i.createdAt||'').slice(0,4)).filter(y=>/^\d{4}$/.test(y)))].sort((a,b)=>b-a);
   if(!years.length) years.push(String(new Date().getFullYear()));
   const sel=$('reportYear'); const keep=sel.value; sel.innerHTML=years.map(y=>`<option value="${y}">${y} 年</option>`).join(''); if(years.includes(keep)) sel.value=keep;
-  renderYearReport(sel.value);
+  renderYearReport(sel.value); renderSpendingInsights(sel.value);
   renderBarList('mineralBars',countBy(allItems,i=>i.collectionGroup||i.scientificName||i.mineralName));
   renderBarList('localityBars',countBy(allItems,i=>localityBucket(i)));
 }
@@ -3482,17 +3722,135 @@ function exportYearReview(){
   downloadBlob(new Blob([printableHtml(`${y} 我的矿柜`,body)],{type:'text/html;charset=utf-8'}),`${y}_我的矿柜_年度回顾.html`); showToast('年度回顾已导出');
 }
 
+function formatBytes(bytes){
+  const n=Number(bytes)||0;
+  if(n<1024) return `${Math.round(n)} B`;
+  if(n<1024*1024) return `${(n/1024).toFixed(1)} KB`;
+  if(n<1024*1024*1024) return `${(n/1024/1024).toFixed(1)} MB`;
+  return `${(n/1024/1024/1024).toFixed(2)} GB`;
+}
+function lastBackupAt(){ return localStorage.getItem(LAST_BACKUP_KEY)||''; }
+function backupAgeDays(iso){
+  if(!iso) return null; const t=new Date(iso).getTime(); if(!Number.isFinite(t)) return null;
+  return Math.max(0,Math.floor((Date.now()-t)/86400000));
+}
+async function renderDataSafety(){
+  const last=lastBackupAt(), age=backupAgeDays(last);
+  const lastEl=$('lastBackupValue'), sizeEl=$('localStorageValue'), persistentEl=$('persistentStorageValue'), note=$('dataSafetyNote'), btn=$('persistStorageBtn');
+  if(lastEl) lastEl.textContent=last?(age===0?'今天':`${age} 天前`):'尚未记录';
+  let usage=null, persisted=null;
+  try{ if(navigator.storage?.estimate){ const est=await navigator.storage.estimate(); usage=est?.usage; } }catch(_){}
+  if(sizeEl) sizeEl.textContent=usage!=null?formatBytes(usage):'浏览器未提供';
+  try{ if(navigator.storage?.persisted) persisted=await navigator.storage.persisted(); }catch(_){}
+  if(persistentEl) persistentEl.textContent=persisted===true?'已启用':persisted===false?'未启用':'无法检测';
+  if(btn){
+    const supported=!!navigator.storage?.persist; btn.hidden=!supported; btn.disabled=persisted===true;
+    btn.textContent=persisted===true?'已启用持久存储':'提高本地保存稳定性';
+  }
+  if(note){
+    note.classList.remove('good');
+    if(!last){ note.textContent='还没有记录到完整备份。建议现在导出一份，尤其在继续大量录入之前。'; }
+    else if(age!==null && age>30){ note.textContent=`距离上次完整备份已经 ${age} 天，建议今天再导出一份。`; }
+    else { note.classList.add('good'); note.textContent=`最近一次完整备份：${new Date(last).toLocaleString('zh-CN')}。继续保持定期备份就很好。`; }
+  }
+}
+async function requestPersistentStorage(){
+  if(!navigator.storage?.persist){ showToast('当前浏览器不支持这个设置'); return; }
+  try{
+    const ok=await navigator.storage.persist();
+    showToast(ok?'已请求持久存储保护':'浏览器没有授予持久存储；完整备份仍然最重要');
+  }catch(_){ showToast('这台设备暂时无法设置持久存储'); }
+  renderDataSafety();
+}
+function maybeRemindBackupSafety(){
+  if(!allItems.length) return;
+  const last=lastBackupAt(), age=backupAgeDays(last);
+  if(last && (age===null || age<=30)) return;
+  const shown=localStorage.getItem(BACKUP_REMINDER_KEY)||''; const shownAge=backupAgeDays(shown);
+  if(shown && shownAge!==null && shownAge<7) return;
+  localStorage.setItem(BACKUP_REMINDER_KEY,new Date().toISOString());
+  setTimeout(()=>showToast(last?`已经 ${age} 天没做完整备份了，可以去“备份”里导出一份`:'还没记录过完整备份，建议去“备份”里先导出一份'),1100);
+}
+
+function renderTagManager(){
+  const box=$('tagManagerList'); if(!box) return;
+  const counts=new Map(); allItems.forEach(i=>tagsOf(i.tags).forEach(t=>counts.set(t,(counts.get(t)||0)+1)));
+  const arr=[...counts.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'zh-CN')).slice(0,30);
+  box.innerHTML=arr.length?arr.map(([tag,count])=>`<div class="tag-manager-item"><div><strong>#${esc(tag)}</strong><small>${count} 件使用${counts.size>30?' · 这里只显示前 30 个':''}</small></div><div class="tag-actions"><button type="button" data-tag-action="rename" data-tag="${esc(tag)}">改名 / 合并</button><button type="button" class="danger" data-tag-action="remove" data-tag="${esc(tag)}">删除</button></div></div>`).join(''):'<p class="muted">还没有标签。</p>';
+}
+async function normalizeAllTags(){
+  let changed=0;
+  for(const i of allItems){
+    const nextTags=[...new Set(tagsOf(i.tags))].join(', ');
+    if(nextTags!==String(i.tags||'')){await put({...i,tags:nextTags,updatedAt:new Date().toISOString()});changed++;}
+  }
+  await refresh(); showToast(changed?`已整理 ${changed} 件矿标的标签格式`:'标签格式已经很整齐');
+}
+async function handleTagAction(btn){
+  const old=btn.dataset.tag||''; if(!old) return;
+  if(btn.dataset.tagAction==='rename'){
+    const raw=prompt(`把标签“${old}”改成什么？\n如果输入已有标签，会自动合并。`,old); if(raw===null) return;
+    const nextName=raw.trim(); if(!nextName||nextName===old) return;
+    let n=0;
+    for(const i of allItems){const tags=tagsOf(i.tags);if(!tags.includes(old))continue;const next=[...new Set(tags.map(t=>t===old?nextName:t))];await put({...i,tags:next.join(', '),updatedAt:new Date().toISOString()});n++;}
+    await refresh(); showToast(`已把 ${n} 件里的“${old}”改为“${nextName}”`);
+  } else if(btn.dataset.tagAction==='remove'){
+    if(!confirm(`从所有矿标中删除标签“${old}”？\n只删除标签，不会删除矿标或备注。`)) return;
+    let n=0; for(const i of allItems){const tags=tagsOf(i.tags);if(!tags.includes(old))continue;await put({...i,tags:tags.filter(t=>t!==old).join(', '),updatedAt:new Date().toISOString()});n++;}
+    await refresh(); showToast(`已从 ${n} 件矿标移除“${old}”`);
+  }
+}
+function renderTrash(){
+  const box=$('trashList'), count=$('trashCountText'), empty=$('emptyTrashBtn'); if(!box) return;
+  if(count) count.textContent=`${trashItems.length} 件`; if(empty) empty.disabled=!trashItems.length;
+  const arr=[...trashItems].sort((a,b)=>String(b.deletedAt||'').localeCompare(String(a.deletedAt||'')));
+  box.innerHTML=arr.length?arr.slice(0,50).map(i=>`<div class="trash-item"><div><strong>${esc(i.accessionNo||'')} ${esc(i.nickname||i.mineralName||'矿标')}</strong><small>${esc(placeOf(i)||'产地未填')} · 删除于 ${esc(i.deletedAt?new Date(i.deletedAt).toLocaleDateString('zh-CN'):'—')}</small></div><div class="trash-actions"><button type="button" data-trash-action="restore" data-trash-id="${esc(i.id)}">恢复</button><button type="button" class="danger" data-trash-action="purge" data-trash-id="${esc(i.id)}">永久删除</button></div></div>`).join(''):'<p class="muted">回收站是空的。</p>';
+}
+async function handleTrashAction(btn){
+  const id=btn.dataset.trashId; const item=trashItems.find(i=>i.id===id); if(!item) return;
+  if(btn.dataset.trashAction==='restore'){
+    const next={...item}; delete next.deletedAt; next.updatedAt=new Date().toISOString(); await put(next); await refresh(); renderTrash(); showToast('矿标已恢复');
+  } else if(btn.dataset.trashAction==='purge'){
+    if(!confirm(`永久删除 ${item.accessionNo||''} ${item.nickname||item.mineralName||'这件矿标'}？\n这一步无法撤销，照片也会一起移除。`)) return;
+    await removeItem(id); await refresh(); renderTrash(); showToast('已永久删除');
+  }
+}
+async function emptyTrash(){
+  if(!trashItems.length){showToast('回收站已经是空的');return;}
+  if(!confirm(`永久删除回收站里的 ${trashItems.length} 件矿标？\n这一步无法撤销，照片也会一起移除。`)) return;
+  for(const i of [...trashItems]) await removeItem(i.id);
+  await refresh(); renderTrash(); showToast('回收站已清空');
+}
+function openSettings(){ renderDataSafety(); renderTagManager(); renderTrash(); showSheet(els.settings); }
+
 async function exportBackup() {
+  const exportedAt=new Date().toISOString();
   const payload={
     app:'我的矿标',
-    version:6,
-    exportedAt:new Date().toISOString(),
-    items:allItems,
-    settings:{taxonomy,wishlist,acquisitionBudgets}
+    version:9,
+    exportedAt,
+    items:[...allItems,...trashItems],
+    settings:{taxonomy,wishlist,acquisitionBudgets,lastFullBackupAt:exportedAt}
   };
   const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
-  downloadBlob(blob,`我的矿标_完整备份_${new Date().toISOString().slice(0,10)}.mineralbackup`);
-  showToast('完整备份已导出');
+  const filename=`我的矿标_完整备份_${exportedAt.slice(0,10)}.mineralbackup`;
+  let saved=true;
+  try{
+    if(typeof File!=='undefined' && navigator.share && navigator.canShare){
+      const file=new File([blob],filename,{type:'application/json'});
+      if(navigator.canShare({files:[file]})){
+        await navigator.share({files:[file],title:'我的矿标 · 完整备份'});
+      }else downloadBlob(blob,filename);
+    }else downloadBlob(blob,filename);
+  }catch(err){
+    if(err?.name==='AbortError') saved=false;
+    else { console.warn('backup share fallback',err); downloadBlob(blob,filename); }
+  }
+  if(!saved){ showToast('已取消保存备份'); return; }
+  localStorage.setItem(LAST_BACKUP_KEY,exportedAt);
+  localStorage.removeItem(BACKUP_REMINDER_KEY);
+  renderDataSafety();
+  showToast('完整备份已导出，并已记录本次备份时间');
 }
 function downloadBlob(blob,name){
   const a=document.createElement('a');
@@ -3507,7 +3865,7 @@ async function importBackup(file) {
   try { payload=JSON.parse(await file.text()); }
   catch { alert('这个文件无法读取，请选择由“我的矿标”导出的备份文件。'); return; }
   if(!payload || !Array.isArray(payload.items)){ alert('备份格式不正确。'); return; }
-  if(!confirm(`将用备份中的 ${payload.items.length} 件矿标替换当前 ${allItems.length} 件数据。\n\n继续前，建议先导出当前备份。`)) return;
+  if(!confirm(`将用备份中的 ${payload.items.length} 条记录（包含回收站项目，如有）替换当前 ${allItems.length+trashItems.length} 条本地记录。\n\n继续前，建议先导出当前备份。`)) return;
   await clearAll();
   for(const i of payload.items) await put(i);
   if(Array.isArray(payload.settings?.taxonomy)){
@@ -3516,9 +3874,11 @@ async function importBackup(file) {
   }
   if(Array.isArray(payload.settings?.wishlist)){ wishlist=payload.settings.wishlist; saveWishlist(); }
   if(payload.settings?.acquisitionBudgets && typeof payload.settings.acquisitionBudgets==='object' && !Array.isArray(payload.settings.acquisitionBudgets)){ acquisitionBudgets=payload.settings.acquisitionBudgets; saveAcquisitionBudgets(); }
+  const restoredBackupAt=payload.settings?.lastFullBackupAt||payload.exportedAt; if(restoredBackupAt) localStorage.setItem(LAST_BACKUP_KEY,restoredBackupAt);
   await refresh();
+  renderDataSafety();
   closeSheet(els.settings);
-  showToast(`已恢复 ${payload.items.length} 件矿标`);
+  showToast(`已恢复 ${payload.items.length} 条记录`);
 }
 function csvEscape(v=''){
   const s=String(v??'');
@@ -3527,13 +3887,13 @@ function csvEscape(v=''){
 function exportCSV(){
   const headers=[
     '馆藏编号','主矿物/常用叫法','矿物身份可信度','产地可信度','科学矿物名','化学式','莫氏硬度','科学大类','科学子类','矿物族','收藏大类','细分类','晶系','共生矿物','自定义名称',
-    '国家','省/州','市/县','矿山/矿区','颜色','晶型/形态','尺寸','尺寸级别','收藏位置','收藏日期','来源','来源/原藏备注','入手价','当前估值','准备售价','最低愿售价','是否准备出售',
+    '国家','省/州','市/县','矿山/矿区','颜色','晶型/形态','尺寸','尺寸级别','重量','收藏位置','收藏日期','来源','原藏/来源补充','入手价','当前估值','准备售价','最低愿售价','是否准备出售',
     '收藏状态','售出金额','赠送给','售出/赠送日期','去向备注','标本状况','损坏/修复日期','损坏情况','待办','下次养护','借出状态','借给谁','预计归还','标签','备注','最喜欢'
   ];
   const rows=[headers.join(',')];
   allItems.forEach(i=>{
     const values=[i.accessionNo,i.mineralName,confidenceLabel(i.identityConfidence),confidenceLabel(i.localityConfidence),i.scientificName,i.formula,i.hardness,i.scienceClass,i.scienceSubclass,i.scienceGroup,i.collectionGroup,i.collectionType,i.crystalSystem,i.associated,i.nickname,
-      i.country,i.province,i.city,i.mine,i.color,i.habit,i.size,i.sizeClass||specimenSizeClass(i.size),i.storage,i.acquiredDate,i.source,i.provenanceNote,i.price,i.estimatedValue,i.saleAskPrice,i.minSalePrice,i.forSale?'是':'否',
+      i.country,i.province,i.city,i.mine,i.color,i.habit,i.size,i.sizeClass||specimenSizeClass(i.size),i.weight,i.storage,i.acquiredDate,i.source,i.provenanceNote,i.price,i.estimatedValue,i.saleAskPrice,i.minSalePrice,i.forSale?'是':'否',
       dispositionLabel(dispositionOf(i)),i.salePrice,i.giftTo,i.dispositionDate,i.dispositionNote,conditionLabel(conditionOf(i)),i.damageDate,i.damageNote,taskLabels(i).join('；'),i.nextCareDate,i.loanStatus==='loaned'?'已借出':i.loanStatus==='returned'?'已归还':'未借出',i.loanTo,i.loanDue,i.tags,i.notes,i.favorite?'是':'否'];
     rows.push(values.map(csvEscape).join(','));
   });
@@ -3550,8 +3910,16 @@ function bindEvents(){
   });
 
   $('batchBtn').onclick=openBatch; $('closeBatch').onclick=()=>closeSheet(els.batch); $('saveBatch').onclick=saveBatch;
+  $('multiSelectBtn')?.addEventListener('click',()=>setBulkMode(!bulkMode));
+  $('bulkSelectAllBtn')?.addEventListener('click',()=>{const ids=filteredItems().map(i=>i.id);const allSelected=ids.length&&ids.every(id=>selectedBulkIds.has(id));ids.forEach(id=>allSelected?selectedBulkIds.delete(id):selectedBulkIds.add(id));render();});
+  $('bulkMoveStorageBtn')?.addEventListener('click',bulkMoveStorage);
+  $('bulkAddTagBtn')?.addEventListener('click',bulkAddTag);
+  $('bulkGroupBtn')?.addEventListener('click',bulkChangeGroup);
+  $('bulkTaskBtn')?.addEventListener('click',bulkAddTask);
+  $('bulkForSaleBtn')?.addEventListener('click',bulkMarkForSale);
   $('addBatchItem').onclick=()=>{ batchRows.push(makeBatchRow()); renderBatchItems(); };
   $('addThreeBatchItems').onclick=()=>{ batchRows.push(makeBatchRow(),makeBatchRow(),makeBatchRow()); renderBatchItems(); };
+  ['batchPrice','batchAcquiredDate'].forEach(id=>{ $(id)?.addEventListener('input',renderBatchSettlement); $(id)?.addEventListener('change',renderBatchSettlement); });
   $('batchCollectionGroup').addEventListener('input',()=>updateTypeSuggestions('batchCollectionGroup'));
   $('batchMineralName').addEventListener('input',updateBatchScientificInfo); $('batchMineralName').addEventListener('change',updateBatchScientificInfo);
   $('batchAssociated').addEventListener('input',()=>updateCarePreview(true)); $('batchAssociated').addEventListener('change',()=>updateCarePreview(true));
@@ -3574,20 +3942,20 @@ function bindEvents(){
     const ad=e.target.closest('[data-acq-date]'); if(ad){ selectedAcquisitionDate=ad.dataset.acqDate; renderAcquisitionCalendar(); return; }
   });
   $('addWishBtn').onclick=()=>{ const mineral=$('wishMineral').value.trim(); if(!mineral){showToast('先写想要什么矿');return;} wishlist.unshift({id:'w_'+uid(),mineral,locality:$('wishLocality').value.trim(),budget:$('wishBudget').value.trim(),priority:$('wishPriority').value,notes:$('wishNotes').value.trim(),createdAt:new Date().toISOString()}); saveWishlist(); ['wishMineral','wishLocality','wishBudget','wishNotes'].forEach(id=>$(id).value=''); $('wishPriority').value='normal'; renderWishlist(); showToast('已加入愿望单'); };
-  $('exportSaleListBtn').onclick=exportSaleList; $('reportYear').addEventListener('change',e=>renderYearReport(e.target.value)); $('exportYearReviewBtn').onclick=exportYearReview;
+  $('exportSaleListBtn').onclick=exportSaleList; $('reportYear').addEventListener('change',e=>{renderYearReport(e.target.value);renderSpendingInsights(e.target.value);}); $('exportYearReviewBtn').onclick=exportYearReview;
   $('acquisitionMonth').addEventListener('change',()=>{ selectedAcquisitionDate=''; renderAcquisitionCalendar(); });
   $('acqPrevMonth').onclick=()=>{ $('acquisitionMonth').value=monthShift(ensureAcquisitionMonth(),-1); selectedAcquisitionDate=''; renderAcquisitionCalendar(); };
   $('acqNextMonth').onclick=()=>{ $('acquisitionMonth').value=monthShift(ensureAcquisitionMonth(),1); selectedAcquisitionDate=''; renderAcquisitionCalendar(); };
   $('acquisitionBudget').addEventListener('change',()=>{ const ym=ensureAcquisitionMonth(); const raw=$('acquisitionBudget').value.trim(); if(raw) acquisitionBudgets[ym]=raw; else delete acquisitionBudgets[ym]; saveAcquisitionBudgets(); renderAcquisitionCalendar(); showToast(raw?'本月预算已保存':'本月预算已清除'); });
 
-  $('closeEditor').onclick=()=>closeSheet(els.editor); $('closeDetail').onclick=()=>closeSheet(els.detail); $('closeSettings').onclick=()=>closeSheet(els.settings); $('settingsBtn').onclick=()=>showSheet(els.settings); $('homeBtn').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+  $('closeEditor').onclick=()=>closeSheet(els.editor); $('closeDetail').onclick=()=>closeSheet(els.detail); $('closeSettings').onclick=()=>closeSheet(els.settings); $('settingsBtn').onclick=()=>{showSheet(els.settings);renderDataSafety();}; $('persistStorageBtn')?.addEventListener('click',requestPersistentStorage); $('homeBtn').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
   $('editDetail').onclick=()=>{ const i=allItems.find(x=>x.id===detailId); closeSheet(els.detail); if(i) openEditor(i); };
 
   els.form.addEventListener('submit',async e=>{ e.preventDefault(); if(!$('mineralName').value.trim()){showToast('先写一下主矿物名称');return;} const item=gatherForm(); ensureTaxonomyEntry(item.collectionGroup,item.collectionType); await put(item); closeSheet(els.editor); await refresh(); showToast('矿标已保存'); });
-  $('deleteBtn').onclick=async()=>{ const id=$('recordId').value; if(id&&confirm('确定删除这件矿标吗？这个操作无法撤销。')){await removeItem(id);closeSheet(els.editor);await refresh();showToast('已删除');} };
+  $('deleteBtn').onclick=async()=>{ const id=$('recordId').value; const item=allItems.find(i=>i.id===id); if(item&&confirm('把这件矿标移到回收站？\n之后可以在“备份 → 最近删除”里恢复。')){await put({...item,deletedAt:new Date().toISOString(),updatedAt:new Date().toISOString()});closeSheet(els.editor);await refresh();showToast('已移到回收站，可恢复');} };
 
   els.photoInput.onchange=async()=>{ showToast('正在处理照片…'); editingPhotos.push(...await filesToImages(els.photoInput.files)); els.photoInput.value=''; renderMainPreviews(); reconcileTaskCheckboxesFromEditor(); showToast('照片已加入；“待拍照”已自动完成'); };
-  els.labelPhotoInput.onchange=async()=>{ showToast('正在处理照片…'); editingLabelPhotos.push(...await filesToImages(els.labelPhotoInput.files)); els.labelPhotoInput.value=''; renderLabelPreviews(); reconcileTaskCheckboxesFromEditor(); showToast('原矿标照片已加入；“待补标签”已自动完成'); };
+  els.labelPhotoInput.onchange=async()=>{ showToast('正在处理照片…'); editingLabelPhotos.push(...await filesToImages(els.labelPhotoInput.files)); els.labelPhotoInput.value=''; renderLabelPreviews(); reconcileTaskCheckboxesFromEditor(); showToast('原矿标照片已加入；“待补原矿标 / 证书”已自动完成'); };
   $('timelinePhotoInput').onchange=async()=>{ showToast('正在处理时间线照片…'); pendingTimelinePhotos.push(...await filesToImages($('timelinePhotoInput').files)); $('timelinePhotoInput').value=''; renderPendingTimelinePhotos(); showToast('照片已加入这条记录'); };
   $('addTimelineEvent').onclick=addTimelineEventFromForm;
   $('timelineList').addEventListener('click',e=>{ const b=e.target.closest('[data-remove-event]'); if(!b)return; editingTimeline=editingTimeline.filter(x=>x.id!==b.dataset.removeEvent); renderTimelineEditor(); });
@@ -3606,8 +3974,6 @@ function bindEvents(){
     cb.dataset.userTouched='1';
     if(cb.dataset.task==='locality' && !cb.checked) delete cb.dataset.manualPersisted;
   }));
-  $('forSale').addEventListener('change',()=>{ const cb=document.querySelector('[data-task="sell"]'); if(cb) cb.checked=$('forSale').checked; });
-  document.querySelector('[data-task="sell"]')?.addEventListener('change',e=>{$('forSale').checked=e.target.checked;});
   $('nextCareDate').addEventListener('focus',()=>{ if(!$('nextCareDate').value) $('nextCareDate').value=addMonthsToDate(todayStr(),careSuggestedMonths($('mineralName').value,$('associated').value)); });
   $('crystalSystem').addEventListener('change',()=>{ const select=$('crystalSystem'); const auto=select.dataset.autoValue||''; if(!select.value||select.value===auto) delete select.dataset.manual; else select.dataset.manual='1'; updateCrystalSystemFromMineral(false); });
 
@@ -3616,6 +3982,10 @@ function bindEvents(){
   document.querySelectorAll('.view-tab').forEach(tab=>tab.onclick=()=>{document.querySelectorAll('.view-tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active');browseMode=tab.dataset.view;render();});
 
   $('exportBtn').onclick=exportBackup; $('csvBtn').onclick=exportCSV;
+  $('normalizeTagsBtn')?.addEventListener('click',normalizeAllTags);
+  $('tagManagerList')?.addEventListener('click',e=>{const b=e.target.closest('[data-tag-action]');if(b)handleTagAction(b);});
+  $('trashList')?.addEventListener('click',e=>{const b=e.target.closest('[data-trash-action]');if(b)handleTrashAction(b);});
+  $('emptyTrashBtn')?.addEventListener('click',emptyTrash);
   $('importInput').onchange=async()=>{const f=$('importInput').files[0];if(f)await importBackup(f);$('importInput').value='';};
 }
 
@@ -3631,6 +4001,8 @@ async function init(){
     populateKnownLocalities('','batchKnownLocalitySelect','batchKnownProvinceSelect');
     bindEvents();
     await refresh();
+    renderDataSafety();
+    maybeRemindBackupSafety();
     const qp=new URLSearchParams(location.search).get('specimen');
     if(qp){ const hit=allItems.find(i=>String(i.accessionNo||'').toLowerCase()===String(qp).toLowerCase()); if(hit) setTimeout(()=>openDetail(hit.id),120); }
     const dueCount=allItems.filter(i=>i.nextCareDate&&i.nextCareDate<=todayStr()&&dispositionOf(i)==='held').length;
@@ -3644,6 +4016,7 @@ async function init(){
   }
 }
 
+// 2026.09.02 · 混合批量采购 / 消费分析 / 多选批量管理 / 入手时间线一致性
 document.addEventListener('DOMContentLoaded',init);
 
 </script>
