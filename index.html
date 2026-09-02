@@ -686,6 +686,9 @@ body.dialog-lock { overflow:hidden !important; }
 .locality-quick-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
 .locality-quick-grid .field { margin:0; }
 .locality-group-note { color:var(--muted); font-size:9px; line-height:1.55; margin:7px 2px 0; }
+.locality-merged-note { grid-column:1 / -1; padding:12px 14px 13px; color:var(--muted); font-size:10px; line-height:1.65; background:linear-gradient(135deg,rgba(228,236,232,.56),rgba(251,250,247,.7)); border-top:1px solid var(--line); }
+.locality-merged-note b { color:var(--accent-2); font-weight:750; }
+.locality-unified-card .auto-badge { letter-spacing:.02em; font-size:8px; }
 @media (max-width:520px){
   .care-grid { grid-template-columns:1fr; }
   .care-item, .care-item:nth-child(odd) { border-right:0; }
@@ -931,6 +934,7 @@ body.dialog-lock { overflow:hidden !important; }
 #addBtnTop,#addBtnEmpty,#fab,#addBtnBottom{touch-action:manipulation;pointer-events:auto!important;}
 </style>
   <title>我的矿标</title>
+  <!-- build: 2026-09-locality-unified -->
 </head>
 <body>
   <div class="app-shell">
@@ -998,7 +1002,7 @@ body.dialog-lock { overflow:hidden !important; }
       <section class="section-heading">
         <div>
           <h2>收藏</h2>
-          <p id="resultText">还没有矿标</p>
+<p id="resultText">还没有矿标</p>
         </div>
         <button id="batchBtn" class="mini-action">批量添加</button>
       </section>
@@ -1068,22 +1072,12 @@ body.dialog-lock { overflow:hidden !important; }
       </div>
 
       <h3 class="group-title">产地</h3>
-      <div class="form-card">
-        <div class="known-locality-wrap">
-          <div class="locality-quick-grid">
-            <label class="field"><span>国家 / 地区快捷选</span><select id="knownCountrySelect"><option value="">请选择国家 / 地区</option></select></label>
-            <label class="field"><span>省 / 州快捷选</span><select id="knownProvinceSelect"><option value="">先选择国家 / 地区</option></select></label>
-            <label class="field"><span>市 / 县快捷选</span><select id="knownCitySelect"><option value="">可选：先选择省 / 州</option></select></label>
-            <label class="field"><span>知名矿区 / 矿山</span><select id="knownLocalitySelect"><option value="">按当前国家 / 省份筛选</option></select></label>
-          </div>
-          <div class="locality-group-note">可以一路按“国家 → 省 / 州 → 市 / 县 → 矿区”下拉选择，也可以在下面四个输入框里直接打字。选了“中国”以后，省份下拉只显示中国省级行政单位；知名矿区也只显示当前国家 / 省份相关项，不再混入美国、英国等其他国家。只知道“印度”这种国家级产地同样有效。</div>
-        </div>
-      </div>
-      <div class="form-card grid-two">
-        <label class="field"><span>国家 / 地区</span><input id="country" list="localityCountries" placeholder="例如：中国 / 印度 / 美国" /><small class="field-hint">只知道国家也可以直接保存；省 / 州、城市和矿区都是可选的进一步细化。</small></label>
-        <label class="field"><span>省 / 州</span><input id="province" list="localityProvinces" placeholder="湖南" /><small class="field-hint">会根据当前国家动态给出省 / 州建议；也可以自由输入。</small></label>
-        <label class="field"><span>市 / 县</span><input id="city" list="localityCities" placeholder="郴州" /><small class="field-hint">会根据当前省 / 州缩小建议范围。</small></label>
-        <label class="field"><span>矿山 / 矿区</span><input id="mine" list="localityMines" placeholder="香花岭矿区" /><small class="field-hint">知名矿区只按当前国家 / 省 / 市筛选；没有收录的照样可手输。</small></label>
+      <div class="form-card grid-two locality-unified-card">
+        <label class="field"><span>国家 / 地区 <em class="auto-badge">可选可输</em></span><input id="country" list="localityCountries" placeholder="例如：中国 / 印度 / 美国" /><small class="field-hint">点输入框可选建议，也可以直接打字；只知道国家也算有效产地。</small></label>
+        <label class="field"><span>省 / 州 <em class="auto-badge">可选可输</em></span><input id="province" list="localityProvinces" placeholder="例如：湖南 / 马哈拉施特拉邦" /><small class="field-hint">会按当前国家给出建议；不知道可以留空。</small></label>
+        <label class="field"><span>市 / 县 <em class="auto-badge">可选可输</em></span><input id="city" list="localityCities" placeholder="例如：郴州 / 浦那" /><small class="field-hint">会按当前国家和省 / 州缩小建议范围。</small></label>
+        <label class="field"><span>矿山 / 矿区 <em class="auto-badge">可选可输</em></span><input id="mine" list="localityMines" placeholder="例如：香花岭矿区；不知道可留空" /><small class="field-hint">会优先建议当前地区的经典矿区；没有收录的产地照样可以自己输入。</small></label>
+        <div class="locality-merged-note">现在只填这一套就够了：<b>国家 → 省 / 州 → 市 / 县 → 矿山 / 矿区</b>。每一级都既能从建议里选，也能直接输入；后三级都不是必填。</div>
       </div>
       <datalist id="localityCountries"></datalist><datalist id="localityProvinces"></datalist><datalist id="localityCities"></datalist><datalist id="localityMines"></datalist>
       <input type="hidden" id="localityId" />
@@ -1202,14 +1196,11 @@ body.dialog-lock { overflow:hidden !important; }
         <label class="field"><span>共同细分类</span><input id="batchCollectionType" list="collectionTypeSuggestions" placeholder="可不填" /></label>
         <label class="field"><span>共生矿物</span><input id="batchAssociated" placeholder="例如：方解石、方铅矿" /><small class="field-hint">这一批共同的共生矿也会参与养护与安全判断</small></label>
         <div id="batchCareCard" class="care-card" aria-live="polite"></div>
-        <label class="field"><span>国家 / 地区快捷选</span><select id="batchKnownCountrySelect"><option value="">请选择国家 / 地区</option></select></label>
-        <label class="field"><span>省 / 州快捷选</span><select id="batchKnownProvinceSelect"><option value="">先选择国家 / 地区</option></select></label>
-        <label class="field"><span>市 / 县快捷选</span><select id="batchKnownCitySelect"><option value="">可选：先选择省 / 州</option></select></label>
-        <label class="field"><span>知名矿区 / 矿山</span><select id="batchKnownLocalitySelect"><option value="">按当前国家 / 省份筛选</option></select></label>
-        <label class="field"><span>国家 / 地区</span><input id="batchCountry" list="localityCountries" placeholder="例如：中国 / 印度 / 美国" /><small class="field-hint">批量录入时只填国家也算有效产地，不会自动生成“待补更详细产地”。</small></label>
-        <label class="field"><span>省 / 州</span><input id="batchProvince" list="localityProvinces" placeholder="内蒙古" /></label>
-        <label class="field"><span>市 / 县</span><input id="batchCity" list="localityCities" placeholder="赤峰" /></label>
-        <label class="field"><span>矿山 / 矿区</span><input id="batchMine" list="localityMines" placeholder="矿山 / 矿区" /></label>
+        <label class="field"><span>国家 / 地区 <em class="auto-badge">可选可输</em></span><input id="batchCountry" list="localityCountries" placeholder="例如：中国 / 印度 / 美国" /><small class="field-hint">只填国家也算有效产地，不会自动生成“待补更详细产地”。</small></label>
+        <label class="field"><span>省 / 州 <em class="auto-badge">可选可输</em></span><input id="batchProvince" list="localityProvinces" placeholder="例如：内蒙古" /><small class="field-hint">会按当前国家给出建议；不知道可以留空。</small></label>
+        <label class="field"><span>市 / 县 <em class="auto-badge">可选可输</em></span><input id="batchCity" list="localityCities" placeholder="例如：赤峰" /><small class="field-hint">会按当前国家和省 / 州缩小建议。</small></label>
+        <label class="field"><span>矿山 / 矿区 <em class="auto-badge">可选可输</em></span><input id="batchMine" list="localityMines" placeholder="例如：黄岗矿；不知道可留空" /><small class="field-hint">会推荐当前地区的经典矿区，也可以直接输入未收录产地。</small></label>
+        <div class="locality-merged-note">批量添加也只需要这一套产地。国家确定后，后面的省 / 州、市 / 县和矿区建议会跟着缩小范围。</div>
         <label class="field"><span>收藏日期</span><input id="batchAcquiredDate" type="date" /></label>
         <label class="field"><span>来源</span><input id="batchSource" placeholder="矿展 / 商家…" /></label>
         <label class="field"><span>共同入手价（每件）</span><input id="batchPrice" inputmode="decimal" placeholder="每件相同才填" /></label>
@@ -1494,7 +1485,7 @@ const MINERAL_CATALOG = [
   {name:'沸石类（未细分）', system:'不是单一晶系', formula:'成分随具体沸石种变化', hardness:'通常约 3.5–5.5（随种类变化）', scienceClass:'硅酸盐', scienceSubclass:'架状硅酸盐·沸石', scienceGroup:'沸石族群 / 未细分', aliases:['沸石','zeolite','zeolites'], structureNote:'“沸石”是一个矿物族群/收藏圈统称，不是单一矿物种。若能确定具体种类，建议改选方沸石、辉沸石、片沸石、钠沸石、菱沸石、浊沸石、丝光沸石等具体名称；暂时分不清时可以先用“沸石类（未细分）”记录。'}
 ];
 
-const MINERAL_CATALOG_VERSION = '2026.08 · 行政区划层级 / 矿区筛选修复 · 沸石补充 · 产地层级修复';
+const MINERAL_CATALOG_VERSION = '2026.09 · 产地录入合并 · 行政区划联动 · 世界地图 / 入手日历 · 沸石补充';
 function patchMineral(name, patch){ const x=MINERAL_CATALOG.find(v=>v.name===name); if(x) Object.assign(x, patch); }
 patchMineral('菱锰矿',{aliases:['rhodochrosite','红纹石','菱錳礦']});
 patchMineral('赤铁矿',{hardness:'5.5–6.5', aliases:['hematite','镜铁矿','鏡鐵礦','specularite','specular hematite','铁玫瑰','iron rose'], structureNote:'“镜铁矿 / Specularite”是具银灰色镜面光泽、常呈片状/板状集合体的赤铁矿变种/形态称呼；科学矿物种仍归赤铁矿。'});
@@ -1972,15 +1963,31 @@ function fillDatalist(id,values){
   const el=$(id); if(!el) return;
   el.innerHTML=[...new Set(values.filter(Boolean))].sort((a,b)=>a.localeCompare(b,'zh-CN')).map(v=>`<option value="${esc(v)}"></option>`).join('');
 }
+function populateMineDatalist(id,pool=[],mineralName=''){
+  const el=$(id); if(!el) return;
+  const info=findMineralInfo(mineralName);
+  const canonical=info?.name||'';
+  const ranked=[...pool].sort((a,b)=>{
+    const am=canonical && (a.minerals||[]).includes(canonical) ? 0 : 1;
+    const bm=canonical && (b.minerals||[]).includes(canonical) ? 0 : 1;
+    return am-bm || String(a.mine||a.label||'').localeCompare(String(b.mine||b.label||''),'zh-CN');
+  });
+  const seen=new Set();
+  el.innerHTML=ranked.filter(loc=>{const key=String(loc.mine||'').trim();if(!key||seen.has(key))return false;seen.add(key);return true;}).map(loc=>{
+    const area=[loc.city,normProvince(loc.province),normCountry(loc.country)].filter(Boolean).join(' · ');
+    return `<option value="${esc(loc.mine)}" label="${esc(area)}"></option>`;
+  }).join('');
+}
 function populateLocalityDatalists(batch=false){
   const ids=localityIds(batch);
   const country=$(ids.country)?.value||'';
   const province=$(ids.province)?.value||'';
   const city=$(ids.city)?.value||'';
+  const mineralName=$(batch?'batchMineralName':'mineralName')?.value||'';
   fillDatalist('localityCountries',[...COUNTRY_SUGGESTIONS,...LOCALITY_CATALOG.map(x=>x.country)]);
   fillDatalist('localityProvinces',valuesForProvince(country));
   fillDatalist('localityCities',valuesForCity(country,province));
-  fillDatalist('localityMines',filteredLocalityPool(country,province,city).map(x=>x.mine));
+  populateMineDatalist('localityMines',filteredLocalityPool(country,province,city),mineralName);
 }
 function populateCountrySelect(selectId='knownCountrySelect'){
   const select=$(selectId); if(!select) return;
@@ -1998,7 +2005,7 @@ function populateLocalityProvinceSelect(selectId='knownProvinceSelect',country='
   if([...select.options].some(o=>o.value===keep)) select.value=keep;
 }
 function populateLocalityCitySelect(selectId='knownCitySelect',country='',province=''){
-  const select=$(selectId); if(!select) return;
+const select=$(selectId); if(!select) return;
   const keep=select.value;
   const vals=valuesForCity(country,province);
   const prompt=!country?'先选择国家 / 地区':!province?'先选择省 / 州':'请选择市 / 县（可不填）';
@@ -2076,6 +2083,28 @@ function applyKnownLocality(localityId,batch=false){
   syncHierarchySelects(batch);
   if($(ids.localitySelect)) $(ids.localitySelect).value=loc.id;
   showToast(`已填入：${loc.label}`);
+}
+function handleUnifiedLocalityInput(level,batch=false,commit=false){
+  const ids=localityIds(batch);
+  const country=normCountry($(ids.country)?.value||'');
+  const province=normProvince($(ids.province)?.value||'');
+  if(commit){
+    if(level==='country' && province && !valuesForProvince(country).some(v=>normProvince(v)===province)){
+      if($(ids.province)) $(ids.province).value='';
+      if($(ids.city)) $(ids.city).value='';
+      if($(ids.mine)) $(ids.mine).value='';
+    }
+    if(level==='province'){
+      const city=String($(ids.city)?.value||'').trim();
+      if(city && !valuesForCity(country,$(ids.province)?.value||'').some(v=>cityTokens(city).includes(v)||v===city)){
+        if($(ids.city)) $(ids.city).value='';
+        if($(ids.mine)) $(ids.mine).value='';
+      }
+    }
+  }
+  if(!batch && $('localityId')) $('localityId').value='';
+  populateLocalityDatalists(batch);
+  if(!batch){ reconcileTaskCheckboxesFromEditor(); updateDuplicateHint(); }
 }
 
 let currentMode = 'all';
@@ -3464,11 +3493,10 @@ function bindEvents(){
   $('batchCollectionGroup').addEventListener('input',()=>updateTypeSuggestions('batchCollectionGroup'));
   $('batchMineralName').addEventListener('input',updateBatchScientificInfo); $('batchMineralName').addEventListener('change',updateBatchScientificInfo);
   $('batchAssociated').addEventListener('input',()=>updateCarePreview(true)); $('batchAssociated').addEventListener('change',()=>updateCarePreview(true));
-  $('batchKnownCountrySelect').addEventListener('change',()=>applyHierarchySelection('country',true));
-  $('batchKnownProvinceSelect').addEventListener('change',()=>applyHierarchySelection('province',true));
-  $('batchKnownCitySelect').addEventListener('change',()=>applyHierarchySelection('city',true));
-  $('batchKnownLocalitySelect').addEventListener('change',e=>applyKnownLocality(e.target.value,true));
-  ['batchCountry','batchProvince','batchCity','batchMine'].forEach(id=>$(id).addEventListener('input',()=>populateKnownLocalities($('batchMineralName').value,'batchKnownLocalitySelect','batchKnownProvinceSelect')));
+  [['batchCountry','country'],['batchProvince','province'],['batchCity','city'],['batchMine','mine']].forEach(([id,level])=>{
+    $(id).addEventListener('input',()=>handleUnifiedLocalityInput(level,true,false));
+    $(id).addEventListener('change',()=>handleUnifiedLocalityInput(level,true,true));
+  });
 
   $('taxonomyBtn').onclick=()=>{ renderTaxonomyManager(); showSheet(els.taxonomy); };
   $('closeTaxonomy').onclick=()=>closeSheet(els.taxonomy);
@@ -3505,11 +3533,10 @@ function bindEvents(){
   const mineralChanged=()=>{updateCrystalSystemFromMineral(true);updateCarePreview(false);updateCareReminderHint();updateDuplicateHint();};
   $('mineralName').addEventListener('input',mineralChanged); $('mineralName').addEventListener('change',mineralChanged);
   const associatedChanged=()=>{updateCarePreview(false);updateCareReminderHint();}; $('associated').addEventListener('input',associatedChanged); $('associated').addEventListener('change',associatedChanged);
-  $('knownCountrySelect').addEventListener('change',()=>applyHierarchySelection('country',false));
-  $('knownProvinceSelect').addEventListener('change',()=>applyHierarchySelection('province',false));
-  $('knownCitySelect').addEventListener('change',()=>applyHierarchySelection('city',false));
-  $('knownLocalitySelect').addEventListener('change',e=>{applyKnownLocality(e.target.value,false);reconcileTaskCheckboxesFromEditor();updateDuplicateHint();});
-  ['country','province','city','mine'].forEach(id=>$(id).addEventListener('input',()=>{if($('localityId'))$('localityId').value='';populateKnownLocalities($('mineralName').value,'knownLocalitySelect','knownProvinceSelect');reconcileTaskCheckboxesFromEditor();updateDuplicateHint();}));
+  [['country','country'],['province','province'],['city','city'],['mine','mine']].forEach(([id,level])=>{
+    $(id).addEventListener('input',()=>handleUnifiedLocalityInput(level,false,false));
+    $(id).addEventListener('change',()=>handleUnifiedLocalityInput(level,false,true));
+  });
   ['collectionGroup','collectionType'].forEach(id=>$(id).addEventListener('input',updateDuplicateHint));
   $('collectionGroup').addEventListener('input',()=>updateTypeSuggestions('collectionGroup'));
   $('disposition').addEventListener('change',()=>{updateLifecycleFields();reconcileTaskCheckboxesFromEditor();}); $('conditionStatus').addEventListener('change',()=>{updateLifecycleFields();reconcileTaskCheckboxesFromEditor();}); $('loanStatus').addEventListener('change',updateLoanFields); $('size').addEventListener('input',updateSizeClassHint);
