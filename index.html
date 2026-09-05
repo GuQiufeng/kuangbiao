@@ -3865,9 +3865,43 @@ async function importBackup(file) {
   try { payload=JSON.parse(await file.text()); }
   catch { alert('这个文件无法读取，请选择由“我的矿标”导出的备份文件。'); return; }
   if(!payload || !Array.isArray(payload.items)){ alert('备份格式不正确。'); return; }
+  if(payload.items.some(i=>!i || typeof i!=='object' || !String(i.id||'').trim())){
+    alert('备份中存在无效记录，已停止导入；当前数据库没有被修改。');
+    return;
+  }
   if(!confirm(`将用备份中的 ${payload.items.length} 条记录（包含回收站项目，如有）替换当前 ${allItems.length+trashItems.length} 条本地记录。\n\n继续前，建议先导出当前备份。`)) return;
-  await clearAll();
-  for(const i of payload.items) await put(i);
+
+  try{
+    // 在同一个 IndexedDB 事务中完成“清空 + 全量写入”。
+    // 任意一条写入失败时事务会整体回滚，避免留下半恢复状态。
+    await new Promise((resolve,reject)=>{
+      const t=db.transaction(STORE,'readwrite');
+      const store=t.objectStore(STORE);
+      let failed=false;
+      const fail=(err)=>{
+        if(failed) return;
+        failed=true;
+        try{ t.abort(); }catch(_){ }
+        reject(err instanceof Error ? err : new Error('备份恢复失败'));
+      };
+      t.oncomplete=()=>{ if(!failed) resolve(); };
+      t.onabort=()=>fail(t.error||new Error('备份恢复已回滚'));
+      t.onerror=()=>{ /* 由具体请求或 onabort 统一处理 */ };
+      const clearReq=store.clear();
+      clearReq.onerror=()=>fail(clearReq.error||new Error('无法清空旧数据'));
+      clearReq.onsuccess=()=>{
+        for(const item of payload.items){
+          const req=store.put(item);
+          req.onerror=()=>fail(req.error||new Error('写入备份记录失败'));
+        }
+      };
+    });
+  }catch(err){
+    console.error('backup restore failed',err);
+    alert('备份恢复失败，已自动回滚；原来的本地数据库仍保留。\n\n请检查备份文件是否完整，以及设备剩余存储空间。');
+    return;
+  }
+
   if(Array.isArray(payload.settings?.taxonomy)){
     taxonomy=normalizeTaxonomy(payload.settings.taxonomy);
     saveTaxonomy();
