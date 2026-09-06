@@ -1085,6 +1085,7 @@ body.dialog-lock { overflow:hidden !important; }
           <button class="view-tab active" data-view="grid">照片墙</button>
           <button class="view-tab" data-view="mineral-tree">我的分类</button>
           <button class="view-tab" data-view="science-tree">科学分类</button>
+          <button class="view-tab" data-view="size-tree">尺寸级别</button>
           <button class="view-tab" data-view="locality-tree">产地目录</button>
         </div>
         <div class="chips">
@@ -2539,10 +2540,27 @@ function parseMaxCm(text=''){
 function specimenSizeClass(text=''){
   const cm=parseMaxCm(text);
   if(cm===null) return '';
-  if(cm<=3.2) return `Thumbnail · 缩标（最大边约 ${cm.toFixed(1)} cm）`;
-  if(cm<=5.7) return `Miniature · 迷你标本（最大边约 ${cm.toFixed(1)} cm）`;
+  if(cm<=3.2) return `Thumbnail · 拇指标本（最大边约 ${cm.toFixed(1)} cm）`;
+  if(cm<=5.7) return `Miniature · 小型标本（最大边约 ${cm.toFixed(1)} cm）`;
   if(cm<=10.2) return `Small Cabinet · 小柜标（最大边约 ${cm.toFixed(1)} cm）`;
   return `Cabinet · 柜标（最大边约 ${cm.toFixed(1)} cm）`;
+}
+function specimenSizeTier(itemOrText=''){
+  const text=typeof itemOrText==='object' ? (itemOrText?.size||'') : String(itemOrText||'');
+  const saved=typeof itemOrText==='object' ? String(itemOrText?.sizeClass||'') : '';
+  const cm=parseMaxCm(text);
+  if(cm!==null){
+    if(cm<=3.2) return {key:'thumbnail',label:'Thumbnail · 拇指标本',order:0};
+    if(cm<=5.7) return {key:'miniature',label:'Miniature · 小型标本',order:1};
+    if(cm<=10.2) return {key:'small-cabinet',label:'Small Cabinet · 小柜标',order:2};
+    return {key:'cabinet',label:'Cabinet · 柜标',order:3};
+  }
+  const source=(saved||text).toLowerCase();
+  if(source.includes('thumbnail')||source.includes('缩标')) return {key:'thumbnail',label:'Thumbnail · 拇指标本',order:0};
+  if(source.includes('miniature')||source.includes('迷你')) return {key:'miniature',label:'Miniature · 小型标本',order:1};
+  if(source.includes('small cabinet')||source.includes('小柜标')) return {key:'small-cabinet',label:'Small Cabinet · 小柜标',order:2};
+  if(source.includes('cabinet')||source.includes('柜标')) return {key:'cabinet',label:'Cabinet · 柜标',order:3};
+  return {key:'unknown',label:'尺寸未填写 / 无法判断',order:9};
 }
 function careSuggestedMonths(main='',associated=''){
   const r=combineCare(main,associated);
@@ -2954,6 +2972,28 @@ function renderScienceTree(arr){
     els.grid.appendChild(block);
   });
 }
+function renderSizeTree(arr){
+  const groups=new Map();
+  arr.forEach(i=>{
+    const tier=specimenSizeTier(i);
+    if(!groups.has(tier.key)) groups.set(tier.key,{...tier,items:[]});
+    groups.get(tier.key).items.push(i);
+  });
+  [...groups.values()].sort((a,b)=>a.order-b.order||a.label.localeCompare(b.label,'zh-CN')).forEach(group=>{
+    const block=document.createElement('section');
+    block.className='group-block';
+    block.innerHTML=`<div class="group-head"><h3>${esc(group.label)}</h3><span>${group.items.length} 件</span></div>`;
+    const sorted=[...group.items].sort((a,b)=>{
+      const ac=parseMaxCm(a.size), bc=parseMaxCm(b.size);
+      if(ac===null && bc!==null) return 1;
+      if(ac!==null && bc===null) return -1;
+      if(ac!==null && bc!==null && ac!==bc) return ac-bc;
+      return String(a.mineralName||'').localeCompare(String(b.mineralName||''),'zh-CN');
+    });
+    appendCardGrid(block,sorted);
+    els.grid.appendChild(block);
+  });
+}
 function renderLocalityTree(arr){
   const locals=new Map();
   arr.forEach(i=>{
@@ -2985,7 +3025,7 @@ function render() {
   const arr=filteredItems();
   els.grid.innerHTML='';
   els.grid.className = browseMode==='grid' ? 'collection-grid' : 'grouped-view';
-  const modeText=browseMode==='mineral-tree'?'我的分类':browseMode==='science-tree'?'科学分类':browseMode==='locality-tree'?'产地目录':'照片墙';
+  const modeText=browseMode==='mineral-tree'?'我的分类':browseMode==='science-tree'?'科学分类':browseMode==='size-tree'?'尺寸级别':browseMode==='locality-tree'?'产地目录':'照片墙';
   $('resultText').textContent = allItems.length===0 ? '还没有矿标' : `${modeText} · ${arr.length} / ${allItems.length} 件${bulkMode?' · 已选 '+selectedBulkIds.size+' 件':''}`;
   renderBulkToolbar();
   els.empty.hidden = allItems.length !== 0 || !!els.search.value.trim() || currentMode!=='all' || !!els.mineralFilter.value;
@@ -2995,6 +3035,7 @@ function render() {
   }
   if(browseMode==='mineral-tree') renderMineralTree(arr);
   else if(browseMode==='science-tree') renderScienceTree(arr);
+  else if(browseMode==='size-tree') renderSizeTree(arr);
   else if(browseMode==='locality-tree') renderLocalityTree(arr);
   else arr.forEach(i=>els.grid.appendChild(makeCard(i)));
 }
@@ -3067,7 +3108,7 @@ function updateDuplicateHint(){
 }
 function updateSizeClassHint(){
   const text=specimenSizeClass($('size')?.value||'');
-  if($('sizeClassHint')) $('sizeClassHint').textContent=text||'按最大边自动给出收藏尺寸级别（约：缩标 / 迷你 / 小柜标 / 柜标）';
+  if($('sizeClassHint')) $('sizeClassHint').textContent=text||'按最大边自动给出收藏尺寸级别（约：拇指标本 / 小型标本 / 小柜标 / 柜标）';
 }
 function updateLoanFields(){
   const status=$('loanStatus')?.value||'none';
@@ -3302,7 +3343,6 @@ function openDetail(id) {
     <div class="completeness-card"><div class="completeness-head"><strong>档案完善度</strong><b>${comp.score}%</b></div><div class="completeness-track"><div class="completeness-fill" style="width:${comp.score}%"></div></div><div class="completeness-note ${comp.coreMissing.length?'warn':''}">${esc(compText)}。重量完全可选，不参与待完善判断。</div></div>
     <div class="detail-actions-grid">
       <button type="button" class="secondary-btn" data-detail-action="card">预览 / 导出标本卡</button>
-      <button type="button" class="secondary-btn" data-detail-action="label">馆藏标签 / 二维码</button>
     </div>
     <div class="detail-section-label">标本与矿物</div>
     <div class="detail-section">
@@ -3352,8 +3392,6 @@ function openDetail(id) {
     ${photos.length>1?`<h3 class="group-title">更多照片</h3><div class="detail-gallery">${photos.slice(1).map(p=>`<img src="${p}" alt="矿标照片">`).join('')}</div>`:''}
     ${labelPhotos.length?`<h3 class="group-title">原矿标 / 证书</h3><div class="detail-gallery">${labelPhotos.map(p=>`<img src="${p}" alt="原矿标照片">`).join('')}</div>`:''}
     `;
-  $('detailContent').querySelector('[data-detail-action="card"]')?.addEventListener('click',()=>exportSpecimenCard(i));
-  $('detailContent').querySelector('[data-detail-action="label"]')?.addEventListener('click',()=>exportSpecimenLabel(i));
   showSheet(els.detail);
 }
 
@@ -3562,7 +3600,7 @@ async function handleTaxonomyAction(btn){
 }
 
 function printableHtml(title,body){
-  return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;background:#f3f1ec;color:#1f2723;margin:0;padding:28px}.page{max-width:760px;margin:auto;background:#fbfaf7;border:1px solid #ddd8cf;border-radius:24px;padding:28px}h1,h2{font-family:Georgia,"Songti SC",serif}h1{margin:0 0 6px;font-size:30px}.muted{color:#767d78}.hero{width:100%;max-height:520px;object-fit:cover;border-radius:18px;margin:18px 0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#e1ddd5;border-radius:14px;overflow:hidden}.row{background:#fbfaf7;padding:10px 12px}.row span{display:block;font-size:10px;color:#767d78;margin-bottom:3px}.row b{font-size:13px}.tags{display:flex;gap:6px;flex-wrap:wrap}.tag{padding:5px 8px;border-radius:999px;background:#e4ece8;font-size:10px}.sale-card{display:grid;grid-template-columns:180px 1fr;gap:18px;padding:16px 0;border-bottom:1px solid #ddd8cf}.sale-card img{width:180px;height:150px;object-fit:cover;border-radius:14px}.price{font-size:22px;font-family:Georgia,serif;color:#315a4e}.label{display:grid;grid-template-columns:1fr 124px;gap:18px;align-items:center}.label img.qr{width:124px;height:124px}.code{font:700 22px Georgia,serif;letter-spacing:.08em}.small{font-size:11px;line-height:1.55}.review-stat{display:inline-block;margin:4px;padding:10px 12px;border-radius:12px;background:#eeece6}.review-stat b{display:block;font-size:21px}.card-kicker{font-size:10px;letter-spacing:.18em;color:#777f79;margin-bottom:10px}.card-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}.museum-seal{border:1px solid #b8b1a7;border-radius:50%;width:72px;height:72px;display:flex;align-items:center;justify-content:center;text-align:center;font:700 9px Georgia,serif;letter-spacing:.12em;color:#315a4e}.photo-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:-8px 0 18px}.photo-strip img{width:100%;height:110px;object-fit:cover;border-radius:12px}.museum-block{margin-top:12px;padding:12px 14px;border:1px solid #ddd8cf;border-radius:14px}.museum-block span{display:block;font-size:10px;color:#767d78;margin-bottom:4px}.museum-block b{font-size:13px}.museum-block p{font-size:11px;line-height:1.6;margin:6px 0 0}.museum-block.warning{background:#fff5e8;border-color:#e9cda8}.notes{margin-top:14px}.footer-note{margin-top:20px} @media print{body{background:white;padding:0}.page{border:0;border-radius:0;max-width:none}.no-print{display:none}} @media(max-width:560px){.grid{grid-template-columns:1fr}.sale-card{grid-template-columns:110px 1fr}.sale-card img{width:110px;height:110px}.label{grid-template-columns:1fr}}</style></head><body><div class="page">${body}<p class="no-print muted small" style="margin-top:24px">可以用浏览器“打印 / 保存为 PDF”。</p></div></body></html>`;
+  return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;background:#f3f1ec;color:#1f2723;margin:0;padding:28px}.page{max-width:760px;margin:auto;background:#fbfaf7;border:1px solid #ddd8cf;border-radius:24px;padding:28px}h1,h2{font-family:Georgia,"Songti SC",serif}h1{margin:0 0 6px;font-size:30px}.muted{color:#767d78}.hero{width:100%;max-height:520px;object-fit:cover;border-radius:18px;margin:18px 0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#e1ddd5;border-radius:14px;overflow:hidden}.row{background:#fbfaf7;padding:10px 12px}.row span{display:block;font-size:10px;color:#767d78;margin-bottom:3px}.row b{font-size:13px}.tags{display:flex;gap:6px;flex-wrap:wrap}.tag{padding:5px 8px;border-radius:999px;background:#e4ece8;font-size:10px}.sale-card{display:grid;grid-template-columns:180px 1fr;gap:18px;padding:16px 0;border-bottom:1px solid #ddd8cf}.sale-card img{width:180px;height:150px;object-fit:cover;border-radius:14px}.price{font-size:22px;font-family:Georgia,serif;color:#315a4e}.small{font-size:11px;line-height:1.55}.review-stat{display:inline-block;margin:4px;padding:10px 12px;border-radius:12px;background:#eeece6}.review-stat b{display:block;font-size:21px}.card-kicker{font-size:10px;letter-spacing:.18em;color:#777f79;margin-bottom:10px}.card-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}.museum-seal{border:1px solid #b8b1a7;border-radius:50%;width:72px;height:72px;display:flex;align-items:center;justify-content:center;text-align:center;font:700 9px Georgia,serif;letter-spacing:.12em;color:#315a4e}.photo-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:-8px 0 18px}.photo-strip img{width:100%;height:110px;object-fit:cover;border-radius:12px}.museum-block{margin-top:12px;padding:12px 14px;border:1px solid #ddd8cf;border-radius:14px}.museum-block span{display:block;font-size:10px;color:#767d78;margin-bottom:4px}.museum-block b{font-size:13px}.museum-block p{font-size:11px;line-height:1.6;margin:6px 0 0}.museum-block.warning{background:#fff5e8;border-color:#e9cda8}.notes{margin-top:14px}.footer-note{margin-top:20px} @media print{body{background:white;padding:0}.page{border:0;border-radius:0;max-width:none}.no-print{display:none}} @media(max-width:560px){.grid{grid-template-columns:1fr}.sale-card{grid-template-columns:110px 1fr}.sale-card img{width:110px;height:110px}}</style></head><body><div class="page">${body}<p class="no-print muted small" style="margin-top:24px">可以用浏览器“打印 / 保存为 PDF”。</p></div></body></html>`;
 }
 async function previewFrameToPng(frame){
   const doc=frame.contentDocument;
@@ -3624,7 +3662,7 @@ async function previewFrameToPng(frame){
     URL.revokeObjectURL(url);
   }
 }
-function openExportPreview(html,filename,title='标本卡预览'){
+function openExportPreview(html,filename,title='标本卡预览',pngFactory=null){
   const old=document.getElementById('exportPreviewOverlay');
   if(old) old.remove();
   const overlay=document.createElement('div');
@@ -3659,7 +3697,7 @@ function openExportPreview(html,filename,title='标本卡预览'){
     saveBtn.disabled=true;
     saveBtn.textContent='正在生成图片…';
     try{
-      const pngBlob=await previewFrameToPng(frame);
+      const pngBlob=pngFactory ? await pngFactory() : await previewFrameToPng(frame);
       const pngName=String(filename||'标本卡').replace(/\.html?$/i,'')+'.png';
       const file=new File([pngBlob],pngName,{type:'image/png'});
       try{
@@ -3680,58 +3718,150 @@ function openExportPreview(html,filename,title='标本卡预览'){
     }
   });
 }
-function exportSpecimenCard(i){
-  const photos=(i.photos||[]).slice(0,4);
-  const mainPhoto=photos[0];
-  const info=findMineralInfo(i.mineralName)||null;
-  const care=combineCare(i.mineralName||'',i.associated||'');
-  const condition=conditionLabel(i.conditionStatus||'intact');
-  const confMap={confirmed:'确定',dealer:'商家 / 原标签',self:'自己判断',unknown:'待确认'};
-  const science=specimenScienceSummary(i);
-  const photoStrip=photos.length>1?`<div class="photo-strip">${photos.slice(1).map(src=>`<img src="${src}" alt="标本附图">`).join('')}</div>`:'';
-  const tags=String(i.tags||'').split(/[,，#\s]+/).map(x=>x.trim()).filter(Boolean);
-  const body=`
-    <div class="card-kicker">PRIVATE MINERAL CABINET · SPECIMEN RECORD</div>
-    <div class="card-head"><div><div class="code">${esc(i.accessionNo||'未编号')}</div><h1>${esc(i.nickname||i.collectionType||i.mineralName||'矿标')}</h1><div class="muted">${esc(placeOf(i)||'产地待补')}</div></div><div class="museum-seal">MINERAL<br>CABINET</div></div>
-    ${mainPhoto?`<img class="hero" src="${mainPhoto}" alt="标本主图">`:''}${photoStrip}
-    <div class="grid">
-      <div class="row"><span>主矿物 / 常用叫法</span><b>${esc(i.mineralName||'待确认')}</b></div>
-      <div class="row"><span>科学矿物名</span><b>${esc(i.scientificName||info?.name||i.mineralName||'待确认')}</b></div>
-      <div class="row"><span>化学式</span><b>${esc(i.formula||info?.formula||'—')}</b></div>
-      <div class="row"><span>莫氏硬度</span><b>${esc(i.hardness||info?.hardness||'—')}</b></div>
-      <div class="row"><span>晶系</span><b>${esc(i.crystalSystem||info?.system||'—')}</b></div>
-      <div class="row"><span>晶型 / 形态</span><b>${esc(i.habit||'—')}</b></div>
-      <div class="row"><span>颜色</span><b>${esc(i.color||'—')}</b></div>
-      <div class="row"><span>尺寸 / 级别</span><b>${esc([i.size,i.sizeClass||specimenSizeClass(i.size)].filter(Boolean).join(' · ')||'—')}</b></div>
-      <div class="row"><span>重量</span><b>${esc(i.weight||'—')}</b></div>
-      <div class="row"><span>共生矿物</span><b>${esc(i.associated||'—')}</b></div>
-      <div class="row"><span>我的收藏分类</span><b>${esc(collectionPath(i)||'—')}</b></div>
-      <div class="row"><span>标本状况</span><b>${esc(condition)}</b></div>
-      <div class="row"><span>收藏位置</span><b>${esc(i.storage||'—')}</b></div>
-      <div class="row"><span>来源</span><b>${esc(i.source||'—')}</b></div>
-      <div class="row"><span>收藏日期</span><b>${esc(fmtDate(i.acquiredDate)||'—')}</b></div>
-      <div class="row"><span>身份可信度</span><b>${esc(confMap[i.identityConfidence]||'—')}</b></div>
-      <div class="row"><span>产地可信度</span><b>${esc(confMap[i.localityConfidence]||'—')}</b></div>
-    </div>
-    ${science?`<div class="museum-block"><span>科学分类</span><b>${esc(science)}</b></div>`:''}
-    ${i.provenanceNote?`<div class="museum-block"><span>原藏 / 来源补充</span><b>${esc(i.provenanceNote)}</b></div>`:''}
-    <div class="museum-block"><span>养护摘要</span><b>${esc(care.label)} · ${esc(care.water)}</b><p>${esc(care.storage)}</p></div>
-    ${care.level>=2?`<div class="museum-block warning"><span>安全提示</span><b>${esc(care.hazard)}</b></div>`:''}
-    ${tags.length?`<div class="tags">${tags.map(t=>`<span class="tag">#${esc(t)}</span>`).join('')}</div>`:''}
-    ${i.notes?`<p class="small notes"><b>备注：</b>${esc(i.notes)}</p>`:''}
-    <p class="muted small footer-note">这张标本卡默认不显示入手价、最低愿售价等私密财务字段。</p>`;
-  const html=printableHtml(`${i.accessionNo||''}_${i.mineralName||'矿标'}`,body);
-  const filename=`${i.accessionNo||'矿标'}_${i.mineralName||'标本'}_单块标本卡.html`;
-  openExportPreview(html,filename,`${i.accessionNo||''} ${i.mineralName||'矿标'} · 标本卡`.trim());
+function specimenCardMineralDetails(i){
+  const entries=specimenMineralScienceEntries(i);
+  if(!entries.length) return '';
+  return `<div class="specimen-minerals">${entries.map(entry=>{
+    const info=entry.info;
+    const facts=info ? [
+      info.formula&&`化学式 ${info.formula}`,
+      info.system&&info.system,
+      info.hardness&&`莫氏 ${info.hardness}`,
+      sciencePath(info)&&sciencePath(info)
+    ].filter(Boolean) : [];
+    return `<div class="mineral-chip"><b>${esc(entry.name||entry.typed||'待确认矿物')}</b>${facts.length?`<span>${esc(facts.join(' · '))}</span>`:''}</div>`;
+  }).join('')}</div>`;
 }
-function exportSpecimenLabel(i){
-  const code=i.accessionNo||'未编号';
-  const hosted=location.protocol==='http:'||location.protocol==='https:';
-  const target=hosted?`${location.origin}${location.pathname}?specimen=${encodeURIComponent(code)}`:`MINERAL:${code}`;
-  const qr=`https://quickchart.io/qr?size=240&margin=1&text=${encodeURIComponent(target)}`;
-  const body=`<div class="label"><div><div class="muted small">PRIVATE MINERAL CABINET</div><div class="code">${esc(code)}</div><h2 style="margin:8px 0 4px">${esc(i.mineralName||'待确认矿物')}</h2><div>${esc(placeOf(i)||'产地待补')}</div><p class="small muted">${esc([i.formula,i.crystalSystem,i.size,i.weight&&('重量 '+i.weight)].filter(Boolean).join(' · '))}</p><p class="small">${hosted?'扫码会打开这件矿标的档案。':'当前是本地预览；二维码记录馆藏编号。等网页正式安装到 HTTPS 地址后，会自动变成可打开档案的二维码。'}</p></div><img class="qr" src="${qr}" alt="二维码"></div>`;
-  downloadBlob(new Blob([printableHtml(`${code} 馆藏标签`,body)],{type:'text/html;charset=utf-8'}),`${code}_馆藏标签.html`);
-  showToast('馆藏标签已导出（二维码需联网显示）');
+async function loadCanvasImage(src){
+  if(!src) return null;
+  return await new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=()=>resolve(img);
+    img.onerror=()=>reject(new Error('main photo load failed'));
+    img.src=src;
+  });
+}
+function canvasRoundRect(ctx,x,y,w,h,r,fill){
+  const rr=Math.min(r,w/2,h/2);
+  ctx.beginPath();
+  ctx.moveTo(x+rr,y);ctx.arcTo(x+w,y,x+w,y+h,rr);ctx.arcTo(x+w,y+h,x,y+h,rr);ctx.arcTo(x,y+h,x,y,rr);ctx.arcTo(x,y,x+w,y,rr);ctx.closePath();
+  if(fill){ctx.fillStyle=fill;ctx.fill();}
+}
+function canvasWrapLines(ctx,text,maxWidth){
+  const raw=String(text||''); if(!raw) return [];
+  const lines=[]; let line='';
+  for(const ch of raw){ const t=line+ch; if(line && ctx.measureText(t).width>maxWidth){lines.push(line);line=ch;} else line=t; }
+  if(line) lines.push(line); return lines;
+}
+async function renderSpecimenCardPng(i){
+  const W=1200, pad=72, inner=W-pad*2;
+  const mainPhoto=(i.photos||[])[0]||'';
+  const locality=placeOf(i)||'';
+  const sizeCategory=specimenSizeCategory(i);
+  const facts=[
+    ['产地',locality],
+    ['尺寸',[i.size,sizeCategory?.label].filter(Boolean).join(' · ')],
+    ['颜色',i.color],
+    ['晶型 / 形态',i.habit],
+    ['共生矿物',i.associated]
+  ].filter(x=>String(x[1]||'').trim());
+  const minerals=specimenMineralScienceEntries(i);
+  const title=i.nickname||i.collectionType||i.mineralName||'矿物标本';
+  const photoH=mainPhoto?620:0;
+  const factRows=Math.ceil(facts.length/2);
+  const mineralH=minerals.reduce((sum,e)=>{
+    const info=e.info; const details=info?[info.formula&&`化学式 ${info.formula}`,info.system,info.hardness&&`莫氏 ${info.hardness}`,sciencePath(info)].filter(Boolean).join(' · '):'';
+    return sum+92+(details?36:0);
+  },0);
+  const H=Math.max(760, 190+photoH+(mainPhoto?34:0)+factRows*118+(factRows?26:0)+(minerals.length?70+mineralH:0)+pad);
+  const canvas=document.createElement('canvas'); canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext('2d'); if(!ctx) throw new Error('canvas unavailable');
+  ctx.fillStyle='#f2efe8';ctx.fillRect(0,0,W,H);
+  canvasRoundRect(ctx,28,28,W-56,H-56,34,'#fbfaf7');
+  let y=78;
+  ctx.fillStyle='#6f7772';ctx.font='700 24px Georgia, serif';ctx.fillText(String(i.accessionNo||''),pad,y);
+  ctx.textAlign='right';ctx.fillStyle='#7d857f';ctx.font='700 20px Georgia, serif';ctx.fillText('MINERAL SPECIMEN',W-pad,y);ctx.textAlign='left';
+  y+=58; ctx.fillStyle='#202723';ctx.font='700 54px "Songti SC","Noto Serif CJK SC",serif';
+  const titleLines=canvasWrapLines(ctx,title,inner); titleLines.slice(0,2).forEach(line=>{ctx.fillText(line,pad,y);y+=62;}); y+=16;
+  if(mainPhoto){
+    try{
+      const img=await loadCanvasImage(mainPhoto);
+      const x=pad,w=inner,h=photoH; canvasRoundRect(ctx,x,y,w,h,26,'#ece8df');
+      const scale=Math.max(w/img.width,h/img.height), sw=w/scale, sh=h/scale, sx=(img.width-sw)/2, sy=(img.height-sh)/2;
+      ctx.save();const rr=26;ctx.beginPath();ctx.moveTo(x+rr,y);ctx.arcTo(x+w,y,x+w,y+h,rr);ctx.arcTo(x+w,y+h,x,y+h,rr);ctx.arcTo(x,y+h,x,y,rr);ctx.arcTo(x,y,x+w,y,rr);ctx.closePath();ctx.clip();ctx.drawImage(img,sx,sy,sw,sh,x,y,w,h);ctx.restore();
+    }catch(err){console.warn('card photo render failed',err);}
+    y+=photoH+34;
+  }
+  if(facts.length){
+    const gap=18, colW=(inner-gap)/2;
+    for(let idx=0;idx<facts.length;idx++){
+      const col=idx%2,row=Math.floor(idx/2), x=pad+col*(colW+gap), yy=y+row*118;
+      canvasRoundRect(ctx,x,yy,colW,100,18,'#ffffff');
+      ctx.fillStyle='#7b817d';ctx.font='500 19px -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif';ctx.fillText(facts[idx][0],x+20,yy+30);
+      ctx.fillStyle='#2d3531';ctx.font='700 24px -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif';
+      const ls=canvasWrapLines(ctx,facts[idx][1],colW-40);ctx.fillText(ls[0]||'',x+20,yy+66); if(ls[1]){ctx.font='600 20px -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif';ctx.fillText(ls[1],x+20,yy+91);}
+    }
+    y+=factRows*118+26;
+  }
+  if(minerals.length){
+    ctx.fillStyle='#56625c';ctx.font='700 22px -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif';ctx.fillText('矿物信息',pad,y+8);y+=42;
+    for(const entry of minerals){
+      const info=entry.info;
+      const details=info?[info.formula&&`化学式 ${info.formula}`,info.system,info.hardness&&`莫氏 ${info.hardness}`,sciencePath(info)].filter(Boolean).join(' · '):'';
+      const boxH=details?116:82; canvasRoundRect(ctx,pad,y,inner,boxH,18,'#f5f2ec');
+      ctx.fillStyle='#26302b';ctx.font='700 25px -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif';ctx.fillText(entry.name||entry.typed||'待确认矿物',pad+22,y+34);
+      if(details){ctx.fillStyle='#626a65';ctx.font='500 18px -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif';const ls=canvasWrapLines(ctx,details,inner-44);ctx.fillText(ls[0]||'',pad+22,y+68);if(ls[1])ctx.fillText(ls[1],pad+22,y+94);}
+      y+=boxH+12;
+    }
+  }
+  return await new Promise((resolve,reject)=>{
+    if(canvas.toBlob) canvas.toBlob(b=>b?resolve(b):reject(new Error('PNG encode failed')),'image/png');
+    else {try{const u=canvas.toDataURL('image/png');fetch(u).then(r=>r.blob()).then(resolve,reject);}catch(e){reject(e);}}
+  });
+}
+function exportSpecimenCard(i){
+  const mainPhoto=(i.photos||[])[0]||'';
+  const locality=placeOf(i)||'';
+  const sizeCategory=specimenSizeCategory(i);
+  const fields=[];
+  const pushField=(label,value)=>{ const v=String(value||'').trim(); if(v) fields.push(`<div class="specimen-fact"><span>${esc(label)}</span><b>${esc(v)}</b></div>`); };
+  pushField('产地',locality);
+  pushField('尺寸',[i.size,sizeCategory?.label].filter(Boolean).join(' · '));
+  pushField('颜色',i.color);
+  pushField('晶型 / 形态',i.habit);
+  pushField('共生矿物',i.associated);
+  const title=i.nickname||i.collectionType||i.mineralName||'矿物标本';
+  const body=`
+    <style>
+      .page{max-width:680px!important;padding:22px!important;border-radius:22px!important;box-sizing:border-box}
+      .specimen-card{display:grid;gap:16px}
+      .specimen-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+      .specimen-code{font:700 13px Georgia,serif;letter-spacing:.12em;color:#66706b}
+      .specimen-title{margin:4px 0 0;font:700 28px/1.15 Georgia,"Songti SC",serif;color:#202723}
+      .specimen-photo{display:block;width:100%;height:min(48vh,390px);object-fit:cover;border-radius:18px;background:#ece8df}
+      .specimen-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+      .specimen-fact{padding:9px 11px;border:1px solid #ddd8cf;border-radius:12px;background:#fff}
+      .specimen-fact span{display:block;font-size:10px;color:#7b817d;margin-bottom:3px}
+      .specimen-fact b{font-size:13px;line-height:1.4}
+      .specimen-minerals{display:grid;gap:7px}
+      .mineral-chip{padding:10px 12px;border:1px solid #d9d4ca;border-radius:12px;background:#f6f3ed}
+      .mineral-chip b{display:block;font-size:13px;margin-bottom:2px}
+      .mineral-chip span{display:block;font-size:10.5px;line-height:1.45;color:#626a65}
+      @media(max-width:560px){.specimen-facts{grid-template-columns:1fr 1fr}.specimen-title{font-size:24px}.specimen-photo{height:min(44vh,330px)}}
+      @media print{@page{size:A4;margin:10mm}.page{max-width:none!important;padding:0!important}.specimen-photo{max-height:115mm}}
+    </style>
+    <div class="specimen-card">
+      <div class="specimen-top">
+        <div><div class="specimen-code">${esc(i.accessionNo||'')}</div><h1 class="specimen-title">${esc(title)}</h1></div>
+        <div class="card-kicker">MINERAL SPECIMEN</div>
+      </div>
+      ${mainPhoto?`<img class="specimen-photo" src="${mainPhoto}" alt="标本主图">`:''}
+      ${fields.length?`<div class="specimen-facts">${fields.join('')}</div>`:''}
+      ${specimenCardMineralDetails(i)}
+    </div>`;
+  const html=printableHtml(`${i.accessionNo||''}_${i.mineralName||'矿标'}`,body);
+  const filename=`${i.accessionNo||'矿标'}_${i.mineralName||'标本'}_标本卡.html`;
+  openExportPreview(html,filename,`${i.accessionNo||''} ${i.mineralName||'矿标'} · 标本卡`.trim(),()=>renderSpecimenCardPng(i));
 }
 function countBy(arr,fn){ const m=new Map(); arr.forEach(x=>{const k=fn(x)||'未填写';m.set(k,(m.get(k)||0)+1)}); return [...m.entries()].sort((a,b)=>b[1]-a[1]||String(a[0]).localeCompare(String(b[0]),'zh-CN')); }
 function renderBarList(id,entries,maxItems=8){
@@ -4152,6 +4282,20 @@ function bindEvents(){
   $('acquisitionBudget').addEventListener('change',()=>{ const ym=ensureAcquisitionMonth(); const raw=$('acquisitionBudget').value.trim(); if(raw) acquisitionBudgets[ym]=raw; else delete acquisitionBudgets[ym]; saveAcquisitionBudgets(); renderAcquisitionCalendar(); showToast(raw?'本月预算已保存':'本月预算已清除'); });
 
   $('closeEditor').onclick=()=>closeSheet(els.editor); $('closeDetail').onclick=()=>closeSheet(els.detail); $('closeSettings').onclick=()=>closeSheet(els.settings); $('settingsBtn').onclick=()=>{showSheet(els.settings);renderDataSafety();}; $('persistStorageBtn')?.addEventListener('click',requestPersistentStorage); $('homeBtn').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+  $('detailContent')?.addEventListener('click',e=>{
+    const btn=e.target.closest('[data-detail-action]');
+    if(!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const item=allItems.find(x=>x.id===detailId);
+    if(!item){ showToast('没有找到这件标本，请关闭详情后重新打开'); return; }
+    try{
+      if(btn.dataset.detailAction==='card') exportSpecimenCard(item);
+    }catch(err){
+      console.error('specimen card preview failed',err);
+      showToast('标本卡预览打开失败，请重新进入详情再试');
+    }
+  });
   $('editDetail').onclick=()=>{ const i=allItems.find(x=>x.id===detailId); closeSheet(els.detail); if(i) openEditor(i); };
 
   els.form.addEventListener('submit',async e=>{ e.preventDefault(); if(!$('mineralName').value.trim()){showToast('先写一下主矿物名称');return;} const item=gatherForm(); ensureTaxonomyEntry(item.collectionGroup,item.collectionType); await put(item); closeSheet(els.editor); await refresh(); showToast('矿标已保存'); });
