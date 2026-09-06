@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mineral-cabinet-v20260905-cleanup-v3-safetyfix';
+const CACHE_NAME = 'mineral-cabinet-v20260905-associated-minerals';
 const CORE = ['./index.html','./manifest.json','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install', event => {
   self.skipWaiting();

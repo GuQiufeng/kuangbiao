@@ -2572,6 +2572,29 @@ function appendAutomaticEvents(existing,next){
   return events;
 }
 function itemAliases(i){ const info=findMineralInfo(i?.mineralName||i?.scientificName||''); return info?.aliases||[]; }
+function canonicalMineralName(value=''){
+  const raw=String(value||'').trim();
+  if(!raw) return '';
+  const info=findMineralInfo(raw);
+  return String(info?.name||raw).trim();
+}
+function specimenMineralNames(i){
+  const names=[i?.mineralName,...splitAssociatedNames(i?.associated||'')];
+  const out=[], seen=new Set();
+  names.forEach(value=>{
+    const name=canonicalMineralName(value);
+    if(!name) return;
+    const key=normalizeMineralKey(name)||name.toLowerCase();
+    if(seen.has(key)) return;
+    seen.add(key); out.push(name);
+  });
+  return out;
+}
+function countByMinerals(arr){
+  const m=new Map();
+  arr.forEach(i=>specimenMineralNames(i).forEach(name=>m.set(name,(m.get(name)||0)+1)));
+  return [...m.entries()].sort((a,b)=>b[1]-a[1]||String(a[0]).localeCompare(String(b[0]),'zh-CN'));
+}
 
 
 function showToast(text) {
@@ -2637,7 +2660,7 @@ function renderPhotoPreviews(container, photos, onRemove, options={}) {
 
 function updateStats() {
   $('statCount').textContent=allItems.length;
-  $('statMinerals').textContent=new Set(allItems.map(i=>i.mineralName?.trim()).filter(Boolean)).size;
+  $('statMinerals').textContent=new Set(allItems.flatMap(specimenMineralNames)).size;
   $('statLocalities').textContent=new Set(allItems.map(placeOf).filter(Boolean)).size;
   const spent=allItems.reduce((sum,i)=>sum+moneyNumber(i.price),0);
   const recovered=allItems.filter(i=>dispositionOf(i)==='sold').reduce((sum,i)=>sum+moneyNumber(i.salePrice),0);
@@ -2655,11 +2678,11 @@ function rebuildMineralFilter() {
   const keep=els.mineralFilter.value;
   const groups=[...new Set(allItems.map(i=>i.collectionGroup?.trim()).filter(Boolean))]
     .sort((a,b)=>categoryIndex(a)-categoryIndex(b)||a.localeCompare(b,'zh-CN'));
-  const names=[...new Set(allItems.map(i=>i.mineralName?.trim()).filter(Boolean))]
+  const names=[...new Set(allItems.flatMap(specimenMineralNames))]
     .sort((a,b)=>a.localeCompare(b,'zh-CN'));
   let html='<option value="">全部矿物</option>';
   if(groups.length) html+='<optgroup label="我的收藏大类">'+groups.map(n=>`<option value="g:${esc(n)}">${esc(n)}</option>`).join('')+'</optgroup>';
-  if(names.length) html+='<optgroup label="主矿物">'+names.map(n=>`<option value="m:${esc(n)}">${esc(n)}</option>`).join('')+'</optgroup>';
+  if(names.length) html+='<optgroup label="矿物种类（含共生）">'+names.map(n=>`<option value="m:${esc(n)}">${esc(n)}</option>`).join('')+'</optgroup>';
   els.mineralFilter.innerHTML=html;
   if([...els.mineralFilter.options].some(o=>o.value===keep)) els.mineralFilter.value=keep;
 }
@@ -2668,7 +2691,7 @@ function filteredItems() {
   const filter=els.mineralFilter.value;
   let arr=allItems.filter(i=>{
     if(filter.startsWith('g:') && i.collectionGroup!==filter.slice(2)) return false;
-    if(filter.startsWith('m:') && i.mineralName!==filter.slice(2)) return false;
+    if(filter.startsWith('m:') && !specimenMineralNames(i).includes(filter.slice(2))) return false;
     if(currentMode==='favorite' && !i.favorite) return false;
     if(currentMode==='unlabeled' && !isIncomplete(i)) return false;
     if(currentMode==='sold' && dispositionOf(i)!=='sold') return false;
@@ -3610,12 +3633,12 @@ function renderInsights(){
   if(!years.length) years.push(String(new Date().getFullYear()));
   const sel=$('reportYear'); const keep=sel.value; sel.innerHTML=years.map(y=>`<option value="${y}">${y} 年</option>`).join(''); if(years.includes(keep)) sel.value=keep;
   renderYearReport(sel.value); renderSpendingInsights(sel.value);
-  renderBarList('mineralBars',countBy(allItems,i=>i.collectionGroup||i.scientificName||i.mineralName));
+  renderBarList('mineralBars',countByMinerals(allItems));
   renderBarList('localityBars',countBy(allItems,i=>localityBucket(i)));
 }
 function renderYearReport(year){
   const arr=reportItemsForYear(year); const spent=arr.reduce((s,i)=>s+moneyNumber(i.price),0); const sold=allItems.filter(i=>String(i.dispositionDate||'').slice(0,4)===String(year)&&dispositionOf(i)==='sold'); const recovered=sold.reduce((s,i)=>s+moneyNumber(i.salePrice),0);
-  const topM=countBy(arr,i=>i.collectionGroup||i.scientificName||i.mineralName)[0]; const topP=countBy(arr,i=>localityBucket(i))[0]; const fav=arr.filter(i=>i.favorite).slice(0,10);
+  const topM=countByMinerals(arr)[0]; const topP=countBy(arr,i=>localityBucket(i))[0]; const fav=arr.filter(i=>i.favorite).slice(0,10);
   $('yearReport').innerHTML=`<div class="report-hero"><b>${arr.length} 件</b><span>${year} 年新入藏 · 花费 ${moneyText(spent)} · 回血 ${moneyText(recovered)}</span></div><div class="manage-grid"><div class="manage-stat"><b>${topM?esc(topM[0]):'—'}</b><span>今年收最多</span></div><div class="manage-stat"><b>${topP?esc(topP[0]):'—'}</b><span>最多产地</span></div><div class="manage-stat"><b>${fav.length}</b><span>今年最喜欢</span></div><div class="manage-stat"><b>${sold.length}</b><span>今年售出</span></div></div>${fav.length?`<div class="manage-card"><h3>${year} 最喜欢</h3><p>${fav.map(i=>esc(i.accessionNo||i.nickname||i.mineralName)).join(' · ')}</p></div>`:''}`;
 }
 function acquisitionItemsForDate(date){ return allItems.filter(i=>String(i.acquiredDate||'').slice(0,10)===date); }
