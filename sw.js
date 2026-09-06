@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mineral-cabinet-v20260905-associated-minerals';
+const CACHE_NAME = 'mineral-cabinet-v20260906-basic-consistency-123';
 const CORE = ['./index.html','./manifest.json','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install', event => {
   self.skipWaiting();

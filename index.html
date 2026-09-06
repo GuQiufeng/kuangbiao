@@ -1616,7 +1616,7 @@ const MINERAL_CATALOG = [
   {name:'磷氯铅矿', system:'六方晶系', formula:'Pb₅(PO₄)₃Cl', hardness:'3.5–4', scienceClass:'磷酸盐、砷酸盐与钒酸盐', scienceSubclass:'磷酸盐', scienceGroup:'磷灰石超族', aliases:['pyromorphite']},
   {name:'砷铅矿', system:'六方晶系', formula:'Pb₅(AsO₄)₃Cl', hardness:'3.5–4', scienceClass:'磷酸盐、砷酸盐与钒酸盐', scienceSubclass:'砷酸盐', scienceGroup:'磷灰石超族', aliases:['mimetite']},
   {name:'红锌矿', system:'六方晶系', formula:'ZnO', hardness:'4', scienceClass:'氧化物与氢氧化物', scienceSubclass:'简单氧化物', scienceGroup:'红锌矿族', aliases:['zincite']},
-  {name:'石英', system:'三方晶系', formula:'SiO₂', hardness:'7', scienceClass:'氧化物与氢氧化物', scienceSubclass:'SiO₂ 型氧化物', scienceGroup:'石英族', structureNote:'Strunz 把石英列在氧化物；从结构看它由 SiO₄ 四面体组成三维网络，教材中也常称架状硅酸盐。', aliases:['quartz','水晶','白水晶','白晶','紫水晶','紫晶','amethyst','烟晶','茶晶','smoky quartz','黄水晶','citrine','粉晶','粉水晶','rose quartz','发晶','钛晶','绿幽灵','红幽灵','幽灵水晶','利姆利亚','利姆利亚水晶','lemurian','骸骨','骸骨水晶','骨干水晶','elestial','红水晶','绿帘水晶','chalcedony','玉髓','玛瑙','agate']},
+  {name:'石英', system:'三方晶系', formula:'SiO₂', hardness:'7', scienceClass:'氧化物与氢氧化物', scienceSubclass:'SiO₂ 型氧化物', scienceGroup:'石英族', structureNote:'Strunz 把石英列在氧化物；从结构看它由 SiO₄ 四面体组成三维网络，教材中也常称架状硅酸盐。', aliases:['quartz','水晶','白水晶','白晶','紫水晶','紫晶','amethyst','烟晶','茶晶','smoky quartz','黄水晶','citrine','粉晶','粉水晶','rose quartz','发晶','钛晶','绿幽灵','红幽灵','幽灵水晶','利姆利亚','利姆利亚水晶','lemurian','骸骨','骸骨水晶','骨干水晶','elestial','红水晶','绿帘水晶','chalcedony','玉髓','玛瑙','agate','樱花玛瑙','水草玛瑙','盐源玛瑙','战国红玛瑙','战国红','戈壁玛瑙']},
   {name:'方解石', system:'三方晶系', formula:'CaCO₃', hardness:'3', scienceClass:'碳酸盐与硝酸盐', scienceSubclass:'无水碳酸盐', scienceGroup:'方解石族', aliases:['calcite']},
   {name:'白云石', system:'三方晶系', formula:'CaMg(CO₃)₂', hardness:'3.5–4', scienceClass:'碳酸盐与硝酸盐', scienceSubclass:'无水碳酸盐', scienceGroup:'白云石族', aliases:['dolomite']},
   {name:'菱锰矿', system:'三方晶系', formula:'MnCO₃', hardness:'3.5–4', scienceClass:'碳酸盐与硝酸盐', scienceSubclass:'无水碳酸盐', scienceGroup:'方解石族', aliases:['rhodochrosite']},
@@ -1665,6 +1665,22 @@ function normalizeMineralKey(value='') {
 const RARE_MINERAL_EXPANSION = [{"name":"榍石","system":"单斜晶系","formula":"CaTi(SiO4)O","hardness":"≈5.25","scienceClass":"硅酸盐","scienceSubclass":"岛状硅酸盐","scienceGroup":"榍石","aliases":["Titanite","Sphene","sphene"]},{"name":"硅线石","system":"斜方晶系","formula":"Al2SiO5","hardness":"≈7","scienceClass":"硅酸盐","scienceSubclass":"岛状硅酸盐","scienceGroup":"Al₂SiO₅ 多形","aliases":["Sillimanite","矽线石"]},{"name":"臭葱石","system":"斜方晶系","formula":"Fe3+(AsO4)·2H2O","hardness":"≈3.75","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"含水砷酸盐","scienceGroup":"臭葱石","aliases":["Scorodite"]},{"name":"橄榄铜矿","system":"单斜晶系 / 斜方晶系","formula":"Cu2(AsO4)(OH)","hardness":"≈3","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"含羟基砷酸盐","scienceGroup":"橄榄铜矿","aliases":["Olivenite"],"structureNote":"数据库记录存在多晶型/结构状态差异；此处显示已知晶系范围，具体标本可进一步确认。"},{"name":"砷铜铅矿","system":"单斜晶系","formula":"Cu3PbO(AsO3OH)2(OH)2","hardness":"≈2.33","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"含羟基砷酸盐","scienceGroup":"砷铜铅矿","aliases":["Bayldonite"]},{"name":"钒铜铅矿","system":"斜方晶系","formula":"PbCu(VO4)(OH)","hardness":"≈2.25","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"钒酸盐","scienceGroup":"钒铅矿族","aliases":["Mottramite"]},{"name":"氯铜矿","system":"斜方晶系","formula":"Cu2Cl(OH)3","hardness":"≈3.25","scienceClass":"卤化物","scienceSubclass":"含羟基卤化物","scienceGroup":"氯铜矿族","aliases":["Atacamite"]},{"name":"副氯铜矿","system":"六方晶系","formula":"Cu3(Cu,Zn)Cl2(OH)6","hardness":"","scienceClass":"卤化物","scienceSubclass":"含羟基卤化物","scienceGroup":"副氯铜矿","aliases":["Paratacamite"]},{"name":"水胆矾","system":"单斜晶系","formula":"Cu4(SO4)(OH)6","hardness":"≈3.75","scienceClass":"硫酸盐、铬酸盐、钼酸盐与钨酸盐","scienceSubclass":"含羟基硫酸盐","scienceGroup":"水胆矾","aliases":["Brochantite"]},{"name":"斜砷铜矿","system":"单斜晶系","formula":"Cu3(AsO4)(OH)3","hardness":"","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"含羟基砷酸盐","scienceGroup":"斜砷铜矿","aliases":["Clinoclase"]},{"name":"水砷铜钙石","system":"斜方晶系","formula":"CaCu(AsO4)(OH)","hardness":"≈4.5","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"含羟基砷酸盐","scienceGroup":"水砷铜钙石","aliases":["Conichalcite"]},{"name":"钒钾铀矿","system":"单斜晶系 / 非晶质 / 不适用","formula":"K2(UO2)2(VO4)2·3H2O","hardness":"≈2","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"含铀钒酸盐","scienceGroup":"钒钾铀矿","aliases":["Carnotite"],"structureNote":"数据库记录存在多晶型/结构状态差异；此处显示已知晶系范围，具体标本可进一步确认。"},{"name":"钒钙铀矿","system":"四方晶系 / 斜方晶系","formula":"Ca(UO2)2(VO4)2·5-8H2O","hardness":"","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"含铀钒酸盐","scienceGroup":"钒钙铀矿","aliases":["Tyuyamunite"],"structureNote":"数据库记录存在多晶型/结构状态差异；此处显示已知晶系范围，具体标本可进一步确认。"},{"name":"钍石","system":"四方晶系","formula":"Th(SiO4)","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"岛状硅酸盐","scienceGroup":"锆石族","aliases":["Thorite"]},{"name":"氟碳铈矿","system":"六方晶系","formula":"Ce(CO3)F","hardness":"","scienceClass":"碳酸盐与硝酸盐","scienceSubclass":"稀土氟碳酸盐","scienceGroup":"氟碳铈矿族","aliases":["Bastnasite-(Ce)","Bastnäsite-(Ce)","氟碳铈矿-(Ce)"]},{"name":"氟碳钙铈矿","system":"单斜晶系","formula":"CaCe(CO3)2F","hardness":"≈4.5","scienceClass":"碳酸盐与硝酸盐","scienceSubclass":"稀土氟碳酸盐","scienceGroup":"氟碳钙铈矿","aliases":["Synchysite-(Ce)","Synchysite"]},{"name":"独居石-(Ce)","system":"单斜晶系","formula":"Ce(PO4)","hardness":"","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"无水磷酸盐","scienceGroup":"独居石族","aliases":["Monazite-(Ce)","独居石","Monazite"]},{"name":"磷钇矿-(Y)","system":"四方晶系","formula":"Y(PO4)","hardness":"","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"无水磷酸盐","scienceGroup":"磷钇矿族","aliases":["Xenotime-(Y)","磷钇矿","Xenotime"]},{"name":"褐帘石-(Ce)","system":"单斜晶系 / 晶系待确认","formula":"CaCe(Al2Fe2+)[Si2O7][SiO4]O(OH)","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"双岛状硅酸盐","scienceGroup":"绿帘石超族","aliases":["Allanite-(Ce)","褐帘石","Allanite"],"structureNote":"数据库记录存在多晶型/结构状态差异；此处显示已知晶系范围，具体标本可进一步确认。"},{"name":"褐钇铌矿-(Y)","system":"四方晶系","formula":"YNbO4","hardness":"","scienceClass":"氧化物与氢氧化物","scienceSubclass":"铌钽氧化物","scienceGroup":"褐钇铌矿族","aliases":["Fergusonite-(Y)","褐钇铌矿","Fergusonite"]},{"name":"锰铌矿","system":"斜方晶系","formula":"Mn2+Nb2O6","hardness":"","scienceClass":"氧化物与氢氧化物","scienceSubclass":"铌钽氧化物","scienceGroup":"铌铁矿族","aliases":["Columbite-(Mn)","锰铌铁矿"]},{"name":"锰钽矿","system":"斜方晶系","formula":"Mn2+Ta2O6","hardness":"","scienceClass":"氧化物与氢氧化物","scienceSubclass":"铌钽氧化物","scienceGroup":"铌铁矿族","aliases":["Tantalite-(Mn)","锰钽铁矿"]},{"name":"铌钇矿","system":"斜方晶系","formula":"YFe3+Nb2O8","hardness":"","scienceClass":"氧化物与氢氧化物","scienceSubclass":"稀土铌钽氧化物","scienceGroup":"铌钇矿","aliases":["Samarskite-(Y)","Samarskite"]},{"name":"黑稀金矿","system":"斜方晶系 / 非晶质 / 不适用","formula":"(Y,Ca,Ce,U,Th)(Nb,Ta,Ti)2O6","hardness":"≈6","scienceClass":"氧化物与氢氧化物","scienceSubclass":"稀土铌钽钛氧化物","scienceGroup":"黑稀金矿","aliases":["Euxenite-(Y)","Euxenite"],"structureNote":"数据库记录存在多晶型/结构状态差异；此处显示已知晶系范围，具体标本可进一步确认。"},{"name":"铯榴石","system":"等轴晶系 / 四方晶系","formula":"Cs(Si2Al)O6·nH2O","hardness":"","scienceClass":"硅酸盐","scienceSubclass":"架状硅酸盐","scienceGroup":"沸石型铯矿物","aliases":["Pollucite","Pollucite-(Cs)"],"structureNote":"数据库记录存在多晶型/结构状态差异；此处显示已知晶系范围，具体标本可进一步确认。"},{"name":"透锂长石","system":"单斜晶系","formula":"LiAlSi4O10","hardness":"≈6.25","scienceClass":"硅酸盐","scienceSubclass":"架状硅酸盐","scienceGroup":"透锂长石","aliases":["Petalite"]},{"name":"磷锂铝石","system":"三斜晶系","formula":"LiAl(PO4)F","hardness":"≈5.75","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"无水磷酸盐","scienceGroup":"磷锂铝石-羟磷锂铝石系列","aliases":["Amblygonite"]},{"name":"羟磷锂铝石","system":"三斜晶系","formula":"LiAl(PO4)(OH)","hardness":"","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"无水磷酸盐","scienceGroup":"磷锂铝石-羟磷锂铝石系列","aliases":["Montebrasite"]},{"name":"磷铁锂矿","system":"斜方晶系","formula":"LiFe2+(PO4)","hardness":"≈4.5","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"无水磷酸盐","scienceGroup":"磷铁锂矿族","aliases":["Triphylite"]},{"name":"磷锰锂矿","system":"斜方晶系","formula":"LiMn2+(PO4)","hardness":"≈4.5","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"无水磷酸盐","scienceGroup":"磷铁锂矿族","aliases":["Lithiophilite"]},{"name":"硼铍石","system":"斜方晶系","formula":"Be2(BO3)(OH)","hardness":"≈7.5","scienceClass":"硼酸盐","scienceSubclass":"无水硼酸盐","scienceGroup":"硼铍石","aliases":["Hambergite"]},{"name":"硅铍石","system":"六方晶系","formula":"Be2(SiO4)","hardness":"≈7.75","scienceClass":"硅酸盐","scienceSubclass":"岛状硅酸盐","scienceGroup":"硅铍石","aliases":["Phenakite","Phenacite"]},{"name":"羟硅铍石","system":"斜方晶系","formula":"Be4Si2O7(OH)2","hardness":"≈6.5","scienceClass":"硅酸盐","scienceSubclass":"岛状硅酸盐","scienceGroup":"羟硅铍石","aliases":["Bertrandite"]},{"name":"巴西石","system":"单斜晶系","formula":"NaAl3(PO4)2(OH)4","hardness":"≈5.5","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"无水磷酸盐","scienceGroup":"巴西石","aliases":["Brazilianite"]},{"name":"磷铍钙石","system":"单斜晶系","formula":"CaBe(PO4)F","hardness":"≈5.25","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"无水磷酸盐","scienceGroup":"磷铍钙石系列","aliases":["Herderite"]},{"name":"羟磷铍钙石","system":"单斜晶系","formula":"CaBe(PO4)(OH)","hardness":"","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"无水磷酸盐","scienceGroup":"磷铍钙石系列","aliases":["Hydroxylherderite","羟基磷铍钙石"]},{"name":"硼铝石","system":"六方晶系","formula":"Al6(BO3)5F3","hardness":"≈7","scienceClass":"硼酸盐","scienceSubclass":"无水硼酸盐","scienceGroup":"硼铝石","aliases":["Jeremejevite"]},{"name":"硼镁铝石","system":"斜方晶系","formula":"MgAl(BO4)","hardness":"","scienceClass":"硼酸盐","scienceSubclass":"无水硼酸盐","scienceGroup":"硼镁铝石","aliases":["Sinhalite"]},{"name":"柱晶石","system":"斜方晶系","formula":"(Mg,Fe2+,Al,[box])10(Si,Al,B)5O21(OH,F)2","hardness":"≈6.5","scienceClass":"硅酸盐","scienceSubclass":"硼硅酸盐","scienceGroup":"柱晶石","aliases":["Kornerupine"]},{"name":"异性石","system":"六方晶系","formula":"Na15Ca6Fe3Zr3Si(Si25O73)(O,OH,H2O)3(Cl,OH)2","hardness":"≈5.5","scienceClass":"硅酸盐","scienceSubclass":"环状硅酸盐","scienceGroup":"异性石族","aliases":["Eudialyte"]},{"name":"红硅锰钠石","system":"三斜晶系","formula":"NaMn2+2Si3O8(OH)","hardness":"≈5.25","scienceClass":"硅酸盐","scienceSubclass":"链状硅酸盐","scienceGroup":"红硅锰钠石","aliases":["Serandite"]},{"name":"氟钠石","system":"等轴晶系","formula":"NaF","hardness":"≈2.25","scienceClass":"卤化物","scienceSubclass":"简单卤化物","scienceGroup":"石盐族","aliases":["Villiaumite"]},{"name":"星叶石","system":"三斜晶系 / 单斜晶系","formula":"K2NaFe2+7Ti2(Si4O12)2O2(OH)4F","hardness":"≈3.5","scienceClass":"硅酸盐","scienceSubclass":"层状硅酸盐","scienceGroup":"星叶石族","aliases":["Astrophyllite"],"structureNote":"数据库记录存在多晶型/结构状态差异；此处显示已知晶系范围，具体标本可进一步确认。"},{"name":"霓石","system":"单斜晶系","formula":"NaFe3+Si2O6","hardness":"≈6","scienceClass":"硅酸盐","scienceSubclass":"链状硅酸盐","scienceGroup":"辉石族","aliases":["Aegirine","Aegirite"]},{"name":"蓝闪石","system":"单斜晶系","formula":"[box]Na2(Mg3Al2)Si8O22(OH)2","hardness":"≈6.25","scienceClass":"硅酸盐","scienceSubclass":"双链状硅酸盐","scienceGroup":"角闪石超族","aliases":["Glaucophane"]},{"name":"方镁石","system":"等轴晶系","formula":"MgO","hardness":"≈6","scienceClass":"氧化物与氢氧化物","scienceSubclass":"简单氧化物","scienceGroup":"方镁石族","aliases":["Periclase"]},{"name":"方锰矿","system":"等轴晶系","formula":"MnO","hardness":"≈5.5","scienceClass":"氧化物与氢氧化物","scienceSubclass":"简单氧化物","scienceGroup":"方镁石族","aliases":["Manganosite"]},{"name":"硫镉矿","system":"六方晶系","formula":"CdS","hardness":"","scienceClass":"硫化物与硫盐","scienceSubclass":"金属硫化物","scienceGroup":"硫镉矿","aliases":["Greenockite","Greenockite CdS"]},{"name":"砷黝铜矿","system":"等轴晶系","formula":"Cu6(Cu4Cu2)As4S13","hardness":"","scienceClass":"硫化物与硫盐","scienceSubclass":"硫盐","scienceGroup":"黝铜矿超族","aliases":["Tennantite-(Cu)","Tennantite"]},{"name":"硫锡矿","system":"四方晶系","formula":"Cu2FeSnS4","hardness":"","scienceClass":"硫化物与硫盐","scienceSubclass":"金属硫化物","scienceGroup":"硫锡矿","aliases":["Stannite"]},{"name":"硫锑铜矿","system":"斜方晶系","formula":"CuSbS2","hardness":"","scienceClass":"硫化物与硫盐","scienceSubclass":"硫盐","scienceGroup":"硫锑铜矿","aliases":["Chalcostibite"]},{"name":"碲金矿","system":"单斜晶系","formula":"AuTe2","hardness":"","scienceClass":"硫化物与硫盐","scienceSubclass":"碲化物","scienceGroup":"碲金矿","aliases":["Calaverite"]},{"name":"碲银矿","system":"单斜晶系","formula":"Ag2Te","hardness":"","scienceClass":"硫化物与硫盐","scienceSubclass":"碲化物","scienceGroup":"碲银矿","aliases":["Hessite"]},{"name":"针碲金银矿","system":"单斜晶系","formula":"AgAuTe4","hardness":"","scienceClass":"硫化物与硫盐","scienceSubclass":"碲化物","scienceGroup":"针碲金银矿","aliases":["Sylvanite"]},{"name":"自然碲","system":"六方晶系","formula":"Te","hardness":"","scienceClass":"自然元素","scienceSubclass":"半金属元素","scienceGroup":"自然碲","aliases":["Tellurium","Tellur"]},{"name":"自然硒","system":"六方晶系 / 单斜晶系","formula":"Se","hardness":"","scienceClass":"自然元素","scienceSubclass":"非金属元素","scienceGroup":"自然硒","aliases":["Selenium"],"structureNote":"数据库记录存在多晶型/结构状态差异；此处显示已知晶系范围，具体标本可进一步确认。"},{"name":"水菱镁矿","system":"单斜晶系","formula":"Mg5(CO3)4(OH)2·4H2O","hardness":"≈3.5","scienceClass":"碳酸盐与硝酸盐","scienceSubclass":"含羟基/含水碳酸盐","scienceGroup":"水菱镁矿","aliases":["Hydromagnesite"]},{"name":"菱钴矿","system":"六方晶系","formula":"Co(CO3)","hardness":"≈4","scienceClass":"碳酸盐与硝酸盐","scienceSubclass":"无水碳酸盐","scienceGroup":"方解石族","aliases":["Spherocobaltite"]},{"name":"菱镍矿","system":"六方晶系","formula":"Ni(CO3)","hardness":"≈4.75","scienceClass":"碳酸盐与硝酸盐","scienceSubclass":"无水碳酸盐","scienceGroup":"方解石族","aliases":["Gaspeite","Gaspéite"]},{"name":"蓝铅矿","system":"单斜晶系","formula":"CuPb(SO4)(OH)2","hardness":"≈2.5","scienceClass":"硫酸盐、铬酸盐、钼酸盐与钨酸盐","scienceSubclass":"含羟基硫酸盐","scienceGroup":"蓝铅矿","aliases":["Linarite"]},{"name":"砷铁矿","system":"等轴晶系 / 四方晶系","formula":"KFe3+4(AsO4)3(OH)4·6-7H2O","hardness":"","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"含水砷酸盐","scienceGroup":"砷铁矿","aliases":["Pharmacosiderite"],"structureNote":"数据库记录存在多晶型/结构状态差异；此处显示已知晶系范围，具体标本可进一步确认。"},{"name":"偏铜铀云母","system":"四方晶系 / 单斜晶系","formula":"Cu(UO2)2(PO4)2·8H2O","hardness":"≈2.5","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"含水铀磷酸盐","scienceGroup":"偏铜铀云母","aliases":["Metatorbernite","Meta-torbernite"],"structureNote":"数据库记录存在多晶型/结构状态差异；此处显示已知晶系范围，具体标本可进一步确认。"},{"name":"偏钙铀云母","system":"四方晶系","formula":"Ca(UO2)2(PO4)2·6H2O","hardness":"","scienceClass":"磷酸盐、砷酸盐与钒酸盐","scienceSubclass":"含水铀磷酸盐","scienceGroup":"偏钙铀云母","aliases":["Meta-autunite","Metautunite"]},{"name":"水铀矿","system":"斜方晶系","formula":"(UO2)4O(OH)6(H2O)6","hardness":"≈2.5","scienceClass":"氧化物与氢氧化物","scienceSubclass":"含水铀氧化物","scienceGroup":"水铀矿","aliases":["Schoepite"]}];
 const EXISTING_MINERAL_NAMES = new Set(MINERAL_CATALOG.map(x=>x.name));
 MINERAL_CATALOG.push(...RARE_MINERAL_EXPANSION.filter(x=>!EXISTING_MINERAL_NAMES.has(x.name)));
+
+const AMBIGUOUS_TRADE_NAMES = [
+  {names:['埃及遗迹石','遗迹石'], note:'收藏/商贸名称，不对应唯一科学矿物种；请根据原标签、可靠来源或检测结果再确认具体矿物。'},
+  {names:['沙漠玫瑰'], note:'形态/收藏名称，可能由不同矿物形成，不能仅凭这个名称唯一确定矿物种。'},
+  {names:['天珠'], note:'工艺/收藏名称，不是单一科学矿物种；材质需根据实物或可靠资料确认。'},
+  {names:['虎眼石','虎睛石','鹰眼石'], note:'宝石/材料名称，通常涉及石英及纤维状矿物替代或残留，不能仅凭商品名当作单一矿物种。'},
+  {names:['月光石','月长石'], note:'宝石/材料名称，可来自不同长石成员；仅凭商品名不能可靠确定到单一矿物种。'},
+  {names:['彼得石','彼得莱石'], note:'宝石/材料名称，常为多成分集合体或纤维状石英质材料；不建议仅凭名称自动定为单一矿物种。'}
+];
+const AMBIGUOUS_TRADE_LOOKUP = new Map();
+AMBIGUOUS_TRADE_NAMES.forEach(entry => (entry.names||[]).forEach(name=>{
+  const key=normalizeMineralKey(name); if(key) AMBIGUOUS_TRADE_LOOKUP.set(key,entry);
+}));
+function ambiguousTradeNameInfo(value=''){
+  return AMBIGUOUS_TRADE_LOOKUP.get(normalizeMineralKey(value)) || null;
+}
 
 const MINERAL_LOOKUP = new Map();
 MINERAL_CATALOG.forEach(entry => [entry.name, ...(entry.aliases||[])].forEach(alias => { const key=normalizeMineralKey(alias); if(key) MINERAL_LOOKUP.set(key, entry); }));
@@ -1998,6 +2014,7 @@ function detailCareHTML(item){
 function findMineralInfo(value='') {
   const key=normalizeMineralKey(value);
   if(!key) return null;
+  if(AMBIGUOUS_TRADE_LOOKUP.has(key)) return null;
   return MINERAL_LOOKUP.get(key) || IMA_RRUFF_LOOKUP.get(key) || null;
 }
 
@@ -2014,6 +2031,11 @@ function populateMineralSuggestions(){
     push(x.name,x,'科学名');
     (x.aliases||[]).forEach(a=>{ if(String(a).length<=32) push(a,x,`→ ${x.name}`); });
   });
+  AMBIGUOUS_TRADE_NAMES.forEach(entry=>(entry.names||[]).forEach(name=>{
+    const v=String(name||'').trim(); if(!v) return;
+    const k=v.toLowerCase(); if(seen.has(k)) return; seen.add(k);
+    rows.push(`<option value="${esc(v)}">收藏名 / 商贸名 · 具体矿物待确认</option>`);
+  }));
   list.innerHTML=rows.join('');
   const hint=$('mineralDbHint'); if(hint) hint.textContent=`离线矿物库 ${MINERAL_CATALOG_VERSION} · ${MINERAL_CATALOG.length} 个中文/收藏常用主条目 + ${IMA_RRUFF_FALLBACK.length.toLocaleString('zh-CN')} 个 IMA/RRUFF 英文科学名备用；未收录也可照常保存。`;
 }
@@ -2026,14 +2048,17 @@ function setScienceDisplay(prefix, info, typed=''){
   } : {
     name:'scientificNameDisplay', formula:'formulaDisplay', hardness:'hardnessDisplay', cls:'scienceClassDisplay', note:'scienceStructureNote'
   };
+  const ambiguous=ambiguousTradeNameInfo(typed);
   const values = info ? {
     name: info.name + (typed && normalizeMineralKey(typed)!==normalizeMineralKey(info.name) ? `（识别自：${typed.trim()}）` : ''),
     formula: info.formula || '—', hardness: info.hardness || '—', cls: sciencePath(info) || '—'
+  } : ambiguous ? {
+    name:'收藏名 / 商贸名 · 具体矿物待确认', formula:'—', hardness:'—', cls:'待确认'
   } : {name: typed.trim() ? '暂未收录，可照常保存' : '输入名称后自动识别', formula:'—', hardness:'—', cls:'—'};
   [['name',ids.name],['formula',ids.formula],['hardness',ids.hardness],['cls',ids.cls]].forEach(([k,id])=>{
     const el=$(id); if(!el) return; el.textContent=values[k]; el.classList.toggle('science-empty',!info);
   });
-  if(ids.note && $(ids.note)) $(ids.note).textContent=info?.structureNote||'';
+  if(ids.note && $(ids.note)) $(ids.note).textContent=info?.structureNote || ambiguous?.note || '';
 }
 function updateScientificInfoFromMineral(force=false){
   const name=$('mineralName')?.value || '';
@@ -2053,7 +2078,13 @@ function updateScientificInfoFromMineral(force=false){
   } else {
     select.dataset.autoValue='';
     if(!select.dataset.manual && force) select.value='';
-    hint.textContent=name.trim() ? '这个名称暂未收录，晶系可以手动选择；科学资料不会乱猜' : '输入矿物名称后自动关联；也可以手动修改';
+    const ambiguous=ambiguousTradeNameInfo(name);
+    if(ambiguous){
+      hint.textContent='这是收藏名 / 商贸名，不能仅凭名称可靠确定具体矿物；可先保存，确认后再补科学矿物。';
+      const conf=$('identityConfidence'); if(conf && conf.value==='confirmed') conf.value='unknown';
+    } else {
+      hint.textContent=name.trim() ? '这个名称暂未收录，晶系可以手动选择；科学资料不会乱猜' : '输入矿物名称后自动关联；也可以手动修改';
+    }
     hint.classList.remove('matched');
   }
 }
@@ -2571,7 +2602,17 @@ function appendAutomaticEvents(existing,next){
   if(!sameText(existing.provenanceNote,next.provenanceNote) && next.provenanceNote) push('provenance',next.provenanceNote);
   return events;
 }
-function itemAliases(i){ const info=findMineralInfo(i?.mineralName||i?.scientificName||''); return info?.aliases||[]; }
+function itemAliases(i){
+  const out=[], seen=new Set();
+  specimenMineralNames(i).forEach(name=>{
+    const info=findMineralInfo(name);
+    [info?.name,...(info?.aliases||[])].filter(Boolean).forEach(v=>{
+      const text=String(v).trim(); const key=text.toLowerCase();
+      if(!text||seen.has(key)) return; seen.add(key); out.push(text);
+    });
+  });
+  return out;
+}
 function canonicalMineralName(value=''){
   const raw=String(value||'').trim();
   if(!raw) return '';
@@ -2594,6 +2635,28 @@ function countByMinerals(arr){
   const m=new Map();
   arr.forEach(i=>specimenMineralNames(i).forEach(name=>m.set(name,(m.get(name)||0)+1)));
   return [...m.entries()].sort((a,b)=>b[1]-a[1]||String(a[0]).localeCompare(String(b[0]),'zh-CN'));
+}
+function specimenMineralScienceEntries(i){
+  const entries=[], seen=new Set();
+  const push=(raw,role)=>{
+    const typed=String(raw||'').trim();
+    if(!typed) return;
+    const info=findMineralInfo(typed);
+    const name=String(info?.name||typed).trim();
+    const key=normalizeMineralKey(name)||name.toLowerCase();
+    if(seen.has(key)) return;
+    seen.add(key);
+    entries.push({role,typed,name,info});
+  };
+  push(i?.mineralName||i?.scientificName,'main');
+  splitAssociatedNames(i?.associated||'').forEach(name=>push(name,'associated'));
+  return entries;
+}
+function specimenScienceSummary(i){
+  return specimenMineralScienceEntries(i).map(x=>{
+    if(!x.info) return `${x.name}：暂未收录科学分类`;
+    return `${x.name}：${sciencePath(x.info)||'科学分类待补'}`;
+  }).join('；');
 }
 
 
@@ -2857,11 +2920,20 @@ function localityBucket(i){
 function renderScienceTree(arr){
   const classes=new Map();
   arr.forEach(i=>{
-    const cls=i.scienceClass||'未分类';
-    const sub=[i.scienceSubclass,i.scienceGroup].filter(Boolean).join(' › ') || i.scientificName || i.mineralName || '未细分';
-    if(!classes.has(cls)) classes.set(cls,new Map());
-    if(!classes.get(cls).has(sub)) classes.get(cls).set(sub,[]);
-    classes.get(cls).get(sub).push(i);
+    const entries=specimenMineralScienceEntries(i);
+    if(!entries.length) entries.push({name:i.mineralName||'未识别矿物',info:null});
+    entries.forEach(entry=>{
+      const info=entry.info;
+      const cls=info?.scienceClass || (entry.role==='main' ? i.scienceClass : '') || '未分类';
+      const detail=[info?.scienceSubclass,info?.scienceGroup].filter(Boolean).join(' › ')
+        || (entry.role==='main' ? [i.scienceSubclass,i.scienceGroup].filter(Boolean).join(' › ') : '')
+        || info?.name || entry.name || '未细分';
+      const sub=`${detail}${entry.name && !detail.includes(entry.name) ? ` › ${entry.name}` : ''}`;
+      if(!classes.has(cls)) classes.set(cls,new Map());
+      if(!classes.get(cls).has(sub)) classes.get(cls).set(sub,[]);
+      const list=classes.get(cls).get(sub);
+      if(!list.some(x=>x.id===i.id)) list.push(i);
+    });
   });
   const classNames=[...classes.keys()].sort((a,b)=>{
     const ai=SCIENCE_CLASS_ORDER.indexOf(a), bi=SCIENCE_CLASS_ORDER.indexOf(b);
@@ -2968,7 +3040,8 @@ function updateDuplicateHint(){
   const group=($('collectionGroup')?.value.trim()||'').toLowerCase();
   const currentId=$('recordId')?.value||'';
   if(!canonical){ box.classList.remove('show'); box.innerHTML=''; return; }
-  const history=allItems.filter(i=>i.id!==currentId && (findMineralInfo(i.mineralName)?.name||i.scientificName||i.mineralName)===canonical);
+  const history=allItems.filter(i=>i.id!==currentId && specimenMineralNames(i).includes(canonical));
+  const primaryHistory=history.filter(i=>canonicalMineralName(i.mineralName||i.scientificName||'')===canonical);
   if(!history.length){ box.classList.remove('show'); box.innerHTML=''; return; }
   const held=history.filter(i=>dispositionOf(i)==='held');
   const sameProvince=history.filter(i=>province && normalizeProvince(i.province||'')===province);
@@ -2981,7 +3054,7 @@ function updateDuplicateHint(){
     const t=subtype && String(i.collectionType||'').trim().toLowerCase()===subtype;
     return canonical && (m || (p&&t));
   });
-  let level='普通提醒', lead=`你历史上有 ${history.length} 件 ${esc(canonical)}，其中目前在藏 ${held.length} 件。`;
+  let level='普通提醒', lead=`你的馆藏里共有 ${history.length} 件包含 ${esc(canonical)}，其中 ${primaryHistory.length} 件以它为主矿物；目前在藏 ${held.length} 件。`;
   if(exactish.length){ level='高度重复'; lead=`⚠ ${esc(level)}：你已经有 ${exactish.length} 件“同矿物 + 同矿区/同细分类”非常接近的标本。`; }
   else if(sameMine.length){ level='同矿区重复'; lead=`提醒：你已经有 ${sameMine.length} 件同为 ${esc(canonical)}、且矿区相同/近似的标本。`; }
   else if(sameProvince.length){ level='同省产地重复'; lead=`提醒：你已经有 ${sameProvince.length} 件来自同一省份的 ${esc(canonical)}。`; }
@@ -3238,7 +3311,7 @@ function openDetail(id) {
       ${infoRow('科学矿物名',i.scientificName)}
       ${infoRow('化学式',i.formula)}
       ${infoRow('莫氏硬度',i.hardness)}
-      ${infoRow('科学分类',sciencePathOf(i))}
+      ${specimenScienceSummary(i)?infoRow('科学分类',specimenScienceSummary(i)):''}
       ${infoRow('晶系',i.crystalSystem)}
       ${infoRow('共生',i.associated)}
       ${infoRow('颜色',i.color)}
@@ -3376,7 +3449,7 @@ async function saveBatch(){
     const row=batchRows[idx]; const itemMineral=String(row.mineralName||'').trim()||common.mineralName; const info=findMineralInfo(itemMineral); const itemGroup=String(row.collectionGroup||'').trim()||common.collectionGroup; const type=row.collectionType.trim()||common.collectionType; if(itemGroup)ensureTaxonomyEntry(itemGroup,type);
     const loc=resolveBatchLocality(common,row); const itemDate=String(row.acquiredDate||'').trim()||common.acquiredDate; const itemSource=String(row.source||'').trim()||common.source; const itemPrice=row.price.trim()||common.price||'';
     const tasks=[]; if(!row.photos.length)tasks.push('photo'); if(!loc.country)tasks.push('locality'); const accessionNo=`M-${String(maxCode+idx+1).padStart(4,'0')}`; const itemSize=row.size.trim(); const itemAssociated=mergeBatchAssociated(common.associated,row.associated);
-    const item={id:uid(),accessionNo,mineralName:itemMineral,collectionGroup:itemGroup,collectionType:type,associated:itemAssociated,country:loc.country,province:loc.province,city:loc.city,mine:loc.mine,localityId:inferLocalityId(loc),acquiredDate:itemDate,source:itemSource,price:itemPrice,storage:common.storage,tags:common.tags,identityConfidence:'confirmed',localityConfidence:'confirmed',crystalSystem:info?.system||'',scientificName:info?.name||'',formula:info?.formula||'',hardness:info?.hardness||'',scienceClass:info?.scienceClass||'',scienceSubclass:info?.scienceSubclass||'',scienceGroup:info?.scienceGroup||'',structureNote:info?.structureNote||'',nickname:row.nickname.trim(),notes:row.notes.trim(),favorite:false,color:row.color.trim(),habit:row.habit.trim(),size:itemSize,sizeClass:specimenSizeClass(itemSize),weight:row.weight.trim(),provenanceNote:'',estimatedValue:'',saleAskPrice:'',minSalePrice:'',forSale:false,disposition:'held',salePrice:'',giftTo:'',dispositionDate:'',dispositionNote:'',conditionStatus:'normal',damageDate:'',damageNote:'',tasks,localityTaskManual:false,nextCareDate:'',loanStatus:'none',loanTo:'',loanDate:'',loanDue:'',loanReturnedDate:'',photos:[...row.photos],labelPhotos:[],timeline:[automaticAcquiredEvent(itemSource||'批量入藏',itemDate||'')],createdAt:now,updatedAt:now}; await put(item);
+    const item={id:uid(),accessionNo,mineralName:itemMineral,collectionGroup:itemGroup,collectionType:type,associated:itemAssociated,country:loc.country,province:loc.province,city:loc.city,mine:loc.mine,localityId:inferLocalityId(loc),acquiredDate:itemDate,source:itemSource,price:itemPrice,storage:common.storage,tags:common.tags,identityConfidence:(ambiguousTradeNameInfo(itemMineral)?'unknown':'confirmed'),localityConfidence:'confirmed',crystalSystem:info?.system||'',scientificName:info?.name||'',formula:info?.formula||'',hardness:info?.hardness||'',scienceClass:info?.scienceClass||'',scienceSubclass:info?.scienceSubclass||'',scienceGroup:info?.scienceGroup||'',structureNote:info?.structureNote||'',nickname:row.nickname.trim(),notes:row.notes.trim(),favorite:false,color:row.color.trim(),habit:row.habit.trim(),size:itemSize,sizeClass:specimenSizeClass(itemSize),weight:row.weight.trim(),provenanceNote:'',estimatedValue:'',saleAskPrice:'',minSalePrice:'',forSale:false,disposition:'held',salePrice:'',giftTo:'',dispositionDate:'',dispositionNote:'',conditionStatus:'normal',damageDate:'',damageNote:'',tasks,localityTaskManual:false,nextCareDate:'',loanStatus:'none',loanTo:'',loanDate:'',loanDue:'',loanReturnedDate:'',photos:[...row.photos],labelPhotos:[],timeline:[automaticAcquiredEvent(itemSource||'批量入藏',itemDate||'')],createdAt:now,updatedAt:now}; await put(item);
   }
   const count=batchRows.length;closeSheet(els.batch);await refresh();showToast(`这一批 ${count} 件已保存并自动编号`);
 }
@@ -3491,6 +3564,66 @@ async function handleTaxonomyAction(btn){
 function printableHtml(title,body){
   return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;background:#f3f1ec;color:#1f2723;margin:0;padding:28px}.page{max-width:760px;margin:auto;background:#fbfaf7;border:1px solid #ddd8cf;border-radius:24px;padding:28px}h1,h2{font-family:Georgia,"Songti SC",serif}h1{margin:0 0 6px;font-size:30px}.muted{color:#767d78}.hero{width:100%;max-height:520px;object-fit:cover;border-radius:18px;margin:18px 0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#e1ddd5;border-radius:14px;overflow:hidden}.row{background:#fbfaf7;padding:10px 12px}.row span{display:block;font-size:10px;color:#767d78;margin-bottom:3px}.row b{font-size:13px}.tags{display:flex;gap:6px;flex-wrap:wrap}.tag{padding:5px 8px;border-radius:999px;background:#e4ece8;font-size:10px}.sale-card{display:grid;grid-template-columns:180px 1fr;gap:18px;padding:16px 0;border-bottom:1px solid #ddd8cf}.sale-card img{width:180px;height:150px;object-fit:cover;border-radius:14px}.price{font-size:22px;font-family:Georgia,serif;color:#315a4e}.label{display:grid;grid-template-columns:1fr 124px;gap:18px;align-items:center}.label img.qr{width:124px;height:124px}.code{font:700 22px Georgia,serif;letter-spacing:.08em}.small{font-size:11px;line-height:1.55}.review-stat{display:inline-block;margin:4px;padding:10px 12px;border-radius:12px;background:#eeece6}.review-stat b{display:block;font-size:21px}.card-kicker{font-size:10px;letter-spacing:.18em;color:#777f79;margin-bottom:10px}.card-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}.museum-seal{border:1px solid #b8b1a7;border-radius:50%;width:72px;height:72px;display:flex;align-items:center;justify-content:center;text-align:center;font:700 9px Georgia,serif;letter-spacing:.12em;color:#315a4e}.photo-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:-8px 0 18px}.photo-strip img{width:100%;height:110px;object-fit:cover;border-radius:12px}.museum-block{margin-top:12px;padding:12px 14px;border:1px solid #ddd8cf;border-radius:14px}.museum-block span{display:block;font-size:10px;color:#767d78;margin-bottom:4px}.museum-block b{font-size:13px}.museum-block p{font-size:11px;line-height:1.6;margin:6px 0 0}.museum-block.warning{background:#fff5e8;border-color:#e9cda8}.notes{margin-top:14px}.footer-note{margin-top:20px} @media print{body{background:white;padding:0}.page{border:0;border-radius:0;max-width:none}.no-print{display:none}} @media(max-width:560px){.grid{grid-template-columns:1fr}.sale-card{grid-template-columns:110px 1fr}.sale-card img{width:110px;height:110px}.label{grid-template-columns:1fr}}</style></head><body><div class="page">${body}<p class="no-print muted small" style="margin-top:24px">可以用浏览器“打印 / 保存为 PDF”。</p></div></body></html>`;
 }
+async function previewFrameToPng(frame){
+  const doc=frame.contentDocument;
+  if(!doc) throw new Error('preview document unavailable');
+  if(doc.fonts?.ready) await doc.fonts.ready.catch(()=>{});
+  const imgs=[...doc.images];
+  await Promise.all(imgs.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{
+    img.addEventListener('load',resolve,{once:true});
+    img.addEventListener('error',resolve,{once:true});
+    setTimeout(resolve,2500);
+  })));
+  const page=doc.querySelector('.page');
+  if(!page) throw new Error('preview page unavailable');
+  const style=[...doc.querySelectorAll('style')].map(s=>s.textContent||'').join('\n');
+  const clone=page.cloneNode(true);
+  clone.querySelectorAll('.no-print').forEach(el=>el.remove());
+  clone.style.margin='0';
+  clone.style.maxWidth='none';
+  clone.style.width='760px';
+  clone.style.boxSizing='border-box';
+  const holder=doc.createElement('div');
+  holder.style.position='fixed';
+  holder.style.left='-10000px';
+  holder.style.top='0';
+  holder.style.width='760px';
+  holder.style.background='#f3f1ec';
+  holder.style.padding='28px';
+  holder.style.boxSizing='content-box';
+  const measure=clone.cloneNode(true);
+  holder.appendChild(measure);
+  doc.body.appendChild(holder);
+  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+  const width=Math.ceil(holder.scrollWidth);
+  const height=Math.ceil(holder.scrollHeight);
+  holder.remove();
+  const markup=`<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;min-height:${height}px;background:#f3f1ec;padding:28px;box-sizing:border-box"><style>${style}</style>${clone.outerHTML}</div>`;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><foreignObject width="100%" height="100%">${markup}</foreignObject></svg>`;
+  const svgBlob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'});
+  const url=URL.createObjectURL(svgBlob);
+  try{
+    const image=await new Promise((resolve,reject)=>{
+      const img=new Image();
+      img.onload=()=>resolve(img);
+      img.onerror=()=>reject(new Error('SVG render failed'));
+      img.src=url;
+    });
+    const scale=Math.min(2,Math.max(1,window.devicePixelRatio||1));
+    const canvas=document.createElement('canvas');
+    canvas.width=Math.round(width*scale);
+    canvas.height=Math.round(height*scale);
+    const ctx=canvas.getContext('2d');
+    if(!ctx) throw new Error('canvas unavailable');
+    ctx.scale(scale,scale);
+    ctx.fillStyle='#f3f1ec';
+    ctx.fillRect(0,0,width,height);
+    ctx.drawImage(image,0,0,width,height);
+    return await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('PNG encode failed')),'image/png',0.95));
+  }finally{
+    URL.revokeObjectURL(url);
+  }
+}
 function openExportPreview(html,filename,title='标本卡预览'){
   const old=document.getElementById('exportPreviewOverlay');
   if(old) old.remove();
@@ -3505,7 +3638,7 @@ function openExportPreview(html,filename,title='标本卡预览'){
   heading.textContent=title;
   Object.assign(heading.style,{marginRight:'auto',fontFamily:'Georgia,"Songti SC",serif',fontSize:'15px'});
   const makeBtn=(label,primary=false)=>{const b=document.createElement('button');b.type='button';b.textContent=label;Object.assign(b.style,{border:'1px solid '+(primary?'#315a4e':'#cfc9bf'),background:primary?'#315a4e':'#fff',color:primary?'#fff':'#2f3733',borderRadius:'999px',padding:'9px 13px',fontSize:'12px',fontWeight:'700',cursor:'pointer'});return b;};
-  const saveBtn=makeBtn('保存文件',true);
+  const saveBtn=makeBtn('保存图片',true);
   const printBtn=makeBtn('打印 / 存 PDF');
   const closeBtn=makeBtn('关闭');
   const frame=document.createElement('iframe');
@@ -3519,20 +3652,32 @@ function openExportPreview(html,filename,title='标本卡预览'){
   overlay.addEventListener('click',e=>{if(e.target===overlay) close();});
   printBtn.addEventListener('click',()=>{
     try{frame.contentWindow.focus();frame.contentWindow.print();}
-    catch(err){console.warn('print preview failed',err);showToast('打印没唤起，请先点“保存文件”');}
+    catch(err){console.warn('print preview failed',err);showToast('打印没唤起，可以先点“保存图片”');}
   });
   saveBtn.addEventListener('click',async()=>{
-    const blob=new Blob([html],{type:'text/html;charset=utf-8'});
-    const file=new File([blob],filename,{type:'text/html'});
+    const originalText=saveBtn.textContent;
+    saveBtn.disabled=true;
+    saveBtn.textContent='正在生成图片…';
     try{
-      if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-        await navigator.share({files:[file],title});
-        showToast('标本卡已打开系统分享 / 保存');
-        return;
-      }
-    }catch(err){ if(err && err.name==='AbortError') return; console.warn('share file fallback',err); }
-    downloadBlob(blob,filename);
-    showToast('标本卡文件已保存');
+      const pngBlob=await previewFrameToPng(frame);
+      const pngName=String(filename||'标本卡').replace(/\.html?$/i,'')+'.png';
+      const file=new File([pngBlob],pngName,{type:'image/png'});
+      try{
+        if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+          await navigator.share({files:[file],title});
+          showToast(`${title}图片已打开系统保存 / 分享`);
+          return;
+        }
+      }catch(err){ if(err && err.name==='AbortError') return; console.warn('share png fallback',err); }
+      downloadBlob(pngBlob,pngName);
+      showToast(`${title} PNG 图片已保存`);
+    }catch(err){
+      console.error('PNG export failed',err);
+      showToast(`${title}图片生成失败，可以先用“打印 / 存 PDF”保存`);
+    }finally{
+      saveBtn.disabled=false;
+      saveBtn.textContent=originalText;
+    }
   });
 }
 function exportSpecimenCard(i){
@@ -3542,7 +3687,7 @@ function exportSpecimenCard(i){
   const care=combineCare(i.mineralName||'',i.associated||'');
   const condition=conditionLabel(i.conditionStatus||'intact');
   const confMap={confirmed:'确定',dealer:'商家 / 原标签',self:'自己判断',unknown:'待确认'};
-  const science=[i.scienceClass,i.scienceSubclass,i.scienceGroup].filter(Boolean).join(' › ');
+  const science=specimenScienceSummary(i);
   const photoStrip=photos.length>1?`<div class="photo-strip">${photos.slice(1).map(src=>`<img src="${src}" alt="标本附图">`).join('')}</div>`:'';
   const tags=String(i.tags||'').split(/[,，#\s]+/).map(x=>x.trim()).filter(Boolean);
   const body=`
@@ -3737,12 +3882,13 @@ function openManage(panel='tasks'){
 function exportSaleList(){
   const arr=allItems.filter(i=>i.forSale&&dispositionOf(i)==='held'); if(!arr.length){showToast('还没有准备出售的标本');return;}
   const cards=arr.map(i=>`<div class="sale-card">${(i.photos||[])[0]?`<img src="${(i.photos||[])[0]}">`:''}<div><div class="muted small">${esc(i.accessionNo||'')}</div><h2 style="margin:3px 0">${esc(i.nickname||i.mineralName||'矿标')}</h2><div class="muted small">${esc(placeOf(i)||'产地待补')}</div><p class="small">${esc([i.scientificName,i.associated&&('共生 '+i.associated),i.size].filter(Boolean).join(' · '))}</p><div class="price">${i.saleAskPrice?moneyText(moneyNumber(i.saleAskPrice)):'价格面议'}</div>${hasDamage(i)?`<p class="small"><b>状况：</b>${esc(conditionLabel(conditionOf(i)))} ${esc(i.damageNote||'')}</p>`:''}</div></div>`).join('');
-  downloadBlob(new Blob([printableHtml('我的矿标 · 出售清单',`<div class="muted small">PRIVATE MINERAL CABINET</div><h1>出售清单</h1><p class="muted">共 ${arr.length} 件 · 生成于 ${new Date().toLocaleDateString('zh-CN')}</p>${cards}`)],{type:'text/html;charset=utf-8'}),`我的矿标_出售清单_${todayStr()}.html`); showToast('出售清单已导出');
+  const html=printableHtml('我的矿标 · 出售清单',`<div class="muted small">PRIVATE MINERAL CABINET</div><h1>出售清单</h1><p class="muted">共 ${arr.length} 件 · 生成于 ${new Date().toLocaleDateString('zh-CN')}</p>${cards}`);
+  openExportPreview(html,`我的矿标_出售清单_${todayStr()}.html`,'出售清单');
 }
 function exportYearReview(){
-  const y=$('reportYear').value; const arr=reportItemsForYear(y); const spent=arr.reduce((s,i)=>s+moneyNumber(i.price),0); const sold=allItems.filter(i=>String(i.dispositionDate||'').slice(0,4)===y&&dispositionOf(i)==='sold'); const recovered=sold.reduce((s,i)=>s+moneyNumber(i.salePrice),0); const topM=countBy(arr,i=>i.collectionGroup||i.scientificName||i.mineralName)[0]; const topP=countBy(arr,i=>localityBucket(i))[0];
+  const y=$('reportYear').value; const arr=reportItemsForYear(y); const spent=arr.reduce((s,i)=>s+moneyNumber(i.price),0); const sold=allItems.filter(i=>String(i.dispositionDate||'').slice(0,4)===y&&dispositionOf(i)==='sold'); const recovered=sold.reduce((s,i)=>s+moneyNumber(i.salePrice),0); const topM=countByMinerals(arr)[0]; const topP=countBy(arr,i=>localityBucket(i))[0];
   const body=`<div class="muted small">PRIVATE MINERAL CABINET</div><h1>${esc(y)} · 我的矿柜</h1><div><span class="review-stat"><b>${arr.length}</b>新增标本</span><span class="review-stat"><b>${moneyText(spent)}</b>年度入手</span><span class="review-stat"><b>${moneyText(recovered)}</b>年度回血</span></div><p><b>今年收得最多：</b>${esc(topM?.[0]||'—')}　<b>最多产地：</b>${esc(topP?.[0]||'—')}</p><h2>年度入藏</h2>${arr.map(i=>`<p class="small"><b>${esc(i.accessionNo||'')}</b> ${esc(i.nickname||i.mineralName||'矿标')} · ${esc(placeOf(i)||'产地待补')}${i.price?' · '+moneyText(moneyNumber(i.price)):''}</p>`).join('')||'<p>今年还没有入藏记录。</p>'}`;
-  downloadBlob(new Blob([printableHtml(`${y} 我的矿柜`,body)],{type:'text/html;charset=utf-8'}),`${y}_我的矿柜_年度回顾.html`); showToast('年度回顾已导出');
+  openExportPreview(printableHtml(`${y} 我的矿柜`,body),`${y}_我的矿柜_年度回顾.html`,`${y} 年度回顾`);
 }
 
 function formatBytes(bytes){
