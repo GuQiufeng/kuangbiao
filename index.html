@@ -3815,11 +3815,11 @@ async function renderSpecimenCardPng(i){
     }
   }
   return await new Promise((resolve,reject)=>{
-    if(canvas.toBlob) canvas.toBlob(b=>b?resolve(b):reject(new Error('PNG encode failed')),'image/png');
-    else {try{const u=canvas.toDataURL('image/png');fetch(u).then(r=>r.blob()).then(resolve,reject);}catch(e){reject(e);}}
+    if(canvas.toBlob) canvas.toBlob(b=>b?resolve(b):reject(new Error('JPG encode failed')),'image/jpeg',0.92);
+    else {try{const u=canvas.toDataURL('image/jpeg',0.92);fetch(u).then(r=>r.blob()).then(resolve,reject);}catch(e){reject(e);}}
   });
 }
-function exportSpecimenCard(i){
+function specimenCardBodyHtml(i){
   const mainPhoto=(i.photos||[])[0]||'';
   const locality=placeOf(i)||'';
   const sizeCategory=specimenSizeCategory(i);
@@ -3831,25 +3831,7 @@ function exportSpecimenCard(i){
   pushField('晶型 / 形态',i.habit);
   pushField('共生矿物',i.associated);
   const title=i.nickname||i.collectionType||i.mineralName||'矿物标本';
-  const body=`
-    <style>
-      .page{max-width:680px!important;padding:22px!important;border-radius:22px!important;box-sizing:border-box}
-      .specimen-card{display:grid;gap:16px}
-      .specimen-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
-      .specimen-code{font:700 13px Georgia,serif;letter-spacing:.12em;color:#66706b}
-      .specimen-title{margin:4px 0 0;font:700 28px/1.15 Georgia,"Songti SC",serif;color:#202723}
-      .specimen-photo{display:block;width:100%;height:min(48vh,390px);object-fit:cover;border-radius:18px;background:#ece8df}
-      .specimen-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-      .specimen-fact{padding:9px 11px;border:1px solid #ddd8cf;border-radius:12px;background:#fff}
-      .specimen-fact span{display:block;font-size:10px;color:#7b817d;margin-bottom:3px}
-      .specimen-fact b{font-size:13px;line-height:1.4}
-      .specimen-minerals{display:grid;gap:7px}
-      .mineral-chip{padding:10px 12px;border:1px solid #d9d4ca;border-radius:12px;background:#f6f3ed}
-      .mineral-chip b{display:block;font-size:13px;margin-bottom:2px}
-      .mineral-chip span{display:block;font-size:10.5px;line-height:1.45;color:#626a65}
-      @media(max-width:560px){.specimen-facts{grid-template-columns:1fr 1fr}.specimen-title{font-size:24px}.specimen-photo{height:min(44vh,330px)}}
-      @media print{@page{size:A4;margin:10mm}.page{max-width:none!important;padding:0!important}.specimen-photo{max-height:115mm}}
-    </style>
+  return `
     <div class="specimen-card">
       <div class="specimen-top">
         <div><div class="specimen-code">${esc(i.accessionNo||'')}</div><h1 class="specimen-title">${esc(title)}</h1></div>
@@ -3859,9 +3841,73 @@ function exportSpecimenCard(i){
       ${fields.length?`<div class="specimen-facts">${fields.join('')}</div>`:''}
       ${specimenCardMineralDetails(i)}
     </div>`;
-  const html=printableHtml(`${i.accessionNo||''}_${i.mineralName||'矿标'}`,body);
+}
+function specimenCardScopedCss(){
+  return `
+    .specimen-card{display:grid;gap:16px}
+    .specimen-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+    .specimen-code{font:700 13px Georgia,serif;letter-spacing:.12em;color:#66706b}
+    .specimen-title{margin:4px 0 0;font:700 28px/1.15 Georgia,"Songti SC",serif;color:#202723}
+    .specimen-photo{display:block;width:100%;height:min(48vh,390px);object-fit:cover;border-radius:18px;background:#ece8df}
+    .specimen-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .specimen-fact{padding:9px 11px;border:1px solid #ddd8cf;border-radius:12px;background:#fff}
+    .specimen-fact span{display:block;font-size:10px;color:#7b817d;margin-bottom:3px}
+    .specimen-fact b{font-size:13px;line-height:1.4}
+    .specimen-minerals{display:grid;gap:7px}
+    .mineral-chip{padding:10px 12px;border:1px solid #d9d4ca;border-radius:12px;background:#f6f3ed}
+    .mineral-chip b{display:block;font-size:13px;margin-bottom:2px}
+    .mineral-chip span{display:block;font-size:10.5px;line-height:1.45;color:#626a65}
+    .card-kicker{font:700 11px Georgia,serif;letter-spacing:.12em;color:#7d857f;white-space:nowrap}
+    @media(max-width:560px){.specimen-facts{grid-template-columns:1fr 1fr}.specimen-title{font-size:24px}.specimen-photo{height:min(44vh,330px)}}
+  `;
+}
+function openSpecimenCardPreview(i){
+  document.getElementById('exportPreviewOverlay')?.remove();
+  const title=`${i.accessionNo||''} ${i.mineralName||'矿标'} · 标本卡`.trim();
   const filename=`${i.accessionNo||'矿标'}_${i.mineralName||'标本'}_标本卡.html`;
-  openExportPreview(html,filename,`${i.accessionNo||''} ${i.mineralName||'矿标'} · 标本卡`.trim(),()=>renderSpecimenCardPng(i));
+  const overlay=document.createElement('div');
+  overlay.id='exportPreviewOverlay';
+  Object.assign(overlay.style,{position:'fixed',inset:'0',zIndex:'99999',background:'rgba(22,28,25,.56)',display:'flex',alignItems:'stretch',justifyContent:'center',padding:'env(safe-area-inset-top) 0 env(safe-area-inset-bottom)',boxSizing:'border-box'});
+  const panel=document.createElement('div');
+  Object.assign(panel.style,{width:'min(760px,100%)',height:'100%',background:'#f7f5f0',display:'flex',flexDirection:'column',boxShadow:'0 20px 80px rgba(0,0,0,.25)'});
+  const bar=document.createElement('div');
+  Object.assign(bar.style,{display:'flex',gap:'8px',alignItems:'center',padding:'10px 12px',background:'#fbfaf7',borderBottom:'1px solid #ddd8cf',position:'relative',zIndex:'2',flexWrap:'wrap'});
+  const heading=document.createElement('strong'); heading.textContent=title; Object.assign(heading.style,{marginRight:'auto',fontFamily:'Georgia,"Songti SC",serif',fontSize:'15px'});
+  const makeBtn=(label,primary=false)=>{const b=document.createElement('button');b.type='button';b.textContent=label;Object.assign(b.style,{border:'1px solid '+(primary?'#315a4e':'#cfc9bf'),background:primary?'#315a4e':'#fff',color:primary?'#fff':'#2f3733',borderRadius:'999px',padding:'9px 13px',fontSize:'12px',fontWeight:'700',cursor:'pointer'});return b;};
+  const saveBtn=makeBtn('保存 JPG',true), printBtn=makeBtn('打印 / 存 PDF'), closeBtn=makeBtn('关闭');
+  bar.append(heading,saveBtn,printBtn,closeBtn);
+  const scroller=document.createElement('div'); Object.assign(scroller.style,{flex:'1',overflow:'auto',padding:'18px'});
+  const cardWrap=document.createElement('div'); Object.assign(cardWrap.style,{maxWidth:'680px',margin:'0 auto',padding:'22px',borderRadius:'22px',boxSizing:'border-box',background:'#fbfaf7',boxShadow:'0 8px 30px rgba(0,0,0,.06)'});
+  const style=document.createElement('style'); style.textContent=specimenCardScopedCss();
+  cardWrap.innerHTML=specimenCardBodyHtml(i); scroller.append(style,cardWrap); panel.append(bar,scroller); overlay.append(panel); document.body.append(overlay); document.body.style.overflow='hidden';
+  const close=()=>{overlay.remove();document.body.style.overflow='';}; closeBtn.onclick=close; overlay.onclick=e=>{if(e.target===overlay)close();};
+  saveBtn.onclick=async()=>{
+    const old=saveBtn.textContent; saveBtn.disabled=true; saveBtn.textContent='正在生成图片…';
+    try{
+      const blob=await renderSpecimenCardPng(i);
+      const jpgName=String(filename).replace(/\.html?$/i,'')+'.jpg';
+      const file=new File([blob],jpgName,{type:'image/jpeg'});
+      try{
+        if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){ await navigator.share({files:[file],title}); return; }
+      }catch(err){ if(err?.name==='AbortError') return; console.warn('share jpg fallback',err); }
+      downloadBlob(blob,jpgName); showToast('标本卡 JPG 图片已保存');
+    }catch(err){ console.error('JPG export failed',err); showToast('标本卡 JPG 生成失败，可以先用“打印 / 存 PDF”保存'); }
+    finally{ saveBtn.disabled=false; saveBtn.textContent=old; }
+  };
+  printBtn.onclick=()=>{
+    try{
+      const body=`<style>${specimenCardScopedCss()} @media print{@page{size:A4;margin:10mm}.page{max-width:none!important;padding:0!important}.specimen-photo{max-height:115mm}}</style>${specimenCardBodyHtml(i)}`;
+      const html=printableHtml(`${i.accessionNo||''}_${i.mineralName||'矿标'}`,body);
+      const frame=document.createElement('iframe');
+      Object.assign(frame.style,{position:'fixed',width:'1px',height:'1px',right:'0',bottom:'0',opacity:'0',pointerEvents:'none'});
+      document.body.append(frame);
+      frame.onload=()=>{ try{frame.contentWindow.focus();frame.contentWindow.print();}catch(e){console.warn(e);showToast('打印没唤起，请再试一次');} setTimeout(()=>frame.remove(),1500); };
+      frame.srcdoc=html;
+    }catch(err){ console.warn('print preview failed',err); showToast('打印没唤起，请稍后再试'); }
+  };
+}
+function exportSpecimenCard(i){
+  openSpecimenCardPreview(i);
 }
 function countBy(arr,fn){ const m=new Map(); arr.forEach(x=>{const k=fn(x)||'未填写';m.set(k,(m.get(k)||0)+1)}); return [...m.entries()].sort((a,b)=>b[1]-a[1]||String(a[0]).localeCompare(String(b[0]),'zh-CN')); }
 function renderBarList(id,entries,maxItems=8){
