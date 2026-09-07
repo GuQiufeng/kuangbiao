@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mineral-cabinet-v20260906-card-native-canvas';
+const CACHE_NAME = 'mineral-cabinet-v20260906-card-native-canvas-photo-album-fix';
 const CORE = ['./index.html','./manifest.json','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install', event => {
   self.skipWaiting();

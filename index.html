@@ -1154,7 +1154,7 @@ body.dialog-lock { overflow:hidden !important; }
       <div class="photo-section">
         <div id="photoPreview" class="photo-preview"></div>
         <label class="photo-add">
-          <input id="photoInput" type="file" accept="image/*" capture="environment" multiple hidden />
+          <input id="photoInput" type="file" accept="image/*" multiple hidden />
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5h3l1.5-2h7L17 8.5h3v9H4z"/><circle cx="12" cy="13" r="3.2"/></svg>
           <b>拍照 / 选照片</b>
           <small>可多选，会自动压缩</small>
@@ -1257,7 +1257,7 @@ body.dialog-lock { overflow:hidden !important; }
               <input id="timelineDate" type="date" />
             </div>
             <textarea id="timelineNote" rows="2" placeholder="例如：清洗后状态很好 / 搬到 B 柜第三层 / 补拍损坏位置…"></textarea>
-            <label class="secondary-upload timeline-upload"><input id="timelinePhotoInput" type="file" accept="image/*" capture="environment" multiple hidden>＋ 给这条记录加照片</label>
+            <label class="secondary-upload timeline-upload"><input id="timelinePhotoInput" type="file" accept="image/*" multiple hidden>＋ 给这条记录加照片</label>
             <div id="timelinePhotoPreview" class="timeline-preview"></div>
             <button id="addTimelineEvent" type="button" class="secondary-btn full" style="margin-top:8px">＋ 加入时间线</button>
           </div>
@@ -1274,7 +1274,7 @@ body.dialog-lock { overflow:hidden !important; }
       <div class="form-card">
         <div id="labelPhotoPreview" class="photo-preview compact"></div>
         <label class="secondary-upload">
-          <input id="labelPhotoInput" type="file" accept="image/*" capture="environment" multiple hidden />
+          <input id="labelPhotoInput" type="file" accept="image/*" multiple hidden />
           ＋ 拍原标签 / 证书
         </label>
       </div>
@@ -3445,7 +3445,7 @@ function renderBatchItems(){
   batchRows.forEach((row,idx)=>{
     const el=document.createElement('div'); el.className='batch-item'; el.dataset.id=row.id;
     const photoHtml=row.photos.length?`<div class="batch-thumb-strip">${row.photos.map((p,pi)=>`<div class="batch-thumb"><img src="${p}" alt="照片 ${pi+1}">${pi===0?'<span class="batch-thumb-main">主图</span>':''}<div class="batch-thumb-actions">${pi>0?`<button type="button" data-batch-photo-action="main" data-photo-index="${pi}" title="设主图">★</button>`:'<button type="button" disabled>★</button>'}<button type="button" data-batch-photo-action="left" data-photo-index="${pi}" ${pi===0?'disabled':''} title="左移">←</button><button type="button" data-batch-photo-action="right" data-photo-index="${pi}" ${pi===row.photos.length-1?'disabled':''} title="右移">→</button><button type="button" data-batch-photo-action="remove" data-photo-index="${pi}" title="删除">×</button></div></div>`).join('')}</div>`:'';
-    el.innerHTML=`<div class="batch-item-head"><strong>第 ${idx+1} 件</strong>${batchRows.length>1?'<button type="button" class="batch-remove" title="移除">×</button>':''}</div>${photoHtml}<label class="batch-photo-label"><input class="batch-photo-input" type="file" accept="image/*" capture="environment" multiple hidden>＋ 拍照 / 选这件的照片</label>
+    el.innerHTML=`<div class="batch-item-head"><strong>第 ${idx+1} 件</strong>${batchRows.length>1?'<button type="button" class="batch-remove" title="移除">×</button>':''}</div>${photoHtml}<label class="batch-photo-label"><input class="batch-photo-input" type="file" accept="image/*" multiple hidden>＋ 拍照 / 选这件的照片</label>
       <div class="batch-mini-grid">
         <label>名称 / 编号<input class="batch-nickname" value="${esc(row.nickname)}" placeholder="例如：展会 03"></label>
         <label>细分类（可覆盖共同项）<input class="batch-type" value="${esc(row.collectionType)}" list="collectionTypeSuggestions" placeholder="例如：骸骨"></label>
