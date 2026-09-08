@@ -2708,6 +2708,102 @@ async function filesToImages(fileList) {
   for (const f of files) out.push(await fileToCompressedDataURL(f));
   return out;
 }
+
+
+// 视觉复核：仅用于“照片与填写矿名差异极大”的保守提醒，不作为矿物鉴定。
+const MINERAL_VISUAL_PROFILES = {
+  '孔雀石':['green'],
+  '蓝铜矿':['blue','cyan'],
+  '自然硫':['yellow'],
+  '雄黄':['orange','red'],
+  '雌黄':['yellow','orange'],
+  '朱砂':['red','orange'],
+  '菱锰矿':['pink','red'],
+  '蔷薇辉石':['pink','red'],
+  '绿松石':['cyan','blue','green'],
+  '胆矾':['blue','cyan']
+};
+const VISUAL_BUCKET_LABELS={red:'红色',orange:'橙红色',yellow:'黄色',green:'绿色',cyan:'蓝绿色',blue:'蓝色',purple:'紫色',pink:'粉红色'};
+const VISUAL_BUCKET_SUGGESTIONS={
+  red:['朱砂','雄黄','赤铜矿'],
+  orange:['雄黄','朱砂','赤铜矿'],
+  yellow:['自然硫','雌黄','黄铁矿'],
+  green:['孔雀石','绿帘石','葡萄石'],
+  cyan:['绿松石','天青石','异极矿'],
+  blue:['蓝铜矿','天青石','方钠石'],
+  purple:['萤石','石英（紫水晶）','锂辉石'],
+  pink:['菱锰矿','蔷薇辉石','锂辉石']
+};
+function rgbToVisualBucket(r,g,b){
+  r/=255;g/=255;b/=255;
+  const max=Math.max(r,g,b), min=Math.min(r,g,b), d=max-min;
+  const l=(max+min)/2;
+  if(d<0.001) return {bucket:'',sat:0,light:l};
+  const sat=d/(1-Math.abs(2*l-1));
+  let h=0;
+  if(max===r) h=60*(((g-b)/d)%6);
+  else if(max===g) h=60*((b-r)/d+2);
+  else h=60*((r-g)/d+4);
+  if(h<0) h+=360;
+  let bucket='';
+  if(h<15||h>=345) bucket='red';
+  else if(h<45) bucket='orange';
+  else if(h<75) bucket='yellow';
+  else if(h<165) bucket='green';
+  else if(h<205) bucket='cyan';
+  else if(h<255) bucket='blue';
+  else if(h<315) bucket='purple';
+  else bucket='pink';
+  return {bucket,sat,light:l};
+}
+async function analyzeMainPhotoColor(src){
+  if(!src) return null;
+  const img=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=src;});
+  const size=48, c=document.createElement('canvas'); c.width=size;c.height=size;
+  const ctx=c.getContext('2d',{willReadFrequently:true});
+  // 只取中央约 76%，尽量减少桌面/背景颜色干扰。
+  const sx=img.width*.12, sy=img.height*.12, sw=img.width*.76, sh=img.height*.76;
+  ctx.drawImage(img,sx,sy,sw,sh,0,0,size,size);
+  const data=ctx.getImageData(0,0,size,size).data;
+  const counts={red:0,orange:0,yellow:0,green:0,cyan:0,blue:0,purple:0,pink:0};
+  let chromatic=0, valid=0;
+  for(let i=0;i<data.length;i+=4){
+    if(data[i+3]<180) continue;
+    const x=rgbToVisualBucket(data[i],data[i+1],data[i+2]);
+    if(x.light<.12||x.light>.92) continue;
+    valid++;
+    if(x.sat<.34||!x.bucket) continue;
+    chromatic++; counts[x.bucket]++;
+  }
+  if(!valid||chromatic/valid<.35) return null;
+  const [bucket,count]=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+  if(!bucket||!count||count/chromatic<.68) return null;
+  return {bucket,chromaticShare:chromatic/valid,dominance:count/chromatic};
+}
+function photoReviewFingerprint(mineralName,photo){
+  const base=`${normalizeMineralKey(mineralName)}|${String(photo||'').length}|${String(photo||'').slice(-96)}`;
+  let h=2166136261;
+  for(let i=0;i<base.length;i++){h^=base.charCodeAt(i);h=Math.imul(h,16777619);}
+  return String(h>>>0);
+}
+async function reviewPhotoMineralMismatch(mineralName,photos,acceptedKey=''){
+  const photo=(photos||[])[0];
+  if(!mineralName||!photo) return {ok:true,key:acceptedKey||''};
+  const info=findMineralInfo(mineralName); const canonical=info?.name||String(mineralName).trim();
+  const allowed=MINERAL_VISUAL_PROFILES[canonical];
+  if(!allowed) return {ok:true,key:acceptedKey||''}; // 颜色变化大的矿物不做视觉报警。
+  const key=photoReviewFingerprint(canonical,photo);
+  if(acceptedKey===key) return {ok:true,key};
+  let visual;
+  try{ visual=await analyzeMainPhotoColor(photo); }catch(err){ console.warn('visual review skipped',err); return {ok:true,key:acceptedKey||''}; }
+  if(!visual||allowed.includes(visual.bucket)) return {ok:true,key:acceptedKey||''};
+  const likely=(VISUAL_BUCKET_SUGGESTIONS[visual.bucket]||[]).filter(x=>x!==canonical).slice(0,3);
+  const expected=allowed.map(x=>VISUAL_BUCKET_LABELS[x]||x).join(' / ');
+  const seen=VISUAL_BUCKET_LABELS[visual.bucket]||visual.bucket;
+  const msg=`视觉复核（不是矿物鉴定）\n\n主图看起来以${seen}为主，但你填写的是「${canonical}」，与它常见的${expected}外观差异比较大。\n\n${likely.length?'可能方向（仅按颜色粗略提示）：'+likely.join('、')+'\n\n':''}如果图片和矿名都没有错，点“确定”继续保存并记住这次选择；点“取消”返回修改。`;
+  if(confirm(msg)) return {ok:true,key};
+  return {ok:false,key:''};
+}
 function moveArrayItem(list,from,to){
   if(!Array.isArray(list)||from===to||from<0||to<0||from>=list.length||to>=list.length) return;
   const [v]=list.splice(from,1); list.splice(to,0,v);
@@ -3300,6 +3396,7 @@ function gatherForm() {
     tasks, localityTaskManual, nextCareDate:get('nextCareDate'),
     loanStatus:get('loanStatus')||'none', loanTo:get('loanTo'), loanDate:get('loanDate'), loanDue:get('loanDue'), loanReturnedDate:get('loanReturnedDate'),
     tags:get('tags'), notes:get('notes'), photos:[...editingPhotos], labelPhotos:[...editingLabelPhotos], timeline:[...editingTimeline],
+    photoVisualReviewKey:existing?.photoVisualReviewKey||'',
     createdAt:existing?.createdAt||now, updatedAt:now
   };
   base.tasks=reconciledTasks(base);
@@ -3487,7 +3584,10 @@ async function saveBatch(){
     const row=batchRows[idx]; const itemMineral=String(row.mineralName||'').trim()||common.mineralName; const info=findMineralInfo(itemMineral); const itemGroup=String(row.collectionGroup||'').trim()||common.collectionGroup; const type=row.collectionType.trim()||common.collectionType; if(itemGroup)ensureTaxonomyEntry(itemGroup,type);
     const loc=resolveBatchLocality(common,row); const itemDate=String(row.acquiredDate||'').trim()||common.acquiredDate; const itemSource=String(row.source||'').trim()||common.source; const itemPrice=row.price.trim()||common.price||'';
     const tasks=[]; if(!row.photos.length)tasks.push('photo'); if(!loc.country)tasks.push('locality'); const accessionNo=`M-${String(maxCode+idx+1).padStart(4,'0')}`; const itemSize=row.size.trim(); const itemAssociated=mergeBatchAssociated(common.associated,row.associated);
-    const item={id:uid(),accessionNo,mineralName:itemMineral,collectionGroup:itemGroup,collectionType:type,associated:itemAssociated,country:loc.country,province:loc.province,city:loc.city,mine:loc.mine,localityId:inferLocalityId(loc),acquiredDate:itemDate,source:itemSource,price:itemPrice,storage:common.storage,tags:common.tags,identityConfidence:(ambiguousTradeNameInfo(itemMineral)?'unknown':'confirmed'),localityConfidence:'confirmed',crystalSystem:info?.system||'',scientificName:info?.name||'',formula:info?.formula||'',hardness:info?.hardness||'',scienceClass:info?.scienceClass||'',scienceSubclass:info?.scienceSubclass||'',scienceGroup:info?.scienceGroup||'',structureNote:info?.structureNote||'',nickname:row.nickname.trim(),notes:row.notes.trim(),favorite:false,color:row.color.trim(),habit:row.habit.trim(),size:itemSize,sizeClass:specimenSizeClass(itemSize),weight:row.weight.trim(),provenanceNote:'',estimatedValue:'',saleAskPrice:'',minSalePrice:'',forSale:false,disposition:'held',salePrice:'',giftTo:'',dispositionDate:'',dispositionNote:'',conditionStatus:'normal',damageDate:'',damageNote:'',tasks,localityTaskManual:false,nextCareDate:'',loanStatus:'none',loanTo:'',loanDate:'',loanDue:'',loanReturnedDate:'',photos:[...row.photos],labelPhotos:[],timeline:[automaticAcquiredEvent(itemSource||'批量入藏',itemDate||'')],createdAt:now,updatedAt:now}; await put(item);
+    const visualReview=await reviewPhotoMineralMismatch(itemMineral,row.photos,row.photoVisualReviewKey||'');
+    if(!visualReview.ok){showToast(`第 ${idx+1} 件已返回修改，整批尚未保存`);return;}
+    if(visualReview.key) row.photoVisualReviewKey=visualReview.key;
+    const item={id:uid(),accessionNo,mineralName:itemMineral,collectionGroup:itemGroup,collectionType:type,associated:itemAssociated,country:loc.country,province:loc.province,city:loc.city,mine:loc.mine,localityId:inferLocalityId(loc),acquiredDate:itemDate,source:itemSource,price:itemPrice,storage:common.storage,tags:common.tags,identityConfidence:(ambiguousTradeNameInfo(itemMineral)?'unknown':'confirmed'),localityConfidence:'confirmed',crystalSystem:info?.system||'',scientificName:info?.name||'',formula:info?.formula||'',hardness:info?.hardness||'',scienceClass:info?.scienceClass||'',scienceSubclass:info?.scienceSubclass||'',scienceGroup:info?.scienceGroup||'',structureNote:info?.structureNote||'',nickname:row.nickname.trim(),notes:row.notes.trim(),favorite:false,color:row.color.trim(),habit:row.habit.trim(),size:itemSize,sizeClass:specimenSizeClass(itemSize),weight:row.weight.trim(),provenanceNote:'',estimatedValue:'',saleAskPrice:'',minSalePrice:'',forSale:false,disposition:'held',salePrice:'',giftTo:'',dispositionDate:'',dispositionNote:'',conditionStatus:'normal',damageDate:'',damageNote:'',tasks,localityTaskManual:false,nextCareDate:'',loanStatus:'none',loanTo:'',loanDate:'',loanDue:'',loanReturnedDate:'',photos:[...row.photos],labelPhotos:[],photoVisualReviewKey:row.photoVisualReviewKey||'',timeline:[automaticAcquiredEvent(itemSource||'批量入藏',itemDate||'')],createdAt:now,updatedAt:now}; await put(item);
   }
   const count=batchRows.length;closeSheet(els.batch);await refresh();showToast(`这一批 ${count} 件已保存并自动编号`);
 }
@@ -4344,7 +4444,17 @@ function bindEvents(){
   });
   $('editDetail').onclick=()=>{ const i=allItems.find(x=>x.id===detailId); closeSheet(els.detail); if(i) openEditor(i); };
 
-  els.form.addEventListener('submit',async e=>{ e.preventDefault(); if(!$('mineralName').value.trim()){showToast('先写一下主矿物名称');return;} const item=gatherForm(); ensureTaxonomyEntry(item.collectionGroup,item.collectionType); await put(item); closeSheet(els.editor); await refresh(); showToast('矿标已保存'); });
+  els.form.addEventListener('submit',async e=>{
+    e.preventDefault();
+    if(!$('mineralName').value.trim()){showToast('先写一下主矿物名称');return;}
+    const existing=allItems.find(x=>x.id===$('recordId').value);
+    showToast('正在做保存前复核…');
+    const review=await reviewPhotoMineralMismatch($('mineralName').value.trim(),editingPhotos,existing?.photoVisualReviewKey||'');
+    if(!review.ok){showToast('已返回修改，不会保存');return;}
+    const item=gatherForm();
+    if(review.key) item.photoVisualReviewKey=review.key;
+    ensureTaxonomyEntry(item.collectionGroup,item.collectionType); await put(item); closeSheet(els.editor); await refresh(); showToast('矿标已保存');
+  });
   $('deleteBtn').onclick=async()=>{ const id=$('recordId').value; const item=allItems.find(i=>i.id===id); if(item&&confirm('把这件矿标移到回收站？\n之后可以在“备份 → 最近删除”里恢复。')){await put({...item,deletedAt:new Date().toISOString(),updatedAt:new Date().toISOString()});closeSheet(els.editor);await refresh();showToast('已移到回收站，可恢复');} };
 
   els.photoInput.onchange=async()=>{ showToast('正在处理照片…'); editingPhotos.push(...await filesToImages(els.photoInput.files)); els.photoInput.value=''; renderMainPreviews(); reconcileTaskCheckboxesFromEditor(); showToast('照片已加入；“待拍照”已自动完成'); };
